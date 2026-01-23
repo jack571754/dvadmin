@@ -1,0 +1,462 @@
+{
+  "project_name": "django-vue3-admin",
+  "description": "管理系统开发框架 - 基于 RBAC 模型的权限管理系统，支持列级别权限控制",
+  "last_updated": "2026-01-23T14:19:21+08:00",
+  "version": "3.2.0",
+  "repository": {
+    "gitee": "https://gitee.com/huge-dream/django-vue3-admin",
+    "github": "https://github.com/huge-dream/django-vue3-admin",
+    "website": "https://www.django-vue-admin.com",
+    "demo": "https://demo.dvadmin.com"
+  },
+  "tech_stack": {
+    "backend": {
+      "language": "Python",
+      "framework": "Django 4.2.14",
+      "api_framework": "Django REST Framework 3.15.2",
+      "auth": "djangorestframework_simplejwt 5.4.0",
+      "websocket": "channels 4.1.0",
+      "docs": "drf-yasg 1.21.7",
+      "async": "dvadmin3-celery 3.1.6"
+    },
+    "frontend": {
+      "language": "TypeScript",
+      "framework": "Vue 3.4.38",
+      "build_tool": "Vite 5.4.1",
+      "ui_library": "Element Plus 2.8.0",
+      "state_management": "Pinia 2.0.28",
+      "crud": "@fast-crud/fast-crud 1.21.2",
+      "router": "Vue Router 4.4.3"
+    },
+    "database": {
+      "default": "SQLite3",
+      "recommended": "MySQL 8.0+",
+      "optional": "PostgreSQL"
+    },
+    "cache": {
+      "optional": "Redis 6.2.6+"
+    }
+  },
+  "modules": [
+    {
+      "name": "backend",
+      "path": "backend/",
+      "language": "Python",
+      "framework": "Django 4.2.14",
+      "description": "Django 后端服务，提供 RESTful API、WebSocket 服务",
+      "entry_points": [
+        "manage.py",
+        "main.py",
+        "application/asgi.py",
+        "application/wsgi.py"
+      ],
+      "api_routes": "/api/",
+      "has_tests": true,
+      "test_files": [
+        "backend/dvadmin/system/tests.py"
+      ],
+      "config_files": [
+        "application/settings.py",
+        "conf/env.example.py",
+        "gunicorn_conf.py"
+      ],
+      "submodules": [
+        "application",
+        "dvadmin/system",
+        "dvadmin/utils",
+        "conf",
+        "plugins"
+      ]
+    },
+    {
+      "name": "web",
+      "path": "web/",
+      "language": "TypeScript/Vue3",
+      "framework": "Vue 3.4.38 + Vite 5.4.1",
+      "description": "Vue3 前端应用，提供用户界面、权限控制、状态管理",
+      "entry_points": [
+        "src/main.ts",
+        "index.html"
+      ],
+      "config_files": [
+        "vite.config.ts",
+        "tsconfig.json",
+        "package.json",
+        ".eslintrc.js",
+        ".prettierrc.js"
+      ],
+      "has_tests": false,
+      "build_output": "dist/",
+      "env_files": [
+        ".env",
+        ".env.development",
+        ".env.production",
+        ".env.local_prod"
+      ],
+      "submodules": [
+        "src/api",
+        "src/components",
+        "src/layout",
+        "src/views",
+        "src/stores",
+        "src/router",
+        "src/utils",
+        "src/directive",
+        "src/i18n"
+      ]
+    },
+    {
+      "name": "application",
+      "path": "backend/application/",
+      "language": "Python",
+      "description": "Django 应用配置（URL、Settings、WSGI/ASGI）",
+      "parent": "backend",
+      "entry_points": [
+        "settings.py",
+        "urls.py",
+        "asgi.py",
+        "wsgi.py"
+      ],
+      "config_files": [
+        "settings.py",
+        "urls.py"
+      ]
+    },
+    {
+      "name": "system",
+      "path": "backend/dvadmin/system/",
+      "language": "Python",
+      "description": "系统核心模块（用户/角色/权限/菜单/部门等）",
+      "parent": "backend",
+      "models": [
+        "Users",
+        "Role",
+        "Dept",
+        "Post",
+        "Menu",
+        "MenuButton",
+        "MenuField",
+        "Dictionary",
+        "Area",
+        "FileList",
+        "ApiWhiteList",
+        "SystemConfig",
+        "LoginLog",
+        "OperationLog",
+        "MessageCenter"
+      ],
+      "views": [
+        "UserViewSet",
+        "RoleViewSet",
+        "DeptViewSet",
+        "MenuViewSet",
+        "MenuButtonViewSet",
+        "MenuFieldViewSet",
+        "DictionaryViewSet",
+        "AreaViewSet",
+        "FileViewSet",
+        "ApiWhiteListViewSet",
+        "SystemConfigViewSet",
+        "MessageCenterViewSet",
+        "LoginLogViewSet",
+        "OperationLogViewSet"
+      ],
+      "management_commands": [
+        "init",
+        "init_area",
+        "generate_init_json"
+      ]
+    },
+    {
+      "name": "utils",
+      "path": "backend/dvadmin/utils/",
+      "language": "Python",
+      "description": "工具类与基础组件（模型/视图集/权限/异常等）",
+      "parent": "backend",
+      "core_classes": [
+        "CoreModel",
+        "SoftDeleteModel",
+        "CustomModelViewSet",
+        "CustomPermission",
+        "CustomPagination",
+        "SuccessResponse",
+        "ErrorResponse"
+      ],
+      "utilities": [
+        "models.py",
+        "viewset.py",
+        "permission.py",
+        "filters.py",
+        "pagination.py",
+        "serializers.py",
+        "json_response.py",
+        "exception.py",
+        "middleware.py",
+        "backends.py",
+        "import_export_mixin.py",
+        "field_permission.py",
+        "swagger.py",
+        "aliyunoss.py",
+        "tencentcos.py"
+      ]
+    },
+    {
+      "name": "docker_env",
+      "path": "docker_env/",
+      "language": "Docker",
+      "description": "Docker 容器配置",
+      "services": [
+        "django",
+        "web",
+        "mysql",
+        "redis",
+        "celery",
+        "nginx"
+      ],
+      "config_files": [
+        "docker-compose.yml",
+        "django/Dockerfile",
+        "web/Dockerfile",
+        "mysql/conf.d/my.cnf",
+        "redis/redis.conf"
+      ]
+    }
+  ],
+  "api_endpoints": {
+    "auth": {
+      "login": "/api/login/",
+      "logout": "/api/logout/",
+      "token_refresh": "/token/refresh/",
+      "captcha": "/api/captcha/"
+    },
+    "system": {
+      "base": "/api/system/",
+      "user": "/api/system/user/",
+      "role": "/api/system/role/",
+      "dept": "/api/system/dept/",
+      "menu": "/api/system/menu/",
+      "menu_button": "/api/system/menu_button/",
+      "column": "/api/system/column/",
+      "dictionary": "/api/system/dictionary/",
+      "area": "/api/system/area/",
+      "file": "/api/system/file/",
+      "api_white_list": "/api/system/api_white_list/",
+      "system_config": "/api/system/system_config/",
+      "message_center": "/api/system/message_center/",
+      "login_log": "/api/system/login_log/",
+      "operation_log": "/api/system/operation_log/",
+      "download_center": "/api/system/download_center/"
+    },
+    "init": {
+      "dictionary": "/api/init/dictionary/",
+      "settings": "/api/init/settings/"
+    },
+    "docs": {
+      "swagger": "/swagger/",
+      "redoc": "/redoc/"
+    }
+  },
+  "database": {
+    "default_engine": "django.db.backends.sqlite3",
+    "recommended_engine": "django.db.backends.mysql",
+    "mysql_version": "8.0+",
+    "table_prefix": "dvadmin_",
+    "tables": [
+      "dvadmin_system_users",
+      "dvadmin_system_role",
+      "dvadmin_system_dept",
+      "dvadmin_system_post",
+      "dvadmin_system_menu",
+      "dvadmin_system_menu_button",
+      "dvadmin_system_menu_field",
+      "dvadmin_system_dictionary",
+      "dvadmin_system_area",
+      "dvadmin_system_file_list",
+      "dvadmin_system_api_white_list",
+      "dvadmin_system_system_config",
+      "dvadmin_system_login_log",
+      "dvadmin_system_operation_log",
+      "dvadmin_system_message_center"
+    ]
+  },
+  "frontend_stores": {
+    "userInfo": "用户信息状态",
+    "routesList": "路由列表",
+    "themeConfig": "主题配置",
+    "btnPermission": "按钮权限",
+    "columnPermission": "列权限",
+    "dictionary": "字典数据",
+    "frontendMenu": "前端菜单",
+    "messageCenter": "消息中心",
+    "systemConfig": "系统配置",
+    "keepAliveNames": "页面缓存",
+    "tagsViewRoutes": "标签页"
+  },
+  "frontend_layouts": {
+    "modes": [
+      "classic",
+      "columns",
+      "defaults",
+      "transverse"
+    ],
+    "components": {
+      "aside": "侧边栏",
+      "header": "头部",
+      "tagsView": "标签页",
+      "breadcrumb": "面包屑"
+    }
+  },
+  "default_credentials": {
+    "username": "superadmin",
+    "password": "admin123456"
+  },
+  "coverage": {
+    "scan_phase": "module_priority_scan",
+    "total_files_estimated": 500,
+    "scanned_files": 180,
+    "coverage_percent": 36,
+    "scanned_areas": [
+      "项目根配置文件",
+      "backend 应用配置",
+      "system 模块核心功能",
+      "utils 工具模块",
+      "web 核心配置和入口",
+      "web 路由和状态管理",
+      "docker 配置"
+    ],
+    "gaps": [
+      {
+        "area": "前端组件",
+        "missing": "components/ 目录下的详细组件文档",
+        "priority": "medium"
+      },
+      {
+        "area": "页面视图",
+        "missing": "views/system/ 各页面详细说明",
+        "priority": "medium"
+      },
+      {
+        "area": "测试用例",
+        "missing": "自动化测试配置和用例",
+        "priority": "low"
+      },
+      {
+        "area": "插件系统",
+        "missing": "插件开发详细指南",
+        "priority": "high"
+      },
+      {
+        "area": "前端工具函数",
+        "missing": "utils/ 目录工具函数详细说明",
+        "priority": "low"
+      }
+    ]
+  },
+  "ignores": [
+    "node_modules/**",
+    ".git/**",
+    ".github/**",
+    "dist/**",
+    "build/**",
+    ".next/**",
+    "__pycache__/**",
+    "*.pyc",
+    "*.lock",
+    "*.log",
+    "*.bin",
+    "*.pdf",
+    "*.png",
+    "*.jpg",
+    "*.jpeg",
+    "*.gif",
+    "*.bmp",
+    "*.svg",
+    "*.ico",
+    "*.mp4",
+    "*.avi",
+    "*.mov",
+    "*.zip",
+    "*.tar",
+    "*.gz",
+    "*.rar",
+    "*.7z",
+    "backend/venv/**",
+    ".idea/**",
+    ".vscode/**",
+    ".history/**",
+    "*.bat",
+    "backend/static/**",
+    "backend/media/**",
+    "backend/logs/**",
+    "docker_env/mysql/data/**",
+    "docker_env/redis/data/**"
+  ],
+  "key_features": [
+    "列级别权限控制",
+    "前后端分离",
+    "JWT 认证",
+    "动态菜单权限",
+    "多认证方式支持",
+    "WebSocket 支持",
+    "异步任务（Celery）",
+    "Swagger API 文档",
+    "Excel 导入导出",
+    "操作日志记录",
+    "数据权限控制",
+    "插件化架构"
+  ],
+  "truncated": false,
+  "next_steps": [
+    {
+      "priority": "high",
+      "task": "补充插件开发指南",
+      "target": "backend/plugins/ 和 web/src/views/plugins/"
+    },
+    {
+      "priority": "medium",
+      "task": "补充前端组件文档",
+      "target": "web/src/components/"
+    },
+    {
+      "priority": "medium",
+      "task": "补充系统页面视图文档",
+      "target": "web/src/views/system/"
+    },
+    {
+      "priority": "low",
+      "task": "补充前端工具函数文档",
+      "target": "web/src/utils/"
+    },
+    {
+      "priority": "low",
+      "task": "补充测试用例和测试配置",
+      "target": "backend/*/tests.py 和 web 测试配置"
+    }
+  ],
+  "documentation_files": [
+    {
+      "path": "CLAUDE.md",
+      "description": "项目根文档"
+    },
+    {
+      "path": "backend/CLAUDE.md",
+      "description": "后端模块文档"
+    },
+    {
+      "path": "web/CLAUDE.md",
+      "description": "前端模块文档"
+    },
+    {
+      "path": "backend/dvadmin/system/CLAUDE.md",
+      "description": "系统核心模块文档"
+    },
+    {
+      "path": "backend/dvadmin/utils/CLAUDE.md",
+      "description": "工具模块文档"
+    },
+    {
+      "path": ".claude/index.json",
+      "description": "项目索引文件"
+    }
+  ]
+}

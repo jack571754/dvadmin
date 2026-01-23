@@ -1,0 +1,259 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1, maximum-scale=1, minimum-scale=1, user-scalable=no,viewport-fit=cover"/>
+    <title>详情</title>
+    <script src="//cdn.kungfumars.com/kfm-code-qr-jump/vue.global.prod.js"></script>
+    <script src="//cdn.kungfumars.com/kfm-code-qr-jump/axios-1.3.6.min.js"></script>
+    <script src="/static/js/xe-utils.js"></script>
+    <script src="/static/js/vant4.min.js"></script>
+    <link rel="stylesheet" href="/static/css/vant4.css">
+    <link rel="stylesheet" href="/static/css/public.css">
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            background-color: #ececec;
+        }
+
+        .form-list {
+            height: 70vh;
+            overflow-y: scroll;
+        }
+
+        .content-header {
+            padding: 10px;
+            background-color: #FFFFFF;
+            margin-bottom: 10px;
+        }
+
+        .content-footer {
+            display: flex;
+            justify-content: center;
+            column-gap: 10px;
+            background-color: #ffffff;
+            padding: 10px;
+        }
+    </style>
+</head>
+<body>
+<div id="app">
+    <div v-if="is_authentication">
+        <div class="content-header">
+            <div> ${ dataObj.name}</div>
+            <div style="font-size: 14px;color: #999">
+                <span>审批编号:</span>
+                <van-tag plain type="primary">${dataObj.no}</van-tag>
+            </div>
+            <div>
+                <van-tag v-if="dataObj.status===0" type="primary">待处理</van-tag>
+                <van-tag v-if="dataObj.status===1" type="success">通过</van-tag>
+                <van-tag v-if="dataObj.status===2" type="danger">拒绝</van-tag>
+            </div>
+            <div style="font-size: 14px;color: #999">
+                <span>当前审批人员:</span>
+                <van-tag v-for="item in dataObj.pre_user" plain type="primary">${item}</van-tag>
+            </div>
+        </div>
+        <div class="form-list">
+            <div>
+                <van-cell-group v-for="item in dataObj.form_conf.components">
+                    <van-cell :title="item.name" v-if="item.columnShow"
+                              :label="dataObj.pre_change_content.formData[item.key]"/>
+                </van-cell-group>
+            </div>
+            <div style="margin-top: 10px;background-color: #FFFFFF;">
+                <div style="font-size: 16px;">审批流程</div>
+                <van-steps direction="vertical" :active="stepActive" active-icon="success" active-color="#07c160">
+                    <van-step v-for="item in flowRecord">
+                        <van-cell>
+                            <template #title>
+                                ${item.nodeData.name}
+                            </template>
+                            <template #value>
+                                ${ formatDatetime(item.nodeData.create_datetime) }
+                            </template>
+                            <template #label v-if="item.nodeData.node_type=='Start'">
+                                <van-tag type="primary" plain>${item.startUserName}</van-tag>
+                            </template>
+                            <template #label v-if="item.nodeData.node_type=='Approval'">
+                                <div>
+                                    <div>
+                                        <span>审核人员({{ item.preInfo.pre_user.length }}人):</span>
+                                        <van-tag v-for="user in item.preInfo.pre_user" plain type="primary">
+                                            <span>${user.name}</span>
+                                        </van-tag>
+                                    </div>
+                                    <div style="margin-top: 5px">
+                                        <span>审核完成(${item.auditUsers.length}人):</span>
+                                        <van-tag v-for="user in item.auditUsers" type="success" plain>${user.name}
+                                        </van-tag>
+                                    </div>
+                                </div>
+                            </template>
+                            <template #label v-if="item.nodeData.node_type=='Cc'">
+                                <div>
+
+                                    <div>抄送(${item.nodeData.props.assignUser.length}人):</div>
+                                    <div v-for="user in item.nodeData.props.assignUser">
+                                        <van-tag type="success" plain>${user.name}</van-tag>
+                                    </div>
+
+                                </div>
+                            </template>
+                        </van-cell>
+                    </van-step>
+                </van-steps>
+            </div>
+        </div>
+        <div class="content-footer" v-if="dataObj.status===0">
+            <van-button style="width: 100%" @click="handleDialog(0)">拒绝</van-button>
+            <van-button type="primary" style="width: 100%" @click="handleDialog(1)">同意</van-button>
+        </div>
+        <van-dialog v-model:show="auditShow" :title="auditTitle" show-cancel-button @confirm="handleConfirm">
+            <van-cell-group inset>
+                <van-field
+                        v-model="reason"
+                        rows="1"
+                        autosize
+                        type="textarea"
+                        placeholder="请输入审批备注"
+                />
+            </van-cell-group>
+        </van-dialog>
+    </div>
+    <div v-else>
+        <div>
+            ${errMsg}
+        </div>
+    </div>
+</div>
+<script>
+    const app = Vue.createApp({
+        delimiters: ['${', '}'],
+        data() {
+            return {
+                is_authentication: true,
+                errMsg: '',
+                dataObj: {
+                    form_conf: {
+                        components: []
+                    }
+                },
+                auditShow: false,
+                auditTitle: '',
+                auditStatus: null,
+                reason: '',
+                flowRecord: [],
+                stepActive: 0
+            }
+        },
+        methods: {
+            getFlowRecord() {
+                const locat = XEUtils.locat()
+                const searchQuery = locat.searchQuery
+                const token = searchQuery.token || null
+                const flow_data_id = searchQuery.flow_data_id || null
+                const domain = `${location.protocol}//${location.hostname}${location.port ? ':' : '/api'}${location.port}`;
+                axios({
+                    url: `${domain}/api/dvadmin3_flow/app_flow_data/${flow_data_id}/get_flow_record/`,
+                    method: 'get',
+                    params: {},
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `JWT ${token}`
+                    }
+                }).then(res => {
+                    const {data} = res
+                    const list = data.data
+                    this.flowRecord = data.data
+                    this.stepActive = XEUtils.findLastIndexOf(list, (item, index) => {
+                        return item.nodeStatus === 1
+                    })
+
+                })
+            },
+            // 获取列表
+            getPageList() {
+                const locat = XEUtils.locat()
+                const searchQuery = locat.searchQuery
+                const token = searchQuery.token || null
+                const flow_data_id = searchQuery.flow_data_id || null
+                const domain = `${location.protocol}//${location.hostname}${location.port ? ':' : '/api'}${location.port}`;
+                axios({
+                    url: `${domain}/api/dvadmin3_flow/app_flow_data/${flow_data_id}/`,
+                    method: 'get',
+                    params: {},
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `JWT ${token}`
+                    }
+                }).then(res => {
+                    const {data} = res
+                    if (data.code === 2000) {
+                        console.log(data.data)
+                        this.dataObj = data.data
+                    } else if (data.code === 401) {
+                        this.is_authentication = false
+                        this.errMsg = "未登录,请登录授权~"
+                    } else {
+                        this.is_authentication = false
+                        this.errMsg = data.msg
+                    }
+                }).catch(err => {
+                    this.is_authentication = false
+                    this.errMsg = "网站错误,请联系网站管理员~"
+                })
+            },
+            // 显示处理弹窗
+            handleDialog(index) {
+                this.auditShow = true
+                this.auditTitle = index === 0 ? '拒绝' : '同意'
+                this.auditStatus = index
+            },
+            // 处理确认
+            handleConfirm() {
+                const locat = XEUtils.locat()
+                const searchQuery = locat.searchQuery
+                const token = searchQuery.token || null
+                const domain = `${location.protocol}//${location.hostname}${location.port ? ':' : '/api'}${location.port}`;
+                // auditStatus===0?拒绝:同意
+                const url = this.auditStatus === 0 ? `${domain}/api/dvadmin3_flow/app_flow_data/${this.dataObj.id}/handle_reject/` : `${domain}/api/dvadmin3_flow/app_flow_data/${this.dataObj.id}/handle_pass/`
+                axios({
+                    url: url,
+                    method: 'POST',
+                    data: {
+                        reason: this.reason
+                    },
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `JWT ${token}`
+                    }
+                }).then(res => {
+                    const {data} = res
+                    if (data.code === 2000) {
+                        this.auditShow = false
+                        window.location.reload()
+                    } else {
+                        showToast(data.msg);
+                    }
+                }).catch(err => {
+                    showToast(data.msg);
+                })
+            },
+            formatDatetime(datetime) {
+                return XEUtils.toDateString(datetime, 'yyyy-MM-dd HH:mm:ss')
+            }
+        },
+        mounted() {
+            this.getPageList()
+            this.getFlowRecord()
+        },
+    })
+    app.use(vant);
+    app.mount("#app");
+</script>
+</body>
+</html>

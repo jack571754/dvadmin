@@ -1,0 +1,239 @@
+[
+  {
+    "name": "审批流程",
+    "icon": "iconfont icon-xitongshezhi",
+    "sort": 9,
+    "is_link": false,
+    "is_catalog": true,
+    "web_path": "/workflow",
+    "component": "",
+    "component_name": "",
+    "status": true,
+    "cache": false,
+    "visible": true,
+    "parent": null,
+    "children": [
+      {
+        "name": "流程管理",
+        "icon": "iconfont icon-caidan",
+        "sort": 1,
+        "is_link": false,
+        "is_catalog": false,
+        "web_path": "/flowManagement",
+        "component": "plugins/dvadmin3-flow-web/src/flowManagement/index",
+        "component_name": "flowManagement",
+        "status": true,
+        "cache": false,
+        "visible": true,
+        "parent": 1,
+        "children": [],
+        "menu_button": [
+          {
+            "name": "查询",
+            "value": "flowInfo:Search",
+            "api": "/api/dvadmin3_flow/flow_info/",
+            "method": 0
+          },
+          {
+            "name": "详情",
+            "value": "flowInfo:Retrieve",
+            "api": "/api/dvadmin3_flow/flow_info/{id}/",
+            "method": 0
+          },
+          {
+            "name": "新增",
+            "value": "flowInfo:Create",
+            "api": "/api/dvadmin3_flow/flow_info/",
+            "method": 1
+          },
+          {
+            "name": "编辑",
+            "value": "flowInfo:Update",
+            "api": "/api/dvadmin3_flow/flow_info/{id}/",
+            "method": 2
+          },
+          {
+            "name": "删除",
+            "value": "flowInfo:Delete",
+            "api": "/api/dvadmin3_flow/flow_info/{id}/",
+            "method": 3
+          }
+        ],
+        "menu_field": []
+      },
+      {
+        "name": "流程列表",
+        "icon": "iconfont icon-caidan",
+        "sort": 1,
+        "is_link": false,
+        "is_catalog": false,
+        "web_path": "/flowList",
+        "component": "plugins/dvadmin3-flow-web/src/flowList/index",
+        "component_name": "flowList",
+        "status": true,
+        "cache": false,
+        "visible": true,
+        "parent": 1,
+        "children": [],
+        "menu_button": [
+
+        ],
+        "menu_field": []
+      },
+      {
+        "name": "全部审批",
+        "icon": "ele-OfficeBuilding",
+        "sort": 3,
+        "is_link": false,
+        "is_catalog": false,
+        "web_path": "/flowData",
+        "component": "plugins/dvadmin3-flow-web/src/flowData/index",
+        "component_name": "flowData",
+        "status": true,
+        "cache": false,
+        "visible": true,
+        "parent": 1,
+        "children": [],
+        "menu_button": [
+          {
+            "name": "查询",
+            "value": "flowData:Search",
+            "api": "/api/dvadmin3_flow/flow_data/{id}/",
+            "method": 0
+          },
+          {
+            "name": "详情",
+            "value": "flowData:Retrieve",
+            "api": "/api/dvadmin3_flow/flow_data/{id}/",
+            "method": 0
+          },
+          {
+            "name": "新增",
+            "value": "flowData:Create",
+            "api": "/api/dvadmin3_flow/flow_data/{id}/",
+            "method": 1
+          },
+          {
+            "name": "编辑",
+            "value": "flowData:Update",
+            "api": "/api/dvadmin3_flow/flow_data/{id}/",
+            "method": 2
+          },
+          {
+            "name": "删除",
+            "value": "flowData:Delete",
+            "api": "/api/dvadmin3_flow/flow_data/{id}/",
+            "method": 3
+          }
+        ],
+        "menu_field": []
+      },
+      {
+        "name": "待我处理",
+        "icon": "ele-ColdDrink",
+        "sort": 4,
+        "is_link": false,
+        "is_catalog": false,
+        "web_path": "/flowTodo",
+        "component": "plugins/dvadmin3-flow-web/src/flowTodo/index",
+        "component_name": "flowTodo",
+        "status": true,
+        "cache": false,
+        "visible": true,
+        "parent": 1,
+        "children": [],
+        "menu_button": [
+          {
+            "name": "查询",
+            "value": "flowTodo:Search",
+            "api": "/api/dvadmin3_flow/flow_data/{id}/",
+            "method": 0
+          }
+        ],
+        "menu_field": [
+
+        ]
+      },
+      {
+        "name": "已处理的",
+        "icon": "ele-ColdDrink",
+        "sort": 5,
+        "is_link": false,
+        "is_catalog": false,
+        "web_path": "/flowIdo",
+        "component": "plugins/dvadmin3-flow-web/src/flowIdo/index",
+        "component_name": "flowIdo",
+        "status": true,
+        "cache": false,
+        "visible": true,
+        "parent": 1,
+        "children": [],
+        "menu_button": [
+          {
+            "name": "查询",
+            "value": "flowIdo:Search",
+            "api": "/api/dvadmin3_flow/flow_data/{id}/",
+            "method": 0
+          }
+        ],
+        "menu_field": [
+
+        ]
+      },
+      {
+        "name": "我发起的",
+        "icon": "ele-ColdDrink",
+        "sort": 6,
+        "is_link": false,
+        "is_catalog": false,
+        "web_path": "/flowSubmitted",
+        "component": "plugins/dvadmin3-flow-web/src/flowSubmitted/index",
+        "component_name": "flowSubmitted",
+        "status": true,
+        "cache": false,
+        "visible": true,
+        "parent": 1,
+        "children": [],
+        "menu_button": [
+          {
+            "name": "查询",
+            "value": "flowSubmitted:Search",
+            "api": "/api/dvadmin3_flow/flow_data/{id}/",
+            "method": 0
+          }
+        ],
+        "menu_field": [
+
+        ]
+      },
+      {
+        "name": "抄送我的",
+        "icon": "ele-ColdDrink",
+        "sort": 7,
+        "is_link": false,
+        "is_catalog": false,
+        "web_path": "/flowCC",
+        "component": "plugins/dvadmin3-flow-web/src/flowCC/index",
+        "component_name": "flowCC",
+        "status": true,
+        "cache": false,
+        "visible": true,
+        "parent": 1,
+        "children": [],
+        "menu_button": [
+          {
+            "name": "查询",
+            "value": "flowCC:Search",
+            "api": "/api/dvadmin3_flow/flow_data/{id}/",
+            "method": 0
+          }
+        ],
+        "menu_field": [
+
+        ]
+      }
+    ],
+    "menu_button": [],
+    "menu_field": []
+  }
+]
