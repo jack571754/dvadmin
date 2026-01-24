@@ -1,11 +1,12 @@
 # Django-Vue3-Admin 项目文档
 
-> 最后更新：2026-01-23 14:19:21
+> 最后更新：2026-01-24
 
 ## 变更记录 (Changelog)
 
 | 时间 | 变更内容 | 责任人 |
 |------|----------|--------|
+| 2026-01-24 | 添加 dvadmin_approval 模块文档，更新项目统计 | Claude AI |
 | 2026-01-23 14:19:21 | 初始化 AI 上下文文档 | Claude AI |
 
 ---
@@ -53,61 +54,116 @@ Django-Vue3-Admin 是一个基于 RBAC（基于角色的访问控制）模型的
 
 ---
 
+## 项目统计
+
+### 代码量统计
+
+| 分类 | 数量 | 说明 |
+|------|------|------|
+| 后端 Python 文件 | 81 个 | django-vue3-admin-master/backend 目录 |
+| 前端 Vue 文件 | 99 个 | django-vue3-admin-master/web/src 目录 |
+| 前端 TypeScript 文件 | 113 个 | django-vue3-admin-master/web/src 目录 |
+| 审批流程模块 | 19 个 | dvadmin_approval 目录 |
+| **总计** | **312+** | 核心业务代码文件 |
+
+### 目录结构
+
+```
+E:\project\dvadmin\
+├── django-vue3-admin-master/     # 主项目目录
+│   ├── backend/                   # Django 后端
+│   │   ├── application/           # Django 应用配置
+│   │   ├── dvadmin/               # 核心业务模块
+│   │   │   ├── system/            # 系统管理模块
+│   │   │   └── utils/             # 工具类库
+│   │   ├── conf/                  # 配置文件
+│   │   ├── plugins/               # 插件目录
+│   │   └── ...                    # 其他后端文件
+│   ├── web/                       # Vue3 前端
+│   │   ├── src/
+│   │   │   ├── api/               # API 接口
+│   │   │   ├── components/        # 通用组件
+│   │   │   ├── layout/            # 布局组件
+│   │   │   ├── views/             # 页面视图
+│   │   │   ├── stores/            # Pinia 状态管理
+│   │   │   ├── router/            # 路由配置
+│   │   │   └── utils/             # 工具函数
+│   │   └── ...                    # 其他前端文件
+│   └── docker_env/                # Docker 配置
+└── dvadmin_approval/              # 审批流程模块（独立）
+```
+
+---
+
 ## 模块结构图
 
 ```mermaid
 graph TD
-    A["(根) django-vue3-admin-master"] --> B["backend"];
-    A --> C["web"];
-    A --> D["docker_env"];
+    A["(根) E:/project/dvadmin"] --> B["django-vue3-admin-master"];
+    A --> C["dvadmin_approval"];
 
-    B --> E["application"];
-    B --> F["dvadmin"];
-    B --> G["conf"];
-    B --> H["plugins"];
-    B --> I["static"];
+    B --> D["backend<br/>(Django 后端)"];
+    B --> E["web<br/>(Vue3 前端)"];
+    B --> F["docker_env<br/>(Docker 配置)"];
 
-    F --> J["system"];
-    F --> K["utils"];
+    D --> G["application<br/>(应用配置)"];
+    D --> H["dvadmin<br/>(核心业务)"];
+    D --> I["conf<br/>(环境配置)"];
+    D --> J["plugins<br/>(插件目录)"];
 
-    C --> L["src"];
-    L --> M["api"];
-    L --> N["components"];
-    L --> O["layout"];
-    L --> P["views"];
-    L --> Q["stores"];
-    L --> R["router"];
-    L --> S["utils"];
+    H --> K["system<br/>(系统管理)"];
+    H --> L["utils<br/>(工具类)"];
 
-    P --> T["system"];
-    P --> U["plugins"];
+    E --> M["src"];
+    M --> N["api<br/>(接口定义)"];
+    M --> O["components<br/>(通用组件)"];
+    M --> P["layout<br/>(布局组件)"];
+    M --> Q["views<br/>(页面视图)"];
+    M --> R["stores<br/>(状态管理)"];
+    M --> S["router<br/>(路由配置)"];
 
-    click B "./backend/CLAUDE.md" "查看 backend 模块文档"
-    click C "./web/CLAUDE.md" "查看 web 模块文档"
-    click J "./backend/dvadmin/system/CLAUDE.md" "查看 system 模块文档"
-    click K "./backend/dvadmin/utils/CLAUDE.md" "查看 utils 模块文档"
+    Q --> T["system<br/>(系统页面)"];
+    Q --> U["plugins<br/>(插件页面)"];
+
+    C --> V["审批流程模块<br/>(Workflow)"];
+
+    click D "./django-vue3-admin-master/backend/CLAUDE.md" "查看 backend 模块文档"
+    click E "./django-vue3-admin-master/web/CLAUDE.md" "查看 web 模块文档"
+    click C "./dvadmin_approval/CLAUDE.md" "查看 dvadmin_approval 模块文档"
+    click H "./django-vue3-admin-master/backend/dvadmin/CLAUDE.md" "查看 dvadmin 核心模块"
+    click K "./django-vue3-admin-master/backend/dvadmin/system/CLAUDE.md" "查看 system 模块文档"
+    click L "./django-vue3-admin-master/backend/dvadmin/utils/CLAUDE.md" "查看 utils 模块文档"
 ```
 
 ---
 
 ## 模块索引
 
+### 主项目模块
+
 | 模块路径 | 语言 | 职责描述 | 入口文件 |
 |---------|------|----------|----------|
-| [backend](./backend/CLAUDE.md) | Python | Django 后端服务 | `manage.py`, `main.py` |
-| [backend/application](./backend/application/CLAUDE.md) | Python | Django 应用配置 | `settings.py`, `urls.py`, `asgi.py` |
-| [backend/dvadmin/system](./backend/dvadmin/system/CLAUDE.md) | Python | 系统核心模块（用户/角色/权限/菜单等） | `models.py`, `urls.py`, `views/` |
-| [backend/dvadmin/utils](./backend/dvadmin/utils/CLAUDE.md) | Python | 工具类与基础组件 | `viewset.py`, `models.py`, `permission.py` |
-| [backend/conf](./backend/conf/CLAUDE.md) | Python | 环境配置 | `env.py` |
-| [backend/plugins](./backend/plugins/CLAUDE.md) | Python | 插件目录 | - |
-| [web](./web/CLAUDE.md) | TypeScript/Vue3 | Vue3 前端应用 | `src/main.ts`, `package.json` |
-| [web/src/api](./web/src/api/CLAUDE.md) | TypeScript | API 接口定义 | `login/index.ts`, `menu/index.ts` |
-| [web/src/components](./web/src/components/CLAUDE.md) | Vue3 | 通用组件库 | 各种 `.vue` 组件 |
-| [web/src/layout](./web/src/layout/CLAUDE.md) | Vue3 | 布局组件 | 侧边栏、头部、标签页等 |
-| [web/src/views](./web/src/views/CLAUDE.md) | Vue3 | 页面视图 | `system/`, `plugins/` |
-| [web/src/stores](./web/src/stores/CLAUDE.md) | TypeScript | Pinia 状态管理 | `userInfo.ts`, `routesList.ts` 等 |
-| [web/src/router](./web/src/router/CLAUDE.md) | TypeScript | 路由配置 | `index.ts`, `backEnd.ts`, `frontEnd.ts` |
-| [docker_env](./docker_env/CLAUDE.md) | Docker | Docker 容器配置 | `docker-compose.yml` |
+| [backend](./django-vue3-admin-master/backend/CLAUDE.md) | Python | Django 后端服务 | `manage.py`, `main.py` |
+| [backend/application](./django-vue3-admin-master/backend/application/CLAUDE.md) | Python | Django 应用配置 | `settings.py`, `urls.py`, `asgi.py` |
+| [backend/dvadmin](./django-vue3-admin-master/backend/dvadmin/CLAUDE.md) | Python | 核心业务模块包 | `__init__.py` |
+| [backend/dvadmin/system](./django-vue3-admin-master/backend/dvadmin/system/CLAUDE.md) | Python | 系统核心模块（用户/角色/权限/菜单等） | `models.py`, `urls.py`, `views/` |
+| [backend/dvadmin/utils](./django-vue3-admin-master/backend/dvadmin/utils/CLAUDE.md) | Python | 工具类与基础组件 | `viewset.py`, `models.py`, `permission.py` |
+| [backend/conf](./django-vue3-admin-master/backend/conf/CLAUDE.md) | Python | 环境配置 | `env.py` |
+| [backend/plugins](./django-vue3-admin-master/backend/plugins/CLAUDE.md) | Python | 插件目录 | - |
+| [web](./django-vue3-admin-master/web/CLAUDE.md) | TypeScript/Vue3 | Vue3 前端应用 | `src/main.ts`, `package.json` |
+| [web/src/api](./django-vue3-admin-master/web/src/api/CLAUDE.md) | TypeScript | API 接口定义 | `login/index.ts`, `menu/index.ts` |
+| [web/src/components](./django-vue3-admin-master/web/src/components/CLAUDE.md) | Vue3 | 通用组件库 | 各种 `.vue` 组件 |
+| [web/src/layout](./django-vue3-admin-master/web/src/layout/CLAUDE.md) | Vue3 | 布局组件 | 侧边栏、头部、标签页等 |
+| [web/src/views](./django-vue3-admin-master/web/src/views/CLAUDE.md) | Vue3 | 页面视图 | `system/`, `plugins/` |
+| [web/src/stores](./django-vue3-admin-master/web/src/stores/CLAUDE.md) | TypeScript | Pinia 状态管理 | `userInfo.ts`, `routesList.ts` 等 |
+| [web/src/router](./django-vue3-admin-master/web/src/router/CLAUDE.md) | TypeScript | 路由配置 | `index.ts`, `backEnd.ts`, `frontEnd.ts` |
+| [docker_env](./django-vue3-admin-master/docker_env/CLAUDE.md) | Docker | Docker 容器配置 | `docker-compose.yml` |
+
+### 独立模块
+
+| 模块路径 | 语言 | 职责描述 | 入口文件 |
+|---------|------|----------|----------|
+| [dvadmin_approval](./dvadmin_approval/CLAUDE.md) | Python | 审批流程模块 | `models.py`, `urls.py`, `views/` |
 
 ---
 
@@ -144,9 +200,11 @@ python3 manage.py init
 python3 manage.py init_area
 
 # 启动开发服务器
-python3 manage.py runserver 0.0.0.0:8000
-# 或使用 uvicorn
-uvicorn application.asgi:application --port 8000 --host 0.0.0.0 --workers 8
+# 注意：Windows 系统保留端口 7911-8010，8000 端口不可用
+# 推荐使用 9000 端口
+python3 manage.py runserver 0.0.0.0:9000
+# 或使用 uvicorn（推荐，支持 WebSocket）
+uvicorn application.asgi:application --port 9000 --host 0.0.0.0 --workers 8
 ```
 
 ### 前端启动
@@ -182,8 +240,8 @@ exit
 
 # 访问地址
 # 前端：http://127.0.0.1:8080
-# 后端 API：http://127.0.0.1:8080/api
-# Swagger：http://127.0.0.1:8000/
+# 后端 API：http://127.0.0.1:9000/api
+# Swagger：http://127.0.0.1:9000/
 ```
 
 ### 默认账号

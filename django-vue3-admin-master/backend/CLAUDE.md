@@ -41,7 +41,9 @@ Django 后端服务，提供 RESTful API、WebSocket 服务、异步任务处理
 
 ```bash
 # 方式 1：直接使用 uvicorn 命令
-uvicorn application.asgi:application --host 0.0.0.0 --port 8000 --reload
+# 注意：Windows 系统保留端口 7911-8010，8000 端口不可用
+# 推荐使用 9000 端口，如遇端口冲突请更换其他端口（如 8888、8080）
+uvicorn application.asgi:application --host 0.0.0.0 --port 9000 --reload
 
 # 方式 2：使用提供的启动脚本
 # Windows:
@@ -55,14 +57,16 @@ bash start_dev_asgi.sh
 
 ```bash
 # 注意：此方式不支持 WebSocket！
-python3 manage.py runserver 0.0.0.0:8000
+# Windows 系统如遇端口占用，请使用其他端口
+python3 manage.py runserver 0.0.0.0:9000
 ```
 
 #### 生产环境
 
 ```bash
 # Uvicorn（推荐）
-uvicorn application.asgi:application --host 0.0.0.0 --port 8000 --workers 4
+# 注意：请根据实际环境调整端口
+uvicorn application.asgi:application --host 0.0.0.0 --port 9000 --workers 4
 
 # 或使用启动脚本
 # Windows:
@@ -224,7 +228,8 @@ python3 manage.py collectstatic
 
 ```bash
 # 停止 WSGI 服务器，使用以下命令启动
-uvicorn application.asgi:application --host 0.0.0.0 --port 8000 --reload
+# Windows 系统保留端口 7911-8010，推荐使用 9000
+uvicorn application.asgi:application --host 0.0.0.0 --port 9000 --reload
 ```
 
 **验证方法**：WebSocket 连接成功应返回 101 状态码，而不是 404。

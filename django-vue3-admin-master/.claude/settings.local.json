@@ -1,0 +1,21 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(node:*)",
+      "Bash(npm:*)",
+      "Bash([ -d \"node_modules\" ])",
+      "Bash(pip install:*)",
+      "Bash(python manage.py makemigrations:*)",
+      "Bash(python manage.py migrate:*)",
+      "Bash(python manage.py init:*)",
+      "Bash(netstat:*)",
+      "Bash(findstr:*)",
+      "Bash(uvicorn:*)",
+      "Bash(python -m uvicorn:*)",
+      "Bash(python manage.py:*)",
+      "Bash(curl:*)",
+      "WebSearch",
+      "Skill(glm-plan-usage:usage-query-skill)"
+    ]
+  }
+}

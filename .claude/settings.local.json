@@ -1,0 +1,13 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(netstat:*)",
+      "Bash(findstr:*)",
+      "Bash(powershell -Command \"Get-NetTCPConnection -LocalPort 8000 -ErrorAction SilentlyContinue | Select-Object LocalPort, OwningProcess, State\")",
+      "Bash(powershell -Command \"netsh interface ipv4 show excludedportrange protocol=tcp\")",
+      "Bash(uvicorn:*)",
+      "Bash(powershell -Command:*)",
+      "Bash(git add:*)"
+    ]
+  }
+}

@@ -55,7 +55,7 @@ INSTALLED_APPS = [
     "django.contrib.contenttypes",
     "django.contrib.sessions",
     "django.contrib.messages",
-    "django.contrib.staticfiles",
+    "django.contrib.staticfiles",   
     "django_comment_migrate",
     "rest_framework",
     "django_filters",
@@ -103,16 +103,25 @@ WSGI_APPLICATION = "application.wsgi.application"
 # Database
 # https://docs.djangoproject.com/en/3.2/ref/settings/#databases
 
-DATABASES = {
-    "default": {
-        "ENGINE": DATABASE_ENGINE,
-        "NAME": DATABASE_NAME,
-        "USER": DATABASE_USER,
-        "PASSWORD": DATABASE_PASSWORD,
-        "HOST": DATABASE_HOST,
-        "PORT": DATABASE_PORT,
+# 数据库配置 - 根据引擎类型动态设置
+if DATABASE_ENGINE == "django.db.backends.sqlite3":
+    DATABASES = {
+        "default": {
+            "ENGINE": DATABASE_ENGINE,
+            "NAME": DATABASE_NAME,
+        }
     }
-}
+else:
+    DATABASES = {
+        "default": {
+            "ENGINE": DATABASE_ENGINE,
+            "NAME": DATABASE_NAME,
+            "USER": DATABASE_USER,
+            "PASSWORD": DATABASE_PASSWORD,
+            "HOST": DATABASE_HOST,
+            "PORT": DATABASE_PORT,
+        }
+    }
 AUTH_USER_MODEL = "system.Users"
 USERNAME_FIELD = "username"
 
