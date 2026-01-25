@@ -15,7 +15,14 @@
       "Bash(python manage.py:*)",
       "Bash(curl:*)",
       "WebSearch",
-      "Skill(glm-plan-usage:usage-query-skill)"
+      "Skill(glm-plan-usage:usage-query-skill)",
+      "mcp__zai-mcp-server__extract_text_from_screenshot",
+      "Bash(python:*)",
+      "Bash(set DJANGO_SETTINGS_MODULE=application.settings)",
+      "Bash(find:*)",
+      "Bash(pip show:*)",
+      "Bash(start:*)",
+      "Bash(taskkill:*)"
     ]
   }
 }
