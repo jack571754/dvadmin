@@ -130,6 +130,7 @@ INSTALLED_APPS = [
     "captcha",                      # 验证码
     "channels",                     # WebSocket 支持
     "dvadmin.system",               # 系统管理模块
+    "dvadmin.book",                 # 图书管理模块
 ]
 
 # ================================================= #

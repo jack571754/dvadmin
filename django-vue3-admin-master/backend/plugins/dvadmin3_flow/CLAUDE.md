@@ -1,15 +1,16 @@
-[根目录](../CLAUDE.md) > **dvadmin_approval**
+[根目录](../../../../CLAUDE.md) > [django-vue3-admin-master](../../../CLAUDE.md) > [backend](../../CLAUDE.md) > [plugins](../CLAUDE.md) > **dvadmin3_flow**
 
 ---
 
-# Dvadmin Approval 审批流程模块
+# Dvadmin3 Flow 工作流审批插件
 
-> 最后更新：2026-01-24
+> 最后更新：2026-01-25 14:09:00
 
 ## 变更记录 (Changelog)
 
 | 时间 | 变更内容 | 责任人 |
 |------|----------|--------|
+| 2026-01-25 14:09:00 | 更新插件文档，添加面包屑导航 | Claude AI |
 | 2026-01-24 | 初始化审批流程模块文档 | Claude AI |
 
 ---
@@ -298,3 +299,15 @@ PUT /api/workflow/flow_record/{id}/
 - [ ] 支持抄送功能
 - [ ] 添加流程监控
 - [ ] 优化移动端界面
+
+---
+
+## 面包屑导航
+
+```
+[根目录] (../../../../CLAUDE.md)
+  └─ [django-vue3-admin-master] (../../../CLAUDE.md)
+       └─ [backend] (../../CLAUDE.md)
+            └─ [plugins] (../CLAUDE.md)
+                 └─ [dvadmin3_flow] (./)
+```
