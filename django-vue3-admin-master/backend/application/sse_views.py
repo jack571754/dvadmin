@@ -13,10 +13,18 @@ def event_stream(user_id):
     last_sent_time = 0
 
     while True:
-        # 从 Redis 中获取最后数据库变更时间
-        last_db_change_time = cache.get('last_db_change_time', 0)
-        # 只有当数据库发生变化时才检查总数
-        if last_db_change_time and last_db_change_time > last_sent_time:
+        try:
+            # 从缓存中获取最后数据库变更时间（支持Redis和本地缓存）
+            last_db_change_time = cache.get('last_db_change_time', 0)
+            # 只有当数据库发生变化时才检查总数
+            if last_db_change_time and last_db_change_time > last_sent_time:
+                count = MessageCenterTargetUser.objects.filter(users=user_id, is_read=False).count()
+                yield f"data: {count}\n\n"
+                last_sent_time = time.time()
+        except Exception as e:
+            # 缓存连接失败时使用轮询模式
+            import logging
+            logging.getLogger(__name__).warning(f"SSE cache error: {e}, using polling mode")
             count = MessageCenterTargetUser.objects.filter(users=user_id, is_read=False).count()
             yield f"data: {count}\n\n"
             last_sent_time = time.time()

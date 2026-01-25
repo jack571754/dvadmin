@@ -8,86 +8,184 @@ https://docs.djangoproject.com/en/4.1/topics/settings/
 
 For the full list of settings and their values, see
 https://docs.djangoproject.com/en/4.1/ref/settings/
+
+===============================================================================
+Django Settings 作用说明：
+===============================================================================
+
+这是一个基于 Django 的企业级后台管理系统（django-vue3-admin）的核心配置文件，
+负责整个应用的各项设置，包括：
+
+🔧 核心功能：
+  • 数据库配置（SQLite/MySQL/PostgreSQL动态切换）
+  • 用户认证与权限管理（JWT + 自定义后端）
+  • REST API 配置（DRF + Swagger文档）
+  • 实时通信支持（Channels + WebSocket）
+  • 插件化架构（动态模块加载）
+
+🛡️ 安全配置：
+  • CORS跨域处理
+  • CSRF保护
+  • 密码强度验证
+  • 验证码系统
+
+📊 监控运维：
+  • 分级日志系统（文件轮转）
+  • API请求日志
+  • 健康检查中间件
+  • 性能优化配置
+
+🔌 扩展特性：
+  • 异步任务支持（Celery）
+  • 静态文件压缩
+  • 多租户架构准备
+  • 第三方服务集成
+
+配置文件通过环境变量实现开发/生产环境自动切换，支持插件热插拔和模块化扩展。
+===============================================================================
 """
 
+# ================================================= #
+# ************** 数据库驱动配置 ************** #
+# ================================================= #
 # 使用 pymysql 替代 mysqlclient
+# 原因：mysqlclient 在某些系统上安装困难，pymysql 是纯 Python 实现，更易安装
 import pymysql
 pymysql.install_as_MySQLdb()
 
+# ================================================= #
+# ************** 基础导入和路径配置 ************** #
+# ================================================= #
 import os
 import sys
 from pathlib import Path
 from datetime import timedelta
 
-# Build paths inside the project like this: BASE_DIR / 'subdir'.
+# 项目根目录路径
+# 使用 Path(__file__).resolve().parent.parent 获取 settings.py 所在目录的上级目录
 BASE_DIR = Path(__file__).resolve().parent.parent
 
 # ================================================= #
 # ******************** 动态配置 ******************** #
 # ================================================= #
-
+# 从环境配置文件导入所有设置
+# 这种方式允许通过环境变量动态配置，而不修改代码
 from conf.env import *
 
-# Quick-start development settings - unsuitable for production
-# See https://docs.djangoproject.com/en/3.2/howto/deployment/checklist/
-
+# ================================================= #
+# ************** Django 核心安全配置 ************** #
+# ================================================= #
 # SECURITY WARNING: keep the secret key used in production secret!
+# 安全密钥：生产环境必须修改为随机生成的复杂字符串
 SECRET_KEY = "django-insecure--z8%exyzt7e_%i@1+#1mm=%lb5=^fx_57=1@a+_y7bg5-w%)sm"
-# 初始化plugins插件路径到环境变量中
+
+# 初始化插件路径到 Python 路径中
+# 实现插件化架构的核心：运行时动态加载插件模块
 PLUGINS_PATH = os.path.join(BASE_DIR, "plugins")
 sys.path.insert(0, os.path.join(PLUGINS_PATH))
 
+# 动态扫描并加载所有插件目录到 Python 路径
+# 过滤条件：必须是目录且不以 __ 开头（排除 __pycache__ 等）
 [
     sys.path.insert(0, os.path.join(PLUGINS_PATH, ele))
     for ele in os.listdir(PLUGINS_PATH)
     if os.path.isdir(os.path.join(PLUGINS_PATH, ele)) and not ele.startswith("__")
 ]
 
+# ================================================= #
+# ************** 开发环境基本配置 ************** #
+# ================================================= #
 # SECURITY WARNING: don't run with debug turned on in production!
+# DEBUG 模式：开发时显示详细错误信息，生产环境必须设为 False
 DEBUG = locals().get("DEBUG", True)
+
+# 允许访问的主机列表
+# 开发环境允许所有主机，生产环境应该设置具体域名如 ['yourdomain.com']
 ALLOWED_HOSTS = locals().get("ALLOWED_HOSTS", ["*"])
 
-# 列权限需要排除的App应用
+# ================================================= #
+# ************** 权限系统配置 ************** #
+# ================================================= #
+# 列权限需要排除的应用列表
+# 这些应用的数据表不参与字段级权限控制
 COLUMN_EXCLUDE_APPS = ['channels', 'captcha'] + locals().get("COLUMN_EXCLUDE_APPS", [])
 
+# ================================================= #
+# ************** 已安装应用列表 ************** #
+# ================================================= #
 INSTALLED_APPS = [
-    "django.contrib.auth",
-    "django.contrib.contenttypes",
-    "django.contrib.sessions",
-    "django.contrib.messages",
-    "django.contrib.staticfiles",   
-    "django_comment_migrate",
-    "rest_framework",
-    "django_filters",
-    "corsheaders",  # 注册跨域app
-    "drf_yasg",
-    "captcha",
-    "channels",
-    "dvadmin.system",
+    # Django 核心应用
+    "django.contrib.auth",          # 用户认证系统
+    "django.contrib.contenttypes",  # 内容类型框架
+    "django.contrib.sessions",      # 会话管理
+    "django.contrib.messages",      # 消息框架
+    "django.contrib.staticfiles",   # 静态文件管理
+
+    # 项目专用应用
+    "django_comment_migrate",       # 数据库注释迁移
+    "rest_framework",               # REST API 框架
+    "django_filters",               # 高级过滤器
+    "corsheaders",                  # 跨域请求处理
+    "drf_yasg",                     # Swagger API 文档
+    "captcha",                      # 验证码
+    "channels",                     # WebSocket 支持
+    "dvadmin.system",               # 系统管理模块
 ]
 
+# ================================================= #
+# ************** 中间件配置 ************** #
+# ================================================= #
 MIDDLEWARE = [
+    # 自定义健康检查中间件（用于监控服务状态）
     "dvadmin.utils.middleware.HealthCheckMiddleware",
+
+    # Django 安全中间件（提供安全头、安全检查等）
     "django.middleware.security.SecurityMiddleware",
+
+    # 白噪声中间件（生产环境静态文件服务）
     "whitenoise.middleware.WhiteNoiseMiddleware",
+
+    # 会话中间件
     "django.contrib.sessions.middleware.SessionMiddleware",
-    "corsheaders.middleware.CorsMiddleware",  # 跨域中间件
+
+    # 跨域中间件（处理 CORS 预检请求）
+    "corsheaders.middleware.CorsMiddleware",
+
+    # 通用中间件（URL 重写、请求处理等）
     "django.middleware.common.CommonMiddleware",
+
+    # CSRF 保护中间件
     "django.middleware.csrf.CsrfViewMiddleware",
+
+    # 用户认证中间件
     "django.contrib.auth.middleware.AuthenticationMiddleware",
+
+    # 消息中间件
     "django.contrib.messages.middleware.MessageMiddleware",
+
+    # 点击劫持保护中间件
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
+
+    # 自定义 API 日志中间件（记录 API 请求）
     "dvadmin.utils.middleware.ApiLoggingMiddleware",
 ]
 
+# ================================================= #
+# ************** URL 和模板配置 ************** #
+# ================================================= #
+# 主 URL 配置文件
 ROOT_URLCONF = "application.urls"
 
+# 模板配置
 TEMPLATES = [
     {
         "BACKEND": "django.template.backends.django.DjangoTemplates",
+        # 模板搜索目录
         "DIRS": [os.path.join(BASE_DIR, "templates")],
+        # 允许在应用目录中搜索模板
         "APP_DIRS": True,
         "OPTIONS": {
+            # 模板上下文处理器（为模板提供额外变量）
             "context_processors": [
                 "django.template.context_processors.debug",
                 "django.template.context_processors.request",
@@ -98,186 +196,228 @@ TEMPLATES = [
     },
 ]
 
+# WSGI 应用配置（传统同步 Web 服务器接口）
 WSGI_APPLICATION = "application.wsgi.application"
 
-# Database
-# https://docs.djangoproject.com/en/3.2/ref/settings/#databases
-
-# 数据库配置 - 根据引擎类型动态设置
+# ================================================= #
+# ************** 数据库配置 ************** #
+# ================================================= #
+# 根据数据库引擎类型动态配置数据库连接
+# 支持 SQLite（开发环境）和 MySQL/PostgreSQL（生产环境）
 if DATABASE_ENGINE == "django.db.backends.sqlite3":
+    # SQLite 配置（轻量级，文件数据库）
     DATABASES = {
         "default": {
             "ENGINE": DATABASE_ENGINE,
-            "NAME": DATABASE_NAME,
+            "NAME": DATABASE_NAME,  # 数据库文件路径
         }
     }
 else:
+    # 关系型数据库配置（MySQL/PostgreSQL）
     DATABASES = {
         "default": {
             "ENGINE": DATABASE_ENGINE,
-            "NAME": DATABASE_NAME,
-            "USER": DATABASE_USER,
-            "PASSWORD": DATABASE_PASSWORD,
-            "HOST": DATABASE_HOST,
-            "PORT": DATABASE_PORT,
+            "NAME": DATABASE_NAME,      # 数据库名
+            "USER": DATABASE_USER,      # 用户名
+            "PASSWORD": DATABASE_PASSWORD,  # 密码
+            "HOST": DATABASE_HOST,      # 主机地址
+            "PORT": DATABASE_PORT,      # 端口号
         }
     }
+
+# ================================================= #
+# ************** 用户模型配置 ************** #
+# ================================================= #
+# 自定义用户模型（替代 Django 默认的 User 模型）
 AUTH_USER_MODEL = "system.Users"
+# 指定用户名字段（通常是 'username' 或 'email'）
 USERNAME_FIELD = "username"
 
-# Password validation
-# https://docs.djangoproject.com/en/3.2/ref/settings/#auth-password-validators
-
+# ================================================= #
+# ************** 密码验证器配置 ************** #
+# ================================================= #
+# Django 内置密码强度验证器
 AUTH_PASSWORD_VALIDATORS = [
     {
+        # 防止密码与用户属性相似
         "NAME": "django.contrib.auth.password_validation.UserAttributeSimilarityValidator",
     },
     {
+        # 密码最小长度验证
         "NAME": "django.contrib.auth.password_validation.MinimumLengthValidator",
     },
     {
+        # 防止常见密码
         "NAME": "django.contrib.auth.password_validation.CommonPasswordValidator",
     },
     {
+        # 防止纯数字密码
         "NAME": "django.contrib.auth.password_validation.NumericPasswordValidator",
     },
 ]
 
-# Internationalization
-# https://docs.djangoproject.com/en/3.2/topics/i18n/
-
+# ================================================= #
+# ************** 国际化配置 ************** #
+# ================================================= #
+# 语言设置：简体中文
 LANGUAGE_CODE = "zh-hans"
 
+# 时区设置：东八区（北京时间）
 TIME_ZONE = "Asia/Shanghai"
 
+# 启用国际化支持
 USE_I18N = True
 
+# 启用本地化支持
 USE_L10N = True
 
+# 禁用时区感知（使用本地时间而不是 UTC）
 USE_TZ = False
 
-# Static files (CSS, JavaScript, Images)
-# https://docs.djangoproject.com/en/3.2/howto/static-files/
-
+# ================================================= #
+# ************** 静态文件和媒体文件配置 ************** #
+# ================================================= #
+# 静态文件 URL 前缀
 STATIC_URL = "/static/"
-# # 设置django的静态文件目录
+
+# 静态文件搜索目录
 STATICFILES_DIRS = [
     os.path.join(BASE_DIR, "static"),
 ]
 
-MEDIA_ROOT = "media"  # 项目下的目录
-MEDIA_URL = "/media/"  # 跟STATIC_URL类似，指定用户可以通过这个url找到文件
+# 媒体文件存储目录
+MEDIA_ROOT = "media"
 
-#添加以下代码以后就不用写{% load staticfiles %}，可以直接引用
+# 媒体文件 URL 前缀
+MEDIA_URL = "/media/"
+
+# 静态文件查找器配置
 STATICFILES_FINDERS = (
     "django.contrib.staticfiles.finders.FileSystemFinder",
     "django.contrib.staticfiles.finders.AppDirectoriesFinder"
 )
-# 收集静态文件，必须将 MEDIA_ROOT,STATICFILES_DIRS先注释
-# python manage.py collectstatic
-# STATIC_ROOT=os.path.join(BASE_DIR,'static')
+
+# 生产环境静态文件收集配置（注释掉的是生产环境配置）
+# STATIC_ROOT = os.path.join(BASE_DIR, 'static')
 
 # ================================================= #
-# ******************* 跨域的配置 ******************* #
+# ******************* 跨域配置 ******************* #
 # ================================================= #
-
-# 全部允许配置
+# 允许所有域名跨域访问（开发环境）
 CORS_ORIGIN_ALLOW_ALL = True
-# 允许cookie
-CORS_ALLOW_CREDENTIALS = True  # 指明在跨域访问中，后端是否支持对cookie的操作
 
-# ===================================================== #
-# ********************* channels配置 ******************* #
-# ===================================================== #
+# 允许跨域请求携带认证信息（cookies、authorization headers）
+CORS_ALLOW_CREDENTIALS = True
+
+# ================================================= #
+# ******************* Channels 配置 ******************* #
+# ================================================= #
+# ASGI 应用配置（支持异步和 WebSocket）
 ASGI_APPLICATION = 'application.asgi.application'
+
+# Channels 后端配置（内存存储，适合开发环境）
 CHANNEL_LAYERS = {
     "default": {
         "BACKEND": "channels.layers.InMemoryChannelLayer"
     }
 }
+
+# Redis 后端配置（生产环境推荐，注释掉）
 # CHANNEL_LAYERS = {
 #     'default': {
 #         'BACKEND': 'channels_redis.core.RedisChannelLayer',
 #         'CONFIG': {
-#             "hosts": [('127.0.0.1', 6379)], #需修改
+#             "hosts": [('127.0.0.1', 6379)],
 #         },
 #     },
 # }
 
-
 # ================================================= #
 # ********************* 日志配置 ******************* #
 # ================================================= #
-# # log 配置部分BEGIN #
+# 日志文件路径配置
 SERVER_LOGS_FILE = os.path.join(BASE_DIR, "logs", "server.log")
 ERROR_LOGS_FILE = os.path.join(BASE_DIR, "logs", "error.log")
 LOGS_FILE = os.path.join(BASE_DIR, "logs")
+
+# 自动创建日志目录
 if not os.path.exists(os.path.join(BASE_DIR, "logs")):
     os.makedirs(os.path.join(BASE_DIR, "logs"))
 
-# 格式:[2020-04-22 23:33:01][micoservice.apps.ready():16] [INFO] 这是一条日志:
-# 格式:[日期][模块.函数名称():行号] [级别] 信息
+# 日志格式定义
+# 格式: [时间][模块.函数():行号] [级别] 消息内容
 STANDARD_LOG_FORMAT = (
     "[%(asctime)s][%(name)s.%(funcName)s():%(lineno)d] [%(levelname)s] %(message)s"
 )
 CONSOLE_LOG_FORMAT = (
     "[%(asctime)s][%(name)s.%(funcName)s():%(lineno)d] [%(levelname)s] %(message)s"
 )
+
+# Django 日志配置
 LOGGING = {
     "version": 1,
     "disable_existing_loggers": False,
     "formatters": {
+        # 标准格式器
         "standard": {"format": STANDARD_LOG_FORMAT},
+        # 控制台格式器（带时间格式）
         "console": {
             "format": CONSOLE_LOG_FORMAT,
             "datefmt": "%Y-%m-%d %H:%M:%S",
         },
+        # 文件格式器
         "file": {
             "format": CONSOLE_LOG_FORMAT,
             "datefmt": "%Y-%m-%d %H:%M:%S",
         },
     },
     "handlers": {
+        # 文件处理器（INFO 级别及以上）
         "file": {
             "level": "INFO",
             "class": "logging.handlers.RotatingFileHandler",
             "filename": SERVER_LOGS_FILE,
-            "maxBytes": 1024 * 1024 * 100,  # 100 MB
-            "backupCount": 5,  # 最多备份5个
+            "maxBytes": 1024 * 1024 * 100,  # 100MB
+            "backupCount": 5,  # 保留5个备份文件
             "formatter": "standard",
             "encoding": "utf-8",
         },
+        # 错误文件处理器（ERROR 级别及以上）
         "error": {
             "level": "ERROR",
             "class": "logging.handlers.RotatingFileHandler",
             "filename": ERROR_LOGS_FILE,
-            "maxBytes": 1024 * 1024 * 100,  # 100 MB
-            "backupCount": 3,  # 最多备份3个
+            "maxBytes": 1024 * 1024 * 100,  # 100MB
+            "backupCount": 3,  # 保留3个备份文件
             "formatter": "standard",
             "encoding": "utf-8",
         },
+        # 控制台处理器
         "console": {
             "level": "INFO",
             "class": "logging.StreamHandler",
             "formatter": "console",
         },
-
     },
     "loggers": {
+        # 根日志器
         "": {
             "handlers": ["console", "error", "file"],
             "level": "INFO",
         },
+        # Django 框架日志器
         "django": {
             "handlers": ["console", "error", "file"],
             "level": "INFO",
             "propagate": False,
         },
+        # 数据库后端日志器
         'django.db.backends': {
             'handlers': ["console", "error", "file"],
             'propagate': False,
             'level': "INFO"
         },
+        # Uvicorn 服务器日志器
         "uvicorn.error": {
             "level": "INFO",
             "handlers": ["console", "error", "file"],
@@ -290,142 +430,197 @@ LOGGING = {
 }
 
 # ================================================= #
-# *************** REST_FRAMEWORK配置 *************** #
+# *************** REST Framework 配置 *************** #
 # ================================================= #
-
 REST_FRAMEWORK = {
+    # 默认解析器类（支持 JSON 和文件上传）
     'DEFAULT_PARSER_CLASSES': (
         'rest_framework.parsers.JSONParser',
         'rest_framework.parsers.MultiPartParser',
     ),
-    "DATETIME_FORMAT": "%Y-%m-%d %H:%M:%S",  # 日期时间格式配置
-    "DATE_FORMAT": "%Y-%m-%d",
-    "DEFAULT_FILTER_BACKENDS": (
-        # 'django_filters.rest_framework.DjangoFilterBackend',
-        "dvadmin.utils.filters.CustomDjangoFilterBackend",
-        "rest_framework.filters.SearchFilter",
-        "rest_framework.filters.OrderingFilter",
-    ),
-    "DEFAULT_PAGINATION_CLASS": "dvadmin.utils.pagination.CustomPagination",  # 自定义分页
-    "DEFAULT_AUTHENTICATION_CLASSES": (
-        "rest_framework_simplejwt.authentication.JWTAuthentication",
-        "rest_framework.authentication.SessionAuthentication",
-    ),
-    "DEFAULT_PERMISSION_CLASSES": [
-        "rest_framework.permissions.IsAuthenticated",  # 只有经过身份认证确定用户身份才能访问
-    ],
-    "EXCEPTION_HANDLER": "dvadmin.utils.exception.CustomExceptionHandler",  # 自定义的异常处理
-}
-# ================================================= #
-# ******************** 登录方式配置 ******************** #
-# ================================================= #
 
-AUTHENTICATION_BACKENDS = ["dvadmin.utils.backends.CustomBackend"]
+    # 日期时间格式
+    "DATETIME_FORMAT": "%Y-%m-%d %H:%M:%S",
+    "DATE_FORMAT": "%Y-%m-%d",
+
+    # 默认过滤器后端
+    "DEFAULT_FILTER_BACKENDS": (
+        "dvadmin.utils.filters.CustomDjangoFilterBackend",  # 自定义过滤器
+        "rest_framework.filters.SearchFilter",              # 搜索过滤器
+        "rest_framework.filters.OrderingFilter",            # 排序过滤器
+    ),
+
+    # 默认分页类
+    "DEFAULT_PAGINATION_CLASS": "dvadmin.utils.pagination.CustomPagination",
+
+    # 默认认证类
+    "DEFAULT_AUTHENTICATION_CLASSES": (
+        "rest_framework_simplejwt.authentication.JWTAuthentication",  # JWT 认证
+        "rest_framework.authentication.SessionAuthentication",         # 会话认证
+    ),
+
+    # 默认权限类（要求用户必须登录）
+    "DEFAULT_PERMISSION_CLASSES": [
+        "rest_framework.permissions.IsAuthenticated",
+    ],
+
+    # 自定义异常处理器
+    "EXCEPTION_HANDLER": "dvadmin.utils.exception.CustomExceptionHandler",
+}
+
 # ================================================= #
-# ****************** simplejwt配置 ***************** #
+# ******************** 认证后端配置 ******************** #
+# ================================================= #
+# 自定义认证后端（支持多种登录方式）
+AUTHENTICATION_BACKENDS = ["dvadmin.utils.backends.CustomBackend"]
+
+# ================================================= #
+# ****************** JWT 配置 ***************** #
 # ================================================= #
 SIMPLE_JWT = {
-    # token有效时长
+    # Access Token 有效期（24小时）
     "ACCESS_TOKEN_LIFETIME": timedelta(minutes=1440),
-    # token刷新后的有效时间
+
+    # Refresh Token 有效期（1天）
     "REFRESH_TOKEN_LIFETIME": timedelta(days=1),
-    # 设置前缀
+
+    # 认证头类型前缀
     "AUTH_HEADER_TYPES": ("JWT",),
+
+    # 自动轮换 Refresh Token
     "ROTATE_REFRESH_TOKENS": True,
 }
 
-# ====================================#
-# ****************swagger************#
-# ====================================#
+# ================================================= #
+# ****************** Swagger 配置 ****************** #
+# ================================================= #
 SWAGGER_SETTINGS = {
-    # 基础样式
+    # 安全定义
     "SECURITY_DEFINITIONS": {"basic": {"type": "basic"}},
-    # 如果需要登录才能够查看接口文档, 登录的链接使用restframework自带的.
+
+    # 登录/登出 URL
     "LOGIN_URL": "apiLogin/",
-    # 'LOGIN_URL': 'rest_framework:login',
     "LOGOUT_URL": "rest_framework:logout",
-    # 'DOC_EXPANSION': None,
-    # 'SHOW_REQUEST_HEADERS':True,
-    # 'USE_SESSION_AUTH': True,
-    # 'DOC_EXPANSION': 'list',
-    # 接口文档中方法列表以首字母升序排列
+
+    # 接口排序方式（字母顺序）
     "APIS_SORTER": "alpha",
-    # 如果支持json提交, 则接口文档中包含json输入框
+
+    # 启用 JSON 编辑器
     "JSON_EDITOR": True,
-    # 方法列表字母排序
+
+    # 操作排序方式
     "OPERATIONS_SORTER": "alpha",
+
+    # 验证器 URL
     "VALIDATOR_URL": None,
-    "AUTO_SCHEMA_TYPE": 2,  # 分组根据url层级分，0、1 或 2 层
+
+    # API 分组层级（2层分组）
+    "AUTO_SCHEMA_TYPE": 2,
+
+    # 自定义 Schema 类
     "DEFAULT_AUTO_SCHEMA_CLASS": "dvadmin.utils.swagger.CustomSwaggerAutoSchema",
 }
 
 # ================================================= #
 # **************** 验证码配置  ******************* #
 # ================================================= #
-CAPTCHA_IMAGE_SIZE = (160, 46)  # 设置 captcha 图片大小
-CAPTCHA_LENGTH = 4  # 字符个数
-CAPTCHA_TIMEOUT = 1  # 超时(minutes)
+# 验证码图片尺寸
+CAPTCHA_IMAGE_SIZE = (160, 46)
+
+# 验证码字符长度
+CAPTCHA_LENGTH = 4
+
+# 验证码超时时间（分钟）
+CAPTCHA_TIMEOUT = 1
+
+# 验证码输出格式
 CAPTCHA_OUTPUT_FORMAT = "%(image)s %(text_field)s %(hidden_field)s "
-CAPTCHA_FONT_SIZE = 36  # 字体大小
-CAPTCHA_FOREGROUND_COLOR = "#64DAAA"  # 前景色
-CAPTCHA_BACKGROUND_COLOR = "#F5F7F4"  # 背景色
+
+# 字体大小
+CAPTCHA_FONT_SIZE = 36
+
+# 前景色（文字颜色）
+CAPTCHA_FOREGROUND_COLOR = "#64DAAA"
+
+# 背景色
+CAPTCHA_BACKGROUND_COLOR = "#F5F7F4"
+
+# 干扰元素（弧线干扰）
 CAPTCHA_NOISE_FUNCTIONS = (
-    "captcha.helpers.noise_arcs",  # 线
-    # "captcha.helpers.noise_dots",  # 点
+    "captcha.helpers.noise_arcs",
+    # "captcha.helpers.noise_dots",  # 点干扰（已注释）
 )
-# CAPTCHA_CHALLENGE_FUNCT = 'captcha.helpers.random_char_challenge' #字母验证码
-CAPTCHA_CHALLENGE_FUNCT = "captcha.helpers.math_challenge"  # 加减乘除验证码
+
+# 验证码类型：数学运算（加减乘除）
+CAPTCHA_CHALLENGE_FUNCT = "captcha.helpers.math_challenge"
 
 # ================================================= #
 # ******************** 其他配置 ******************** #
 # ================================================= #
-
+# 默认自动字段类型
 DEFAULT_AUTO_FIELD = "django.db.models.AutoField"
+
+# API 日志启用
 API_LOG_ENABLE = True
-# API_LOG_METHODS = 'ALL' # ['POST', 'DELETE']
-API_LOG_METHODS = ["POST", "UPDATE", "DELETE", "PUT"]  # ['POST', 'DELETE']
+
+# API 日志记录的方法
+API_LOG_METHODS = ["POST", "UPDATE", "DELETE", "PUT"]
+
+# API 模块映射（用于日志分类）
 API_MODEL_MAP = {
     "/token/": "登录模块",
     "/api/login/": "登录模块",
     "/api/plugins_market/plugins/": "插件市场",
 }
 
+# Celery 时区配置
 DJANGO_CELERY_BEAT_TZ_AWARE = False
-CELERY_TIMEZONE = "Asia/Shanghai"  # celery 时区问题
-# 静态页面压缩
+CELERY_TIMEZONE = "Asia/Shanghai"
+
+# 静态文件存储（启用压缩）
 STATICFILES_STORAGE = "whitenoise.storage.CompressedStaticFilesStorage"
 
-ALL_MODELS_OBJECTS = []  # 所有app models 对象
+# 全局变量
+ALL_MODELS_OBJECTS = []  # 所有应用模型对象列表
 
-# 初始化需要执行的列表，用来初始化后执行
-INITIALIZE_LIST = []
-INITIALIZE_RESET_LIST = []
-# 表前缀
+# 初始化执行列表
+INITIALIZE_LIST = []      # 系统启动时执行的任务
+INITIALIZE_RESET_LIST = [] # 重置时执行的任务
+
+# 数据库表前缀
 TABLE_PREFIX = locals().get('TABLE_PREFIX', "")
-# 系统配置
+
+# 系统配置字典
 SYSTEM_CONFIG = {}
+
 # 字典配置
 DICTIONARY_CONFIG = {}
 
 # ================================================= #
 # ******************** 插件配置 ******************** #
 # ================================================= #
-# 租户共享app
+# 租户共享应用列表
 TENANT_SHARED_APPS = []
-# 普通租户独有app
+
+# 租户独有应用列表
 TENANT_EXCLUSIVE_APPS = []
-# 插件 urlpatterns
+
+# 插件 URL 模式列表
 PLUGINS_URL_PATTERNS = []
-# 所有模式有的
+
+# 共享应用列表
 SHARED_APPS = []
+
 # ********** 一键导入插件配置开始 **********
+# 这里可以导入各种插件的配置
 # 例如:
 # from dvadmin_upgrade_center.settings import *    # 升级中心
-from dvadmin3_celery.settings import *            # celery 异步任务
+from dvadmin3_celery.settings import *            # Celery 异步任务插件
+from dvadmin3_flow.settings import *              # 审批流程插件
 # from dvadmin_third.settings import *            # 第三方用户管理
-# from dvadmin_ak_sk.settings import *            # 秘钥管理管理
+# from dvadmin_ak_sk.settings import *            # 秘钥管理
 # from dvadmin_tenants.settings import *            # 租户管理
-#from dvadmin_social_auth.settings import *
-#from dvadmin_uniapp.settings import *
+# from dvadmin_social_auth.settings import *
+# from dvadmin_uniapp.settings import *
 # ...
 # ********** 一键导入插件配置结束 **********

@@ -22,11 +22,9 @@ from application.ws_routing import websocket_urlpatterns
 
 application = ProtocolTypeRouter({
     "http": http_application,
-    'websocket': AllowedHostsOriginValidator(
-            AuthMiddlewareStack(
-                URLRouter(
-                    websocket_urlpatterns  # 指明路由文件是devops/routing.py
-                )
-            )
-        ),
+    'websocket': AuthMiddlewareStack(
+        URLRouter(
+            websocket_urlpatterns
+        )
+    ),
 })
