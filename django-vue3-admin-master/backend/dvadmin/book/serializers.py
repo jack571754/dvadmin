@@ -6,9 +6,10 @@
 
 from rest_framework import serializers
 from dvadmin.book.models import Book, BookCategory, BookAuthor, BookPublisher, BookBorrow, BookReservation
+from dvadmin.utils.serializers import CustomModelSerializer
 
 
-class BookCategorySerializer(serializers.ModelSerializer):
+class BookCategorySerializer(CustomModelSerializer):
     """图书分类序列化器"""
 
     class Meta:
@@ -16,7 +17,7 @@ class BookCategorySerializer(serializers.ModelSerializer):
         fields = "__all__"
 
 
-class BookCategoryTreeSerializer(serializers.ModelSerializer):
+class BookCategoryTreeSerializer(CustomModelSerializer):
     """图书分类树形结构序列化器"""
     children = serializers.SerializerMethodField()
 
@@ -32,7 +33,7 @@ class BookCategoryTreeSerializer(serializers.ModelSerializer):
         return []
 
 
-class BookPublisherSerializer(serializers.ModelSerializer):
+class BookPublisherSerializer(CustomModelSerializer):
     """出版社序列化器"""
 
     class Meta:
@@ -40,7 +41,7 @@ class BookPublisherSerializer(serializers.ModelSerializer):
         fields = "__all__"
 
 
-class BookAuthorSerializer(serializers.ModelSerializer):
+class BookAuthorSerializer(CustomModelSerializer):
     """作者序列化器"""
 
     class Meta:
@@ -48,7 +49,7 @@ class BookAuthorSerializer(serializers.ModelSerializer):
         fields = "__all__"
 
 
-class BookSerializer(serializers.ModelSerializer):
+class BookSerializer(CustomModelSerializer):
     """图书序列化器"""
     category_name = serializers.CharField(source="category.name", read_only=True)
     publisher_name = serializers.CharField(source="publisher.name", read_only=True)
@@ -70,7 +71,7 @@ class BookSerializer(serializers.ModelSerializer):
         return [author.name for author in obj.authors.all()]
 
 
-class BookListSerializer(serializers.ModelSerializer):
+class BookListSerializer(CustomModelSerializer):
     """图书列表序列化器（简化版）"""
     category_name = serializers.CharField(source="category.name", read_only=True)
     publisher_name = serializers.CharField(source="publisher.name", read_only=True)
@@ -87,7 +88,7 @@ class BookListSerializer(serializers.ModelSerializer):
         return [author.name for author in obj.authors.all()]
 
 
-class BookBorrowSerializer(serializers.ModelSerializer):
+class BookBorrowSerializer(CustomModelSerializer):
     """借阅记录序列化器"""
     book_title = serializers.CharField(source="book.title", read_only=True)
     book_isbn = serializers.CharField(source="book.isbn", read_only=True)
@@ -105,7 +106,7 @@ class BookBorrowSerializer(serializers.ModelSerializer):
         return "未知用户"
 
 
-class BookReservationSerializer(serializers.ModelSerializer):
+class BookReservationSerializer(CustomModelSerializer):
     """预约记录序列化器"""
     book_title = serializers.CharField(source="book.title", read_only=True)
     book_isbn = serializers.CharField(source="book.isbn", read_only=True)

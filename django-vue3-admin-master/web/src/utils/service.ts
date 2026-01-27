@@ -153,7 +153,10 @@ function createService() {
 				default:
 					break;
 			}
-			errorLog(error);
+			// 只记录非业务错误的日志（400/403 业务错误已通过页面提示显示）
+			if (status !== 400 && status !== 403) {
+				errorLog(error);
+			}
 			if (status === 401) {
 				// const userStore = useUserStore();
 				// userStore.logout();

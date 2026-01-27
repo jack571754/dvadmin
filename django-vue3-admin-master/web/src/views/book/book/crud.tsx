@@ -1,6 +1,7 @@
 import * as api from './api';
 import { dict, UserPageQuery, AddReq, DelReq, EditReq, CreateCrudOptionsProps, CreateCrudOptionsRet } from '@fast-crud/fast-crud';
 import { auth } from '/@/utils/authFunction';
+import { successMessage, errorMessage } from '/@/utils/message';
 
 export const createCrudOptions = function ({ crudExpose }: CreateCrudOptionsProps): CreateCrudOptionsRet {
 	const pageRequest = async (query: UserPageQuery) => {
@@ -25,6 +26,13 @@ export const createCrudOptions = function ({ crudExpose }: CreateCrudOptionsProp
 				editRequest,
 				delRequest,
 			},
+			actionbar: {
+				buttons: {
+					add: {
+						show: auth('book:book:Create')
+					}
+				}
+			},
 			rowHandle: {
 				fixed: 'right',
 				width: 280,
@@ -37,19 +45,15 @@ export const createCrudOptions = function ({ crudExpose }: CreateCrudOptionsProp
 						show: auth('book:book:Borrow'),
 						click: async ({ row }) => {
 							try {
-								const res = await api.borrowBook(row.id);
-								if (res) {
-									crudExpose.doRefresh();
-								}
+								await api.borrowBook(row.id);
+								successMessage('借阅成功！');
+								await crudExpose?.doRefresh?.();
 							} catch (error: any) {
-								// 显示详细错误信息
 								const errorMsg = error?.response?.data?.error || error?.response?.data?.detail || error?.message || '借阅失败';
-								console.error('Borrow error:', error?.response?.data);
-								alert('借阅失败: ' + errorMsg);
+								errorMessage(errorMsg);
 							}
 						},
 						visible: ({ row }) => {
-							// 仅库存大于0且状态正常时显示
 							return row.available_quantity > 0 && row.status === 0;
 						}
 					},
@@ -59,9 +63,13 @@ export const createCrudOptions = function ({ crudExpose }: CreateCrudOptionsProp
 						type: 'text',
 						show: auth('book:book:Return'),
 						click: async ({ row }) => {
-							const res = await api.returnBook(row.id);
-							if (res) {
-								crudExpose.doRefresh();
+							try {
+								await api.returnBook(row.id);
+								successMessage('归还成功！');
+								await crudExpose?.doRefresh?.();
+							} catch (error: any) {
+								const errorMsg = error?.response?.data?.error || error?.response?.data?.detail || error?.message || '归还失败';
+								errorMessage(errorMsg);
 							}
 						},
 						// 注意：这里无法直接判断用户是否借阅了该书
