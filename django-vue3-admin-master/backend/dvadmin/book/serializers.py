@@ -54,6 +54,12 @@ class BookSerializer(serializers.ModelSerializer):
     publisher_name = serializers.CharField(source="publisher.name", read_only=True)
     author_names = serializers.SerializerMethodField()
     is_available = serializers.BooleanField(read_only=True)
+    authors = serializers.PrimaryKeyRelatedField(
+        many=True,
+        read_only=False,
+        required=False,
+        queryset=BookAuthor.objects.all()
+    )
 
     class Meta:
         model = Book
@@ -85,11 +91,18 @@ class BookBorrowSerializer(serializers.ModelSerializer):
     """借阅记录序列化器"""
     book_title = serializers.CharField(source="book.title", read_only=True)
     book_isbn = serializers.CharField(source="book.isbn", read_only=True)
+    user_name = serializers.SerializerMethodField()
     status_text = serializers.CharField(source="get_status_display", read_only=True)
 
     class Meta:
         model = BookBorrow
         fields = "__all__"
+
+    def get_user_name(self, obj):
+        """获取用户名称，处理 user 为 None 的情况"""
+        if obj.user:
+            return obj.user.username
+        return "未知用户"
 
 
 class BookReservationSerializer(serializers.ModelSerializer):

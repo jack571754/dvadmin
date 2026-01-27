@@ -13,6 +13,7 @@
 """
 
 from django.db import models
+from django.conf import settings
 from dvadmin.utils.models import CoreModel, table_prefix
 
 
@@ -195,6 +196,16 @@ class BookBorrow(CoreModel):
         db_constraint=False,
         related_name="borrow_records",
         help_text="借阅的图书"
+    )
+    user = models.ForeignKey(
+        to=settings.AUTH_USER_MODEL,
+        on_delete=models.CASCADE,
+        verbose_name="借阅用户",
+        db_constraint=False,
+        related_name="borrow_records",
+        null=True,
+        blank=True,
+        help_text="借阅该图书的用户"
     )
 
     STATUS_CHOICES = (
