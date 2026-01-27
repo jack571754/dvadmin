@@ -31,3 +31,4 @@ pyinstaller>=6.15.0
 dvadmin3-celery==3.1.6
 oss2==2.19.1
 cos-python-sdk-v5==1.9.37
+Faker>=25.0.0
