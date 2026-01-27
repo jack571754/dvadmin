@@ -7,7 +7,22 @@
       "Bash(powershell -Command \"netsh interface ipv4 show excludedportrange protocol=tcp\")",
       "Bash(uvicorn:*)",
       "Bash(powershell -Command:*)",
-      "Bash(git add:*)"
+      "Bash(git add:*)",
+      "Bash(dir:*)",
+      "Bash(python manage.py shell:*)",
+      "Bash(python fix_book_menu.py:*)",
+      "Bash(python backend/manage.py shell:*)",
+      "Bash(python manage.py:*)",
+      "Bash(pip show:*)",
+      "Bash(pip install:*)",
+      "Bash(find:*)",
+      "Bash(curl:*)",
+      "Bash(taskkill:*)",
+      "Bash(ls:*)",
+      "Bash(grep:*)",
+      "Bash(git rm:*)",
+      "Bash(git commit:*)",
+      "Bash(git push:*)"
     ]
   }
 }
