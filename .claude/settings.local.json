@@ -22,7 +22,19 @@
       "Bash(grep:*)",
       "Bash(git rm:*)",
       "Bash(git commit:*)",
-      "Bash(git push:*)"
+      "Bash(git push:*)",
+      "Bash(python:*)",
+      "Bash(timeout 10:*)",
+      "Bash(ping:*)",
+      "Bash(timeout /t 3 /nobreak)",
+      "mcp__zai-mcp-server__analyze_image",
+      "mcp__zread__read_file",
+      "Bash(if not exist \"E:\\\\project\\\\dvadmin\\\\django-vue3-admin-master\\\\backend\\\\dvadmin\\\\blog\\\\management\\\\commands\" mkdir \"E:\\\\project\\\\dvadmin\\\\django-vue3-admin-master\\\\backend\\\\dvadmin\\\\blog\\\\management\\\\commands\")",
+      "Bash(git -C \"E:\\\\project\\\\dvadmin\" status)",
+      "Bash(git -C \"E:\\\\project\\\\dvadmin\" diff --stat)",
+      "Bash(git -C \"E:\\\\project\\\\dvadmin\" log --oneline -5)",
+      "Bash(git -C \"E:\\\\project\\\\dvadmin\" add -A)",
+      "Bash(git -C \"E:\\\\project\\\\dvadmin\" commit -m \"$\\(cat <<''EOF''\nfeat: 添加博客系统和富文本编辑器集成\n\n- 新增 blog-frontend 前端项目（Vue 3 + TypeScript + Vite）\n- 新增 blog 后端模块（Django REST Framework）\n- 集成 WangEditor 富文本编辑器支持\n- 更新应用配置和路由设置\n- 移除 About/Archive 页面装饰元素，改用背景色设计\n- 修复 Login/Register 页面，移除 Element Plus 依赖\n\nCo-Authored-By: Claude Opus 4.5 <noreply@anthropic.com>\nEOF\n\\)\")"
     ]
   }
 }

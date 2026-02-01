@@ -1,0 +1,403 @@
+/**
+ * Animation Library - 纸间韵律
+ * 精心编排的动画系统
+ */
+
+/* ========================================
+   Stagger Animations - 错落有致
+   ======================================== */
+
+/* 列表项错落动画 */
+.stagger-enter-active {
+  animation: fadeInUp var(--duration-slow) var(--ease-out-quart) backwards;
+}
+
+@for $i from 1 through 20 {
+  .stagger-enter-active:nth-child(#{$i}) {
+    animation-delay: #{$i * 0.06}s;
+  }
+}
+
+/* ========================================
+   Page Transitions - 页面转场
+   ======================================== */
+
+.page-enter-active {
+  animation: pageIn var(--duration-slower) var(--ease-out-expo) forwards;
+}
+
+.page-leave-active {
+  animation: pageOut var(--duration-normal) var(--ease-in-out-quart) forwards;
+}
+
+@keyframes pageIn {
+  0% {
+    opacity: 0;
+    transform: translateY(32px) scale(0.98);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+@keyframes pageOut {
+  0% {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+  100% {
+    opacity: 0;
+    transform: translateY(-16px) scale(0.98);
+  }
+}
+
+/* ========================================
+   Reveal Animations - 渐进式展现
+   ======================================== */
+
+/* 向上淡入 */
+.reveal-up {
+  opacity: 0;
+  transform: translateY(32px);
+  transition: opacity var(--duration-slow) var(--ease-out-quart),
+              transform var(--duration-slow) var(--ease-out-quart);
+}
+
+.reveal-up.is-visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/* 向下淡入 */
+.reveal-down {
+  opacity: 0;
+  transform: translateY(-32px);
+  transition: opacity var(--duration-slow) var(--ease-out-quart),
+              transform var(--duration-slow) var(--ease-out-quart);
+}
+
+.reveal-down.is-visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/* 从左淡入 */
+.reveal-left {
+  opacity: 0;
+  transform: translateX(-32px);
+  transition: opacity var(--duration-slow) var(--ease-out-quart),
+              transform var(--duration-slow) var(--ease-out-quart);
+}
+
+.reveal-left.is-visible {
+  opacity: 1;
+  transform: translateX(0);
+}
+
+/* 从右淡入 */
+.reveal-right {
+  opacity: 0;
+  transform: translateX(32px);
+  transition: opacity var(--duration-slow) var(--ease-out-quart),
+              transform var(--duration-slow) var(--ease-out-quart);
+}
+
+.reveal-right.is-visible {
+  opacity: 1;
+  transform: translateX(0);
+}
+
+/* 缩放淡入 */
+.reveal-scale {
+  opacity: 0;
+  transform: scale(0.92);
+  transition: opacity var(--duration-slow) var(--ease-out-expo),
+              transform var(--duration-slow) var(--ease-out-expo);
+}
+
+.reveal-scale.is-visible {
+  opacity: 1;
+  transform: scale(1);
+}
+
+/* ========================================
+   Micro Interactions - 微交互
+   ======================================== */
+
+/* 按钮微交互 */
+.button-interactive {
+  position: relative;
+  overflow: hidden;
+  transition: transform var(--duration-fast) var(--ease-out-quart);
+}
+
+.button-interactive::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(circle at var(--mouse-x, 50%) var(--mouse-y, 50%), rgba(255, 255, 255, 0.15), transparent 60%);
+  opacity: 0;
+  transition: opacity var(--duration-fast);
+}
+
+.button-interactive:hover::before {
+  opacity: 1;
+}
+
+.button-interactive:active {
+  transform: scale(0.96);
+}
+
+/* 卡片悬浮效果 */
+.card-hover {
+  transition: transform var(--duration-normal) var(--ease-out-quart),
+              box-shadow var(--duration-normal) var(--ease-out-quart);
+}
+
+.card-hover:hover {
+  transform: translateY(-4px);
+  box-shadow: var(--shadow-ink-lg);
+}
+
+/* 链接下划线动画 */
+.link-underline {
+  position: relative;
+}
+
+.link-underline::after {
+  content: '';
+  position: absolute;
+  bottom: -2px;
+  left: 0;
+  width: 100%;
+  height: 1px;
+  background: currentColor;
+  transform: scaleX(0);
+  transform-origin: right;
+  transition: transform var(--duration-normal) var(--ease-out-quart);
+}
+
+.link-underline:hover::after {
+  transform: scaleX(1);
+  transform-origin: left;
+}
+
+/* ========================================
+   Loading States - 加载状态
+   ======================================== */
+
+/* 脉冲点 */
+.pulse-dots {
+  display: flex;
+  gap: var(--space-2);
+  align-items: center;
+}
+
+.pulse-dots span {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--vermilion);
+  animation: pulse 1.4s ease-in-out infinite;
+}
+
+.pulse-dots span:nth-child(2) {
+  animation-delay: 0.2s;
+}
+
+.pulse-dots span:nth-child(3) {
+  animation-delay: 0.4s;
+}
+
+@keyframes pulse {
+  0%, 80%, 100% {
+    opacity: 0.3;
+    transform: scale(0.8);
+  }
+  40% {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+/* 骨架屏 */
+.skeleton {
+  background: linear-gradient(
+    90deg,
+    var(--stone-200) 0%,
+    var(--stone-100) 50%,
+    var(--stone-200) 100%
+  );
+  background-size: 200% 100%;
+  animation: shimmer 1.5s ease-in-out infinite;
+}
+
+@keyframes shimmer {
+  0% {
+    background-position: -200% 0;
+  }
+  100% {
+    background-position: 200% 0;
+  }
+}
+
+/* ========================================
+   Text Animations - 文字动画
+   ======================================== */
+
+/* 文字渐显 */
+.text-reveal {
+  overflow: hidden;
+}
+
+.text-reveal span {
+  display: inline-block;
+  transform: translateY(100%);
+  animation: textReveal 0.6s var(--ease-out-expo) forwards;
+}
+
+@keyframes textReveal {
+  to {
+    transform: translateY(0);
+  }
+}
+
+/* 打字机效果 */
+.typewriter {
+  overflow: hidden;
+  border-right: 2px solid var(--vermilion);
+  white-space: nowrap;
+  animation: typing 3s steps(30) 1s forwards,
+             blink 0.75s step-end infinite;
+}
+
+@keyframes typing {
+  from { width: 0; }
+  to { width: 100%; }
+}
+
+@keyframes blink {
+  50% { border-color: transparent; }
+}
+
+/* ========================================
+   Scroll Animations - 滚动动画
+   ======================================== */
+
+/* 视差效果 */
+.parallax {
+  will-change: transform;
+}
+
+/* 滚动指示器 */
+.scroll-indicator {
+  animation: scrollBounce 2s var(--ease-spring) infinite;
+}
+
+@keyframes scrollBounce {
+  0%, 100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(8px);
+  }
+}
+
+/* ========================================
+   Special Effects - 特效
+   ======================================== */
+
+/* 墨迹扩散 */
+.ink-spread {
+  position: relative;
+}
+
+.ink-spread::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(circle at var(--mouse-x, 50%) var(--mouse-y, 50%), var(--vermilion), transparent 60%);
+  opacity: 0;
+  animation: inkSpread 0.6s var(--ease-out-quart) forwards;
+  pointer-events: none;
+}
+
+@keyframes inkSpread {
+  0% {
+    opacity: 0.4;
+    transform: scale(0);
+  }
+  100% {
+    opacity: 0;
+    transform: scale(2);
+  }
+}
+
+/* 呼吸灯 */
+.breathe {
+  animation: breathe 3s ease-in-out infinite;
+}
+
+@keyframes breathe {
+  0%, 100% {
+    opacity: 0.8;
+    transform: scale(1);
+  }
+  50% {
+    opacity: 1;
+    transform: scale(1.02);
+  }
+}
+
+/* 浮动 */
+.float {
+  animation: float 6s ease-in-out infinite;
+}
+
+@keyframes float {
+  0%, 100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-12px);
+  }
+}
+
+/* ========================================
+   Utility Classes
+   ======================================== */
+
+/* 延迟类 */
+.delay-100 { animation-delay: 100ms; }
+.delay-200 { animation-delay: 200ms; }
+.delay-300 { animation-delay: 300ms; }
+.delay-400 { animation-delay: 400ms; }
+.delay-500 { animation-delay: 500ms; }
+.delay-600 { animation-delay: 600ms; }
+.delay-700 { animation-delay: 700ms; }
+.delay-800 { animation-delay: 800ms; }
+.delay-900 { animation-delay: 900ms; }
+.delay-1000 { animation-delay: 1000ms; }
+
+/* 持续时间类 */
+.duration-fast { animation-duration: var(--duration-fast); }
+.duration-normal { animation-duration: var(--duration-normal); }
+.duration-slow { animation-duration: var(--duration-slow); }
+.duration-slower { animation-duration: var(--duration-slower); }
+
+/* 缓动类 */
+.ease-quart { animation-timing-function: var(--ease-out-quart); }
+.ease-expo { animation-timing-function: var(--ease-out-expo); }
+.ease-spring { animation-timing-function: var(--ease-spring); }
+
+/* 减少动画 */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}

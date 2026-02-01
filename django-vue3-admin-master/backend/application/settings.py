@@ -131,6 +131,7 @@ INSTALLED_APPS = [
     "channels",                     # WebSocket 支持
     "dvadmin.system",               # 系统管理模块
     "dvadmin.book",                 # 图书管理模块
+    "dvadmin.blog",                 # 博客管理模块
 ]
 
 # ================================================= #

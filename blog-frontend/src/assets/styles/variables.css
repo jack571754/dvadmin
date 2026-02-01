@@ -1,0 +1,502 @@
+/**
+ * Blog Design System - 「纸间·墨语」
+ * 东方美学与现代主义的融合设计
+ *
+ * 设计理念：
+ * - 纸：温暖、质感、留白
+ * - 墨：深邃、流动、对比
+ * - 韵：节奏、呼吸、韵律
+ */
+
+@import url('https://fonts.googleapis.com/css2?family=Noto+Serif+SC:wght@300;400;500;600;700;900&family=Outfit:wght@300;400;500;600;700&family=JetBrains+Mono:wght@300;400;500&display=swap');
+
+:root {
+  /* ========================================
+     Color Palette - 墨与纸
+     ======================================== */
+
+  /* 主色系 - 墨 */
+  --ink-900: #0d0d0d;      /* 浓墨 */
+  --ink-800: #1a1a1a;      /* 深墨 */
+  --ink-700: #2d2d2d;      /* 中墨 */
+  --ink-600: #404040;      /* 淡墨 */
+  --ink-500: #5a5a5a;      /* 灰墨 */
+
+  /* 背景系 - 纸 */
+  --paper-50: #fafaf9;     /* 宣纸白 */
+  --paper-100: #f5f5f4;    /* 米白 */
+  --paper-200: #e7e5e4;    /* 灰白 */
+  --paper-300: #d6d3d1;    /* 雾白 */
+
+  /* 强调色 - 朱 */
+  --vermilion: #c8402e;    /* 朱砂红 */
+  --vermilion-light: #fef2f1;
+  --vermilion-dim: rgba(200, 64, 46, 0.08);
+
+  /* 辅助色 - 青 */
+  --indigo: #4a5fa0;       /* 靛蓝 */
+  --indigo-light: #f0f2fa;
+  --indigo-dim: rgba(74, 95, 160, 0.08);
+
+  /* 中性色 */
+  --stone-100: #f5f5f4;
+  --stone-200: #e7e5e4;
+  --stone-300: #d6d3d1;
+  --stone-400: #a8a29e;
+  --stone-500: #78716c;
+  --stone-600: #57534e;
+  --stone-700: #44403c;
+  --stone-800: #292524;
+
+  /* 语义色 */
+  --color-primary: var(--ink-900);
+  --color-background: var(--paper-50);
+  --color-surface: #ffffff;
+  --color-secondary: var(--stone-600);
+  --color-accent: var(--vermilion);
+  --color-accent-light: var(--vermilion-light);
+  --color-border: var(--stone-200);
+  --color-hover: var(--stone-100);
+  --color-muted: var(--stone-500);
+
+  /* ========================================
+     Typography - 字体系统
+     ======================================== */
+
+  /* 字体家族 */
+  --font-serif: 'Noto Serif SC', 'Songti SC', 'SimSun', serif;
+  --font-sans: 'Outfit', -apple-system, BlinkMacSystemFont, 'PingFang SC', sans-serif;
+  --font-mono: 'JetBrains Mono', 'SF Mono', 'Monaco', 'Consolas', monospace;
+
+  /* 字号系统 - 黄金比例 */
+  --font-size-xs: 0.75rem;      /* 12px */
+  --font-size-sm: 0.875rem;     /* 14px */
+  --font-size-base: 1rem;       /* 16px */
+  --font-size-md: 1.125rem;     /* 18px */
+  --font-size-lg: 1.25rem;      /* 20px */
+  --font-size-xl: 1.5rem;       /* 24px */
+  --font-size-2xl: 1.875rem;    /* 30px */
+  --font-size-3xl: 2.5rem;      /* 40px */
+  --font-size-4xl: 3.5rem;      /* 56px */
+  --font-size-5xl: 4.5rem;      /* 72px */
+  --font-size-6xl: 6rem;        /* 96px */
+
+  /* 字重 */
+  --font-weight-light: 300;
+  --font-weight-normal: 400;
+  --font-weight-medium: 500;
+  --font-weight-semibold: 600;
+  --font-weight-bold: 700;
+  --font-weight-black: 900;
+
+  /* 字间距 - 墨韵 */
+  --letter-tight: -0.03em;
+  --letter-snug: -0.015em;
+  --letter-normal: 0;
+  --letter-wide: 0.02em;
+  --letter-wider: 0.08em;
+  --letter-widest: 0.15em;
+
+  /* 行高 - 呼吸 */
+  --leading-tight: 1.1;
+  --leading-snug: 1.25;
+  --leading-normal: 1.6;
+  --leading-relaxed: 1.75;
+  --leading-loose: 2;
+
+  /* ========================================
+     Spacing - 留白系统
+     ======================================== */
+
+  --space-0: 0;
+  --space-px: 1px;
+  --space-0_5: 0.125rem;    /* 2px */
+  --space-1: 0.25rem;       /* 4px */
+  --space-1_5: 0.375rem;    /* 6px */
+  --space-2: 0.5rem;        /* 8px */
+  --space-2_5: 0.625rem;    /* 10px */
+  --space-3: 0.75rem;       /* 12px */
+  --space-3_5: 0.875rem;    /* 14px */
+  --space-4: 1rem;          /* 16px */
+  --space-5: 1.25rem;       /* 20px */
+  --space-6: 1.5rem;        /* 24px */
+  --space-7: 1.75rem;       /* 28px */
+  --space-8: 2rem;          /* 32px */
+  --space-9: 2.25rem;       /* 36px */
+  --space-10: 2.5rem;       /* 40px */
+  --space-11: 2.75rem;      /* 44px */
+  --space-12: 3rem;         /* 48px */
+  --space-14: 3.5rem;       /* 56px */
+  --space-16: 4rem;         /* 64px */
+  --space-20: 5rem;         /* 80px */
+  --space-24: 6rem;         /* 96px */
+  --space-28: 7rem;         /* 112px */
+  --space-32: 8rem;         /* 128px */
+  --space-36: 9rem;         /* 144px */
+  --space-40: 10rem;        /* 160px */
+  --space-44: 11rem;        /* 176px */
+  --space-48: 12rem;        /* 192px */
+  --space-52: 13rem;        /* 208px */
+  --space-56: 14rem;        /* 224px */
+  --space-60: 15rem;        /* 240px */
+  --space-64: 16rem;        /* 256px */
+  --space-72: 18rem;        /* 288px */
+  --space-80: 20rem;        /* 320px */
+  --space-96: 24rem;        /* 384px */
+
+  /* ========================================
+     Transitions - 韵律
+     ======================================== */
+
+  --ease-out-quart: cubic-bezier(0.25, 1, 0.5, 1);
+  --ease-out-expo: cubic-bezier(0.19, 1, 0.22, 1);
+  --ease-in-out-quart: cubic-bezier(0.76, 0, 0.24, 1);
+  --ease-spring: cubic-bezier(0.175, 0.885, 0.32, 1.275);
+
+  --duration-instant: 100ms;
+  --duration-fast: 150ms;
+  --duration-normal: 250ms;
+  --duration-slow: 400ms;
+  --duration-slower: 600ms;
+  --duration-slowest: 800ms;
+
+  /* ========================================
+     Shadows - 墨晕
+     ======================================== */
+
+  --shadow-xs: 0 1px 2px rgba(0, 0, 0, 0.03);
+  --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.05), 0 1px 2px rgba(0, 0, 0, 0.04);
+  --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -2px rgba(0, 0, 0, 0.04);
+  --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.06), 0 4px 6px -4px rgba(0, 0, 0, 0.04);
+  --shadow-xl: 0 20px 25px -5px rgba(0, 0, 0, 0.08), 0 8px 10px -6px rgba(0, 0, 0, 0.04);
+  --shadow-2xl: 0 25px 50px -12px rgba(0, 0, 0, 0.12);
+  --shadow-inner: inset 0 2px 4px rgba(0, 0, 0, 0.03);
+
+  /* 墨晕效果 */
+  --shadow-ink: 0 2px 8px rgba(13, 13, 13, 0.08), 0 8px 32px rgba(13, 13, 13, 0.04);
+  --shadow-ink-lg: 0 4px 16px rgba(13, 13, 13, 0.1), 0 16px 48px rgba(13, 13, 13, 0.06);
+
+  /* ========================================
+     Border Radius
+     ======================================== */
+
+  --radius-none: 0;
+  --radius-sm: 0.125rem;     /* 2px */
+  --radius-base: 0.25rem;    /* 4px */
+  --radius-md: 0.375rem;     /* 6px */
+  --radius-lg: 0.5rem;       /* 8px */
+  --radius-xl: 0.75rem;      /* 12px */
+  --radius-2xl: 1rem;        /* 16px */
+  --radius-3xl: 1.5rem;      /* 24px */
+  --radius-full: 9999px;
+
+  /* ========================================
+     Z-Index Scale
+     ======================================== */
+
+  --z-dropdown: 100;
+  --z-sticky: 200;
+  --z-fixed: 300;
+  --z-modal-backdrop: 400;
+  --z-modal: 500;
+  --z-popover: 600;
+  --z-tooltip: 700;
+
+  /* ========================================
+     Container
+     ======================================== */
+
+  --container-xs: 20rem;     /* 320px */
+  --container-sm: 24rem;     /* 384px */
+  --container-md: 28rem;     /* 448px */
+  --container-lg: 32rem;     /* 512px */
+  --container-xl: 36rem;     /* 576px */
+  --container-2xl: 42rem;    /* 672px */
+  --container-3xl: 48rem;    /* 768px */
+  --container-4xl: 56rem;    /* 896px */
+  --container-5xl: 64rem;    /* 1024px */
+  --container-6xl: 72rem;    /* 1152px */
+  --container-7xl: 80rem;    /* 1280px */
+  --container-full: 100%;
+
+  --container-max-width: var(--container-2xl);
+  --container-padding: var(--space-6);
+
+  /* ========================================
+     Paper Texture - 纸张质感
+     ======================================== */
+
+  --paper-texture: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.03'/%3E%3C/svg%3E");
+
+  /* ========================================
+     Animation Keyframes
+     ======================================== */
+
+  /* 淡入上升 */
+  @keyframes fadeInUp {
+    from {
+      opacity: 0;
+      transform: translateY(24px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  /* 淡入 */
+  @keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+  }
+
+  /* 优雅缩放 */
+  @keyframes elegantScale {
+    from {
+      opacity: 0;
+      transform: scale(0.96);
+    }
+    to {
+      opacity: 1;
+      transform: scale(1);
+    }
+  }
+
+  /* 滑入 */
+  @keyframes slideInRight {
+    from {
+      opacity: 0;
+      transform: translateX(-16px);
+    }
+    to {
+      opacity: 1;
+      transform: translateX(0);
+    }
+  }
+
+  /* 脉冲 */
+  @keyframes pulse {
+    0%, 100% {
+      opacity: 1;
+    }
+    50% {
+      opacity: 0.6;
+    }
+  }
+
+  /* 墨迹扩散 */
+  @keyframes inkSpread {
+    0% {
+      transform: scale(0.8);
+      opacity: 0;
+    }
+    50% {
+      opacity: 0.5;
+    }
+    100% {
+      transform: scale(1.2);
+      opacity: 0;
+    }
+  }
+
+  /* 呼吸 */
+  @keyframes breathe {
+    0%, 100% {
+      transform: scale(1);
+      opacity: 0.8;
+    }
+    50% {
+      transform: scale(1.05);
+      opacity: 1;
+    }
+  }
+}
+
+/* ========================================
+   Dark Mode - 夜墨
+   ======================================== */
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    /* 主色系 */
+    --color-primary: var(--paper-50);
+    --color-background: #0c0c0c;
+    --color-surface: #141414;
+    --color-secondary: var(--stone-400);
+    --color-border: #262626;
+    --color-hover: #1f1f1f;
+    --color-muted: var(--stone-500);
+
+    /* 强调色调整 */
+    --vermilion: #e85544;
+    --vermilion-light: rgba(232, 85, 68, 0.12);
+    --indigo: #6b7db8;
+    --indigo-light: rgba(107, 125, 184, 0.12);
+  }
+}
+
+/* ========================================
+   Global Reset & Base
+   ======================================== */
+
+*,
+*::before,
+*::after {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+html {
+  font-size: 16px;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  text-rendering: optimizeLegibility;
+  font-variant-ligatures: common-ligatures;
+}
+
+body {
+  font-family: var(--font-sans);
+  font-size: var(--font-size-base);
+  font-weight: var(--font-weight-normal);
+  line-height: var(--leading-normal);
+  color: var(--color-primary);
+  background-color: var(--color-background);
+  overflow-x: hidden;
+}
+
+/* ========================================
+   Typography Base
+   ======================================== */
+
+h1, h2, h3, h4, h5, h6 {
+  font-family: var(--font-serif);
+  font-weight: var(--font-weight-bold);
+  line-height: var(--leading-tight);
+  color: var(--color-primary);
+  letter-spacing: var(--letter-snug);
+}
+
+h1 { font-size: var(--font-size-5xl); }
+h2 { font-size: var(--font-size-4xl); }
+h3 { font-size: var(--font-size-3xl); }
+h4 { font-size: var(--font-size-2xl); }
+h5 { font-size: var(--font-size-xl); }
+h6 { font-size: var(--font-size-lg); }
+
+p {
+  margin-bottom: var(--space-4);
+}
+
+a {
+  color: inherit;
+  text-decoration: none;
+  transition: color var(--duration-fast) var(--ease-out-quart);
+}
+
+button {
+  font-family: inherit;
+  font-size: inherit;
+  cursor: pointer;
+  border: none;
+  outline: none;
+  background: none;
+}
+
+/* ========================================
+   Selection
+   ======================================== */
+
+::selection {
+  background: var(--vermilion);
+  color: white;
+}
+
+::-moz-selection {
+  background: var(--vermilion);
+  color: white;
+}
+
+/* ========================================
+   Focus Visible
+   ======================================== */
+
+:focus-visible {
+  outline: 2px solid var(--vermilion);
+  outline-offset: 2px;
+}
+
+/* ========================================
+   Scrollbar - 墨竹
+   ======================================== */
+
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--stone-300);
+  border-radius: var(--radius-full);
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--stone-400);
+}
+
+/* ========================================
+   Utility Classes
+   ======================================== */
+
+.container {
+  max-width: var(--container-max-width);
+  margin: 0 auto;
+  padding: 0 var(--container-padding);
+}
+
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+/* ========================================
+   Decorative Elements
+   ======================================== */
+
+.decorative-line {
+  width: 48px;
+  height: 2px;
+  background: var(--vermilion);
+}
+
+.decorative-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--vermilion);
+}
+
+/* 纸张纹理背景 */
+.paper-texture {
+  position: relative;
+}
+
+.paper-texture::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background-image: var(--paper-texture);
+  pointer-events: none;
+  opacity: 1;
+}

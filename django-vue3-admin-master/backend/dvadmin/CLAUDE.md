@@ -10,6 +10,7 @@
 
 | 时间 | 变更内容 | 责任人 |
 |------|----------|--------|
+| 2026-02-01 | 添加 blog 博客模块 | Claude AI |
 | 2026-01-24 | 初始化 dvadmin 模块索引文档 | Claude AI |
 
 ---
@@ -26,6 +27,8 @@ Dvadmin 是 DVAdmin 项目的核心业务模块目录，包含系统管理和工
 |---------|------|----------|----------|
 | [system](./system/CLAUDE.md) | Python | 系统核心模块（用户/角色/权限/菜单等） | `models.py`, `urls.py`, `views/` |
 | [utils](./utils/CLAUDE.md) | Python | 工具类与基础组件 | `viewset.py`, `models.py`, `permission.py` |
+| [book](./book/CLAUDE.md) | Python | 图书管理模块（示例） | `models.py`, `views.py`, `urls.py` |
+| [blog](./blog/CLAUDE.md) | Python | 博客管理模块（文章/分类/标签/评论） | `models.py`, `views.py`, `urls.py` |
 
 ---
 
@@ -35,22 +38,34 @@ Dvadmin 是 DVAdmin 项目的核心业务模块目录，包含系统管理和工
 graph TD
     A["dvadmin"] --> B["system<br/>(系统核心)"];
     A --> C["utils<br/>(工具类库)"];
+    A --> D["book<br/>(图书管理)"];
+    A --> E["blog<br/>(博客管理)"];
 
-    B --> D["用户管理"];
-    B --> E["角色管理"];
-    B --> F["权限管理"];
-    B --> G["菜单管理"];
-    B --> H["部门管理"];
-    B --> I["日志管理"];
+    B --> F["用户管理"];
+    B --> G["角色管理"];
+    B --> H["权限管理"];
+    B --> I["菜单管理"];
+    B --> J["部门管理"];
+    B --> K["日志管理"];
 
-    C --> J["基础模型"];
-    C --> K["视图集基类"];
-    C --> L["权限控制"];
-    C --> M["过滤器"];
-    C --> N["序列化器"];
+    C --> L["基础模型"];
+    C --> M["视图集基类"];
+    C --> N["权限控制"];
+    C --> O["过滤器"];
+    C --> P["序列化器"];
+
+    D --> Q["图书CRUD"];
+    D --> R["图书借阅"];
+
+    E --> S["文章管理"];
+    E --> T["分类/标签"];
+    E --> U["评论系统"];
+    E --> V["用户注册"];
 
     click B "./system/CLAUDE.md" "查看 system 模块"
     click C "./utils/CLAUDE.md" "查看 utils 模块"
+    click D "./book/CLAUDE.md" "查看 book 模块"
+    click E "./blog/CLAUDE.md" "查看 blog 模块"
 ```
 
 ---
@@ -64,6 +79,8 @@ graph TD
 | `__init__.py` | 包初始化文件 |
 | `system/` | 系统核心模块目录 |
 | `utils/` | 工具类目录 |
+| `book/` | 图书管理模块目录 |
+| `blog/` | 博客管理模块目录 |
 
 ---
 
