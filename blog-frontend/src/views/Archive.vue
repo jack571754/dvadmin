@@ -147,6 +147,7 @@ onMounted(() => {
 <style scoped>
 .archive-page {
   min-height: 100vh;
+  background: var(--color-background);
   padding-top: var(--space-3xl);
 }
 
@@ -156,7 +157,6 @@ onMounted(() => {
   flex-direction: column;
   align-items: center;
   padding: var(--space-16) var(--space-lg);
-  background: var(--stone-100);
   border-bottom: 1px solid var(--stone-200);
 }
 

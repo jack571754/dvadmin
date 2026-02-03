@@ -20,6 +20,17 @@ const authClient = axios.create({
   },
 })
 
+// 为 authClient 添加请求拦截器，确保使用 JWT 认证格式
+authClient.interceptors.request.use((config) => {
+  const token = localStorage.getItem('auth_token')
+  if (token && config.headers) {
+    config.headers.Authorization = `JWT ${token}`
+  }
+  return config
+}, (error) => {
+  return Promise.reject(error)
+})
+
 export interface User {
   id: number
   username: string
@@ -57,37 +68,75 @@ export const useAuthStore = defineStore('auth', () => {
 
   /**
    * Login with username and password
-   * Uses DVAdmin /api/system/auth/login/ endpoint
+   * Uses DVAdmin /api/login/ endpoint (JWT)
    */
   async function login(username: string, password: string) {
     try {
-      const response = await authClient.post<AuthResponse>('/system/auth/login/', {
+      // JWT endpoint returns { access: string, refresh: string }
+      const response = await authClient.post<{ access: string; refresh: string }>('/login/', {
         username,
         password,
       })
 
-      if (response.data.code === 2000 || response.data.code === 200) {
-        const { token: newToken, user: userData } = response.data.data
+      // Extract access token as the main token
+      const newToken = response.data.access
 
-        // Store token
-        token.value = newToken
-        localStorage.setItem('auth_token', newToken)
+      // Store token
+      token.value = newToken
+      localStorage.setItem('auth_token', newToken)
 
-        // Store user data if available
-        if (userData) {
-          user.value = userData
-        }
+      // Fetch user info after successful login
+      // 传入 false 避免在获取用户信息失败时跳回登录页
+      await fetchUserInfo(false)
 
-        return response.data
-      } else {
-        throw new Error(response.data.msg || '登录失败')
-      }
+      return response.data
     } catch (error) {
       if (axios.isAxiosError(error)) {
-        const message = error.response?.data?.msg || error.message
+        const message = error.response?.data?.msg || error.response?.data?.detail || error.message
         throw new Error(message)
       }
       throw error
+    }
+  }
+
+  /**
+   * Fetch user info from backend
+   * @param redirectOnError - 是否在出错时跳转登录页（默认 true）
+   */
+  async function fetchUserInfo(redirectOnError: boolean = true) {
+    if (!token.value) {
+      return
+    }
+
+    try {
+      // authClient 拦截器会自动添加 JWT 认证头
+      const response = await authClient.get('/system/user/user_info/')
+
+      console.log('[Auth] User info response:', response.data)
+
+      if (response.data.code === 2000 || response.data.code === 200) {
+        user.value = response.data.data
+        console.log('[Auth] User stored:', user.value)
+      } else if (response.data.code === 401) {
+        // Token 无效，清除并跳转登录
+        console.warn('[Auth] Token invalid, clearing and redirecting to login')
+        logout()
+        if (redirectOnError) {
+          // 跳转到登录页
+          window.location.href = '/login'
+        }
+      }
+    } catch (error) {
+      console.error('[Auth] Failed to fetch user info:', error)
+      // 如果是 401 错误，清除无效 token
+      if (axios.isAxiosError(error) && error.response?.status === 401) {
+        console.warn('[Auth] 401 error, clearing invalid token')
+        logout()
+        if (redirectOnError) {
+          // 跳转到登录页
+          window.location.href = '/login'
+        }
+      }
     }
   }
 
@@ -156,11 +205,12 @@ export const useAuthStore = defineStore('auth', () => {
   /**
    * Initialize auth state from localStorage
    */
-  function initAuth() {
+  async function initAuth() {
     const storedToken = localStorage.getItem('auth_token')
     if (storedToken) {
       token.value = storedToken
-      // Optionally fetch user info here
+      // Fetch user info on init
+      await fetchUserInfo()
     }
   }
 
@@ -174,6 +224,7 @@ export const useAuthStore = defineStore('auth', () => {
     login,
     register,
     getUserInfo,
+    fetchUserInfo,
     logout,
     initAuth,
   }

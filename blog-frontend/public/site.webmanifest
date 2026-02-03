@@ -1,0 +1,18 @@
+{
+  "name": "思·录",
+  "short_name": "思·录",
+  "description": "关于技术、设计与思考的记录",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#ffffff",
+  "theme_color": "#c8402e",
+  "orientation": "portrait-primary",
+  "icons": [
+    {
+      "src": "/favicon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    }
+  ]
+}

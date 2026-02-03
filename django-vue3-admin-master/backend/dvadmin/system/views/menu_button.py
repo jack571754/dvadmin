@@ -87,12 +87,27 @@ class MenuButtonViewSet(CustomModelViewSet):
     @action(methods=['post'], detail=False, permission_classes=[IsAuthenticated])
     def batch_create(self, request, *args, **kwargs):
         """
-        批量创建菜单“增删改查查”权限
+        批量创建菜单"增删改查查"权限
         创建的数据来源于菜单，需要规范创建菜单参数
         value：菜单的component_name:method
         api:菜单的web_path增加'/api'前缀，并根据method增加{id}
         """
-        menu_obj = Menu.objects.filter(id=request.data['menu']).first()
+        menu_id = request.data.get('menu')
+        if not menu_id:
+            return DetailResponse(msg="请选择菜单", code=4000)
+
+        menu_obj = Menu.objects.filter(id=menu_id).first()
+        if not menu_obj:
+            return DetailResponse(msg="菜单不存在", code=4000)
+
+        # 检查 component_name 是否为空
+        if not menu_obj.component_name:
+            return DetailResponse(
+                msg=f"菜单 [{menu_obj.name}] 的组件名称(component_name)为空,无法生成按钮权限。"
+                    f"请先编辑菜单,填写组件名称(通常是对应的视图路径,如 'user'、'role' 等)",
+                code=4000
+            )
+
         result_list = [
             {'menu': menu_obj.id, 'name': '新增', 'value': f'{menu_obj.component_name}:Create', 'api': f'/api/{menu_obj.component_name}/', 'method': 1},
             {'menu': menu_obj.id, 'name': '删除', 'value': f'{menu_obj.component_name}:Delete', 'api': f'/api/{menu_obj.component_name}/{{id}}/', 'method': 3},
@@ -101,7 +116,8 @@ class MenuButtonViewSet(CustomModelViewSet):
             {'menu': menu_obj.id, 'name': '详情', 'value': f'{menu_obj.component_name}:Retrieve', 'api': f'/api/{menu_obj.component_name}/{{id}}/', 'method': 0},
             {'menu': menu_obj.id, 'name': '复制', 'value': f'{menu_obj.component_name}:Copy', 'api': f'/api/{menu_obj.component_name}/', 'method': 1},
             {'menu': menu_obj.id, 'name': '导入', 'value': f'{menu_obj.component_name}:Import', 'api': f'/api/{menu_obj.component_name}/import_data/', 'method': 1},
-            {'menu': menu_obj.id, 'name': '导出', 'value': f'{menu_obj.component_name}:Export', 'api': f'/api{menu_obj.component_name}/export_data/', 'method': 1},]
+            {'menu': menu_obj.id, 'name': '导出', 'value': f'{menu_obj.component_name}:Export', 'api': f'/api/{menu_obj.component_name}/export_data/', 'method': 1},
+        ]
         serializer = self.get_serializer(data=result_list, many=True)
         serializer.is_valid(raise_exception=True)
         serializer.save()

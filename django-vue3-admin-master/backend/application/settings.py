@@ -129,6 +129,8 @@ INSTALLED_APPS = [
     "drf_yasg",                     # Swagger API 文档
     "captcha",                      # 验证码
     "channels",                     # WebSocket 支持
+    "django_celery_beat",           # Celery 定时任务
+    "django_celery_results",        # Celery 结果存储
     "dvadmin.system",               # 系统管理模块
     "dvadmin.book",                 # 图书管理模块
     "dvadmin.blog",                 # 博客管理模块
@@ -617,7 +619,7 @@ SHARED_APPS = []
 # 这里可以导入各种插件的配置
 # 例如:
 # from dvadmin_upgrade_center.settings import *    # 升级中心
-from dvadmin3_celery.settings import *            # Celery 异步任务插件
+# from dvadmin3_celery.settings import *            # Celery 异步任务插件（已移除，手动配置）
 from dvadmin3_flow.settings import *              # 审批流程插件
 # from dvadmin_third.settings import *            # 第三方用户管理
 # from dvadmin_ak_sk.settings import *            # 秘钥管理
@@ -626,3 +628,41 @@ from dvadmin3_flow.settings import *              # 审批流程插件
 # from dvadmin_uniapp.settings import *
 # ...
 # ********** 一键导入插件配置结束 **********
+
+
+# ================================================= #
+# ************** Celery 配置 ************** #
+# ================================================= #
+# Celery Broker 配置（使用 Redis）
+# 注意：REDIS_URL 已包含数据库编号，需要替换为 CELERY_BROKER_DB
+CELERY_BROKER_URL = f'redis://:{REDIS_PASSWORD or ""}@{REDIS_HOST}:6379/{CELERY_BROKER_DB}'
+
+# Celery 结果后端配置（使用 Django 数据库）
+CELERY_RESULT_BACKEND = 'django-db'
+
+# Celery Beat 调度器配置（使用 Django 数据库）
+CELERY_BEAT_SCHEDULER = 'django_celery_beat.schedulers:DatabaseScheduler'
+
+# Celery 缓存后端配置
+CELERY_CACHE_BACKEND = 'default'
+
+# Celery 任务结果过期时间（秒）
+CELERY_RESULT_EXPIRES = 3600
+
+# Celery 任务序列化格式
+CELERY_TASK_SERIALIZER = 'json'
+
+# Celery 结果序列化格式
+CELERY_RESULT_SERIALIZER = 'json'
+
+# Celery 接受的内容类型
+CELERY_ACCEPT_CONTENT = ['json']
+
+# Celery 任务追踪
+CELERY_TASK_TRACK_STARTED = True
+
+# Celery 任务时间限制（秒）
+CELERY_TASK_TIME_LIMIT = 30 * 60
+
+# Celery 任务软时间限制（秒）
+CELERY_TASK_SOFT_TIME_LIMIT = 25 * 60

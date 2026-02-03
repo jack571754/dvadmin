@@ -1,0 +1,306 @@
+{
+  "timestamp": "2026-01-28T10:37:23+08:00",
+  "project_path": "D:\\项目开发\\dvadmin\\django-vue3-admin-master\\web",
+  "project_name": "django-vue3-admin-web",
+  "project_summary": "dvadmin 开发框架前端",
+  "last_scan": "2026-01-28T10:37:23+08:00",
+  "scan_version": "1.0.0",
+  "coverage": {
+    "total_files": 220,
+    "scanned_files": 220,
+    "coverage_percent": 100,
+    "truncated": false
+  },
+  "modules": [
+    {
+      "name": "src",
+      "path": "src",
+      "type": "main",
+      "description": "前端源代码目录",
+      "entry_files": [
+        "src/main.ts",
+        "src/App.vue"
+      ],
+      "key_files": [
+        "src/settings.ts",
+        "src/router/index.ts",
+        "src/stores/index.ts"
+      ],
+      "sub_modules": [
+        {
+          "name": "api",
+          "path": "src/api",
+          "type": "api_layer",
+          "description": "API 接口定义层",
+          "entry_files": [
+            "src/api/login/index.ts",
+            "src/api/menu/index.ts"
+          ],
+          "has_doc": true,
+          "doc_path": "src/api/CLAUDE.md",
+          "coverage": {
+            "total_files": 2,
+            "scanned_files": 2,
+            "coverage_percent": 100
+          }
+        },
+        {
+          "name": "components",
+          "path": "src/components",
+          "type": "components",
+          "description": "通用组件库",
+          "key_components": [
+            "auth",
+            "editor",
+            "fileSelector",
+            "iconSelector",
+            "table",
+            "foreignKey",
+            "manyToMany",
+            "dvaSelect",
+            "importExcel",
+            "avatarSelector",
+            "cropper",
+            "calendar",
+            "svgIcon",
+            "noticeBar",
+            "dept-format"
+          ],
+          "has_doc": true,
+          "doc_path": "src/components/CLAUDE.md",
+          "coverage": {
+            "total_files": 23,
+            "scanned_files": 23,
+            "coverage_percent": 100
+          }
+        },
+        {
+          "name": "layout",
+          "path": "src/layout",
+          "type": "layout",
+          "description": "布局组件系统",
+          "key_components": [
+            "layout/index.vue",
+            "layout/component/aside.vue",
+            "layout/component/header.vue",
+            "layout/component/main.vue",
+            "layout/navBars",
+            "layout/navMenu"
+          ],
+          "has_doc": true,
+          "doc_path": "src/layout/CLAUDE.md",
+          "coverage": {
+            "total_files": 23,
+            "scanned_files": 23,
+            "coverage_percent": 100
+          }
+        },
+        {
+          "name": "views",
+          "path": "src/views",
+          "type": "views",
+          "description": "页面视图组件",
+          "key_pages": [
+            "views/system/login",
+            "views/system/home",
+            "views/system/user",
+            "views/system/role",
+            "views/system/dept",
+            "views/system/menu",
+            "views/system/dictionary",
+            "views/system/messageCenter",
+            "views/system/personal",
+            "views/system/log",
+            "views/plugins/dvadmin3_flow"
+          ],
+          "has_doc": true,
+          "doc_path": "src/views/CLAUDE.md",
+          "coverage": {
+            "total_files": 120,
+            "scanned_files": 120,
+            "coverage_percent": 100
+          }
+        },
+        {
+          "name": "stores",
+          "path": "src/stores",
+          "type": "state_management",
+          "description": "Pinia 状态管理",
+          "key_stores": [
+            "userInfo.ts",
+            "routesList.ts",
+            "themeConfig.ts",
+            "btnPermission.ts",
+            "columnPermission.ts",
+            "dictionary.ts",
+            "frontendMenu.ts",
+            "messageCenter.ts",
+            "systemConfig.ts",
+            "keepAliveNames.ts",
+            "tagsViewRoutes.ts"
+          ],
+          "has_doc": true,
+          "doc_path": "src/stores/CLAUDE.md",
+          "coverage": {
+            "total_files": 14,
+            "scanned_files": 14,
+            "coverage_percent": 100
+          }
+        },
+        {
+          "name": "router",
+          "path": "src/router",
+          "type": "routing",
+          "description": "Vue Router 路由配置",
+          "entry_files": [
+            "src/router/index.ts",
+            "src/router/backEnd.ts",
+            "src/router/frontEnd.ts",
+            "src/router/route.ts"
+          ],
+          "has_doc": true,
+          "doc_path": "src/router/CLAUDE.md",
+          "coverage": {
+            "total_files": 4,
+            "scanned_files": 4,
+            "coverage_percent": 100
+          }
+        },
+        {
+          "name": "utils",
+          "path": "src/utils",
+          "type": "utilities",
+          "description": "工具函数库",
+          "key_files": [
+            "request.ts",
+            "service.ts",
+            "baseUrl.ts",
+            "authFunction.ts",
+            "storage.ts",
+            "commonCrud.ts",
+            "commonFunction.ts",
+            "dictionary.ts",
+            "formatTime.ts",
+            "columnPermission.ts",
+            "websocket.ts"
+          ],
+          "has_doc": true,
+          "doc_path": "src/utils/CLAUDE.md",
+          "coverage": {
+            "total_files": 23,
+            "scanned_files": 23,
+            "coverage_percent": 100
+          }
+        },
+        {
+          "name": "directive",
+          "path": "src/directive",
+          "type": "directives",
+          "description": "自定义指令",
+          "key_directives": [
+            "authDirective.ts",
+            "customDirective.ts",
+            "sizeDirective.ts"
+          ],
+          "has_doc": true,
+          "doc_path": "src/directive/CLAUDE.md",
+          "coverage": {
+            "total_files": 4,
+            "scanned_files": 4,
+            "coverage_percent": 100
+          }
+        },
+        {
+          "name": "i18n",
+          "path": "src/i18n",
+          "type": "internationalization",
+          "description": "国际化配置",
+          "key_files": [
+            "src/i18n/index.ts",
+            "src/i18n/lang/zh-cn.ts",
+            "src/i18n/lang/en.ts",
+            "src/i18n/lang/zh-tw.ts"
+          ],
+          "has_doc": true,
+          "doc_path": "src/i18n/CLAUDE.md",
+          "coverage": {
+            "total_files": 8,
+            "scanned_files": 8,
+            "coverage_percent": 100
+          }
+        },
+        {
+          "name": "plugin",
+          "path": "src/plugin",
+          "type": "plugins",
+          "description": "插件系统",
+          "key_files": [
+            "src/plugin/permission/index.ts"
+          ],
+          "has_doc": true,
+          "doc_path": "src/plugin/CLAUDE.md",
+          "coverage": {
+            "total_files": 4,
+            "scanned_files": 4,
+            "coverage_percent": 100
+          }
+        },
+        {
+          "name": "types",
+          "path": "src/types",
+          "type": "type_definitions",
+          "description": "TypeScript 类型定义",
+          "key_files": [
+            "src/types/global.d.ts",
+            "src/types/axios.d.ts",
+            "src/types/views.d.ts",
+            "src/types/layout.d.ts",
+            "src/types/pinia.d.ts"
+          ],
+          "has_doc": false,
+          "coverage": {
+            "total_files": 7,
+            "scanned_files": 7,
+            "coverage_percent": 100
+          }
+        }
+      ]
+    }
+  ],
+  "ignore_stats": {
+    "node_modules": "已忽略 node_modules 目录（包含依赖包）",
+    "dist": "已忽略构建输出目录",
+    ".git": "已忽略 Git 版本控制目录",
+    "total_ignored_files": "数千个依赖包文件"
+  },
+  "tech_stack": {
+    "framework": "Vue 3.4.38",
+    "language": "TypeScript 4.9.4",
+    "build_tool": "Vite 5.4.1",
+    "ui_library": "Element Plus 2.8.0",
+    "state_management": "Pinia 2.0.28",
+    "router": "Vue Router 4.4.3",
+    "http_client": "Axios 1.7.4",
+    "crud_framework": "@fast-crud/fast-crud 1.21.2",
+    "i18n": "vue-i18n 9.14.0",
+    "css_preprocessor": "Less 4.3.0",
+    "css_framework": "Tailwind CSS 3.2.7"
+  },
+  "documentation": {
+    "root_doc": "CLAUDE.md",
+    "module_docs": [
+      "src/api/CLAUDE.md",
+      "src/components/CLAUDE.md",
+      "src/layout/CLAUDE.md",
+      "src/views/CLAUDE.md",
+      "src/stores/CLAUDE.md",
+      "src/router/CLAUDE.md",
+      "src/utils/CLAUDE.md",
+      "src/directive/CLAUDE.md",
+      "src/i18n/CLAUDE.md",
+      "src/plugin/CLAUDE.md"
+    ]
+  },
+  "gaps": [],
+  "next_steps": []
+}

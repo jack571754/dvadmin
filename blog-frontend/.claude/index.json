@@ -1,0 +1,207 @@
+{
+  "meta": {
+    "version": "1.0.0",
+    "generatedAt": "2026-02-03T10:51:57+08:00",
+    "projectName": "blog-frontend",
+    "projectSummary": "博客页面",
+    "workingDirectory": "D:\\项目开发\\dvadmin\\blog-frontend"
+  },
+  "root": {
+    "path": "D:\\项目开发\\dvadmin\\blog-frontend",
+    "docPath": "CLAUDE.md",
+    "entryPoints": [
+      "src/main.ts",
+      "index.html"
+    ],
+    "configFiles": [
+      "vite.config.ts",
+      "tsconfig.json",
+      "package.json",
+      ".env"
+    ]
+  },
+  "modules": [
+    {
+      "name": "api",
+      "path": "src/api",
+      "docPath": "src/api/CLAUDE.md",
+      "description": "API 服务层",
+      "language": "TypeScript",
+      "entryPoints": [
+        "src/api/blog.ts"
+      ],
+      "interfaces": [
+        "BlogApiService"
+      ],
+      "dependencies": [
+        "axios",
+        "@/types/blog",
+        "@/utils/date",
+        "@/utils/errorHandler"
+      ],
+      "hasTests": false,
+      "hasConfig": false,
+      "keyFiles": [
+        "src/api/blog.ts"
+      ]
+    },
+    {
+      "name": "components",
+      "path": "src/components",
+      "docPath": "src/components/CLAUDE.md",
+      "description": "通用组件",
+      "language": "Vue",
+      "entryPoints": [],
+      "interfaces": [],
+      "components": [
+        "Header",
+        "Footer",
+        "ArticleCard",
+        "MarkdownRenderer",
+        "Sidebar"
+      ],
+      "keyFiles": [
+        "src/components/Header.vue",
+        "src/components/Footer.vue",
+        "src/components/ArticleCard.vue",
+        "src/components/MarkdownRenderer.vue",
+        "src/components/Sidebar.vue"
+      ]
+    },
+    {
+      "name": "views",
+      "path": "src/views",
+      "docPath": "src/views/CLAUDE.md",
+      "description": "页面视图",
+      "language": "Vue",
+      "entryPoints": [],
+      "interfaces": [],
+      "components": [
+        "Home",
+        "ArticleDetail",
+        "Archive",
+        "About",
+        "Login",
+        "Register",
+        "NotFound"
+      ],
+      "routes": [
+        "/",
+        "/article/:id",
+        "/archive",
+        "/about",
+        "/login",
+        "/register",
+        "*"
+      ],
+      "keyFiles": [
+        "src/views/Home.vue",
+        "src/views/ArticleDetail.vue",
+        "src/views/Archive.vue",
+        "src/views/About.vue",
+        "src/views/Login.vue",
+        "src/views/Register.vue",
+        "src/views/NotFound.vue"
+      ]
+    },
+    {
+      "name": "stores",
+      "path": "src/stores",
+      "docPath": "src/stores/CLAUDE.md",
+      "description": "Pinia 状态管理",
+      "language": "TypeScript",
+      "entryPoints": [],
+      "interfaces": [],
+      "stores": [
+        "auth",
+        "articles"
+      ],
+      "keyFiles": [
+        "src/stores/auth.ts",
+        "src/stores/articles.ts"
+      ]
+    },
+    {
+      "name": "router",
+      "path": "src/router",
+      "docPath": "src/router/CLAUDE.md",
+      "description": "Vue Router 配置",
+      "language": "TypeScript",
+      "entryPoints": [
+        "src/router/index.ts"
+      ],
+      "keyFiles": [
+        "src/router/index.ts"
+      ]
+    },
+    {
+      "name": "types",
+      "path": "src/types",
+      "docPath": "src/types/CLAUDE.md",
+      "description": "TypeScript 类型定义",
+      "language": "TypeScript",
+      "entryPoints": [],
+      "interfaces": [
+        "Article",
+        "Category",
+        "Tag",
+        "PaginatedResponse",
+        "BlogConfig",
+        "NavigationItem",
+        "ArticleCardProps"
+      ],
+      "keyFiles": [
+        "src/types/blog.ts"
+      ]
+    },
+    {
+      "name": "utils",
+      "path": "src/utils",
+      "docPath": "src/utils/CLAUDE.md",
+      "description": "工具函数",
+      "language": "TypeScript",
+      "entryPoints": [],
+      "functions": [
+        "formatDate",
+        "formatFullDate",
+        "calculateReadTime",
+        "handleApiError",
+        "showError",
+        "showSuccess"
+      ],
+      "keyFiles": [
+        "src/utils/date.ts",
+        "src/utils/errorHandler.ts"
+      ]
+    },
+    {
+      "name": "assets",
+      "path": "src/assets",
+      "docPath": "src/assets/CLAUDE.md",
+      "description": "样式资源",
+      "language": "CSS",
+      "entryPoints": [],
+      "keyFiles": [
+        "src/assets/styles/variables.css",
+        "src/assets/styles/animations.css",
+        "src/assets/styles/global.css"
+      ]
+    }
+  ],
+  "coverage": {
+    "totalFiles": 24,
+    "scannedFiles": 24,
+    "coveragePercent": 100,
+    "modules": 8,
+    "modulesWithDocs": 8,
+    "gaps": []
+  },
+  "ignoreStats": {
+    "node_modules": "依赖包目录（已忽略）",
+    "dist": "构建输出目录（已忽略）",
+    "*.log": "日志文件（已忽略）",
+    ".git": "Git 目录（已忽略）"
+  },
+  "truncated": false,
+  "nextSteps": []
+}

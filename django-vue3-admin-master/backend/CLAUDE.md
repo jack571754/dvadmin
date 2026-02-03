@@ -4,12 +4,13 @@
 
 # Backend 模块
 
-> 最后更新：2026-01-23 14:19:21
+> 最后更新：2026-02-03 (Django 5.2.0 升级)
 
 ## 变更记录 (Changelog)
 
 | 时间 | 变更内容 | 责任人 |
 |------|----------|--------|
+| 2026-02-03 | Django 升级到 5.2.0 LTS，Celery 配置更新 | Claude AI |
 | 2026-01-23 15:35:00 | 修复 WebSocket 部署，添加 ASGI 启动方式 | Claude AI |
 | 2026-01-23 14:19:21 | 初始化模块文档 | Claude AI |
 
@@ -125,13 +126,14 @@ gunicorn application.wsgi:application -c gunicorn_conf.py
 ### 依赖包（requirements.txt）
 
 核心依赖：
-- Django 4.2.14
-- djangorestframework 3.15.2
-- djangorestframework_simplejwt 5.4.0
+- Django 5.2.0 (LTS)
+- djangorestframework 3.16.0
+- djangorestframework_simplejwt 5.5.0
 - drf-yasg 1.21.7
 - channels 4.1.0
-- mysqlclient 2.2.0
-- celery（通过 dvadmin3-celery）
+- django-celery-beat 2.8.1
+- django-celery-results 2.5.1
+- pymysql 1.1.0
 
 ### 配置文件
 

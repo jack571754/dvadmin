@@ -1,0 +1,10 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100">
+  <!-- Background -->
+  <rect width="100" height="100" fill="#c8402e" rx="20"/>
+
+  <!-- Text "思" in white -->
+  <text x="50" y="65" font-family="'Noto Serif SC', serif" font-size="50" font-weight="bold" fill="white" text-anchor="middle">思</text>
+
+  <!-- Decorative dot -->
+  <circle cx="75" cy="35" r="5" fill="white" opacity="0.8"/>
+</svg>

@@ -119,7 +119,8 @@ const handleLogin = async () => {
 
   try {
     await authStore.login(form.username, form.password)
-    router.push('/')
+    // 登录成功后刷新页面以更新状态
+    window.location.href = '/'
   } catch (err) {
     error.value = err instanceof Error ? err.message : '登录失败，请检查用户名和密码'
   } finally {
