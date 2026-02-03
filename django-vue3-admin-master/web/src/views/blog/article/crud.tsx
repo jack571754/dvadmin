@@ -28,6 +28,15 @@ export const createCrudOptions = function ({ crudExpose }: CreateCrudOptionsProp
 				editRequest,
 				delRequest,
 			},
+			form: {
+				wrapper: {
+					is: 'el-dialog',
+					width: '1200px',
+					draggable: true,
+					class: 'article-form-dialog',
+					closeOnClickModal: false,
+				},
+			},
 			rowHandle: {
 				fixed: 'right',
 				width: 200,
@@ -86,6 +95,7 @@ export const createCrudOptions = function ({ crudExpose }: CreateCrudOptionsProp
 					type: 'input',
 					column: { minWidth: 200 },
 					form: {
+						col: { span: 24 },
 						rules: [{ required: true, message: '文章标题为必填项' }],
 						component: { props: { clearable: true } },
 					},
@@ -95,9 +105,10 @@ export const createCrudOptions = function ({ crudExpose }: CreateCrudOptionsProp
 					type: 'text',
 					column: { minWidth: 250, show: true },
 					form: {
+						col: { span: 24 },
 						component: {
 							type: 'textarea',
-							rows: 3,
+							rows: 2,
 							placeholder: '请输入文章摘要'
 						},
 					},
@@ -107,6 +118,7 @@ export const createCrudOptions = function ({ crudExpose }: CreateCrudOptionsProp
 					type: 'input',
 					column: { minWidth: 120, show: false },
 					form: {
+						col: { span: 12 },
 						component: { placeholder: '请输入封面图 URL' },
 					},
 				},
@@ -116,6 +128,7 @@ export const createCrudOptions = function ({ crudExpose }: CreateCrudOptionsProp
 					type: 'dict-select',
 					column: { minWidth: 100 },
 					form: {
+						col: { span: 12 },
 						rules: [{ required: false, message: '请选择分类' }],
 					},
 				},
@@ -125,6 +138,7 @@ export const createCrudOptions = function ({ crudExpose }: CreateCrudOptionsProp
 					type: 'dict-select',
 					column: { minWidth: 120, show: false },
 					form: {
+						col: { span: 12 },
 						component: {
 							props: {
 								multiple: true,
@@ -144,7 +158,10 @@ export const createCrudOptions = function ({ crudExpose }: CreateCrudOptionsProp
 						],
 					}),
 					column: { minWidth: 100, align: 'center' },
-					form: { value: 'draft' },
+					form: {
+						col: { span: 12 },
+						value: 'draft'
+					},
 				},
 				views_count: {
 					title: '阅读量',
@@ -168,26 +185,33 @@ export const createCrudOptions = function ({ crudExpose }: CreateCrudOptionsProp
 						],
 					}),
 					column: { minWidth: 90, align: 'center' },
-					form: { value: false },
+					form: {
+						col: { span: 12 },
+						value: false
+					},
 				},
 				content: {
 					title: '文章内容',
 					type: 'text',
 					column: { show: false },
 					form: {
+						col: { span: 24 },
 						rules: [{ required: true, message: '文章内容为必填项' }],
 						component: {
-							// 使用自定义 WangEditor 组件
 							render: (context: any) => {
-								return h(WngEditor, {
-									placeholder: '请输入文章内容...',
-									mode: 'default',
-									height: 'calc(100vh - 350px)',
-									getHtml: context.form.content,
-									'onUpdate:getHtml': (value: string) => {
-										context.form.content = value;
-									},
-								});
+								return h('div', {
+									class: 'article-content-wrapper',
+								}, [
+									h(WngEditor, {
+										placeholder: '请输入文章内容...',
+										mode: 'default',
+										height: '500px',
+										getHtml: context.form.content,
+										'onUpdate:getHtml': (value: string) => {
+											context.form.content = value;
+										},
+									}),
+								]);
 							},
 						},
 					},

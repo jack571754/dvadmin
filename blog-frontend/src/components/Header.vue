@@ -16,26 +16,50 @@
           class="nav-link"
           :class="{ 'nav-link--active': isActive(item.path) }"
         >
-          <span class="nav-text">{{ item.label }}</span>
-          <span class="nav-indicator"></span>
+          {{ item.label }}
         </router-link>
 
         <!-- Auth Items -->
         <template v-if="!authStore.isLoggedIn">
           <router-link to="/login" class="nav-link nav-link--subtle">
-            <span class="nav-text">登录</span>
+            登录
           </router-link>
           <router-link to="/register" class="nav-link nav-link--accent">
-            <span class="nav-text">注册</span>
+            注册
           </router-link>
         </template>
         <template v-else>
-          <span class="nav-link nav-link--user">
-            <span class="nav-text">{{ authStore.user?.username || '用户' }}</span>
-          </span>
-          <button @click="handleLogout" class="nav-link nav-link--button">
-            <span class="nav-text">退出</span>
-          </button>
+          <div class="user-dropdown">
+            <button @click="toggleUserMenu" class="user-info-btn">
+              <span class="user-name">用户 {{ authStore.user?.username || '' }}</span>
+              <svg class="dropdown-arrow" :class="{ 'dropdown-arrow--open': userMenuOpen }" width="12" height="12" viewBox="0 0 12 12" fill="none">
+                <path d="M2 4L6 8L10 4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+              </svg>
+            </button>
+            <transition name="dropdown">
+              <div v-if="userMenuOpen" class="user-menu">
+                <div class="user-menu-header">
+                  <div class="user-avatar">👤</div>
+                  <div class="user-details">
+                    <span class="user-display-name">用户 {{ authStore.user?.username || '' }}</span>
+                  </div>
+                </div>
+                <div class="user-menu-divider"></div>
+                <button @click="handlePasswordChange" class="user-menu-item">
+                  <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+                    <path d="M8 1a2 2 0 0 1 2 2v4H6V3a2 2 0 0 1 2-2zm3 6V3a3 3 0 0 0-6 0v4a2 2 0 0 0-2 2v5a2 2 0 0 0 2 2h6a2 2 0 0 0 2-2V9a2 2 0 0 0-2-2z" stroke="currentColor" fill="none" stroke-width="1.5"/>
+                  </svg>
+                  <span>修改密码</span>
+                </button>
+                <button @click="handleLogout" class="user-menu-item user-menu-item--danger">
+                  <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+                    <path d="M5 5L11 11M11 5L5 11" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+                  </svg>
+                  <span>退出登录</span>
+                </button>
+              </div>
+            </transition>
+          </div>
         </template>
       </nav>
 
@@ -81,10 +105,11 @@
             </router-link>
           </template>
           <template v-else>
-            <span class="mobile-nav-link mobile-nav-link--user">
-              <span class="mobile-nav-text">{{ authStore.user?.username || '用户' }}</span>
-            </span>
-            <button @click="handleLogout" class="mobile-nav-link">
+            <div class="mobile-user-info">
+              <div class="mobile-user-avatar">👤</div>
+              <span class="mobile-user-name">{{ authStore.user?.username || '用户' }}</span>
+            </div>
+            <button @click="handleLogoutAndClose" class="mobile-nav-link mobile-nav-link--logout">
               <span class="mobile-nav-text">退出</span>
             </button>
           </template>
@@ -118,6 +143,7 @@ const authStore = useAuthStore()
 
 const isScrolled = ref(false)
 const mobileMenuOpen = ref(false)
+const userMenuOpen = ref(false)
 
 const navItems: NavItem[] = [
   { label: '首页', path: '/' },
@@ -142,25 +168,59 @@ const closeMobileMenu = (): void => {
   document.body.style.overflow = ''
 }
 
+const toggleUserMenu = (): void => {
+  userMenuOpen.value = !userMenuOpen.value
+}
+
+const closeUserMenu = (): void => {
+  userMenuOpen.value = false
+}
+
 const handleLogoClick = (): void => {
   window.scrollTo({ top: 0, behavior: 'smooth' })
 }
 
 const handleLogout = () => {
   authStore.logout()
+  closeUserMenu()
+}
+
+const handleLogoutAndClose = () => {
+  authStore.logout()
   closeMobileMenu()
+}
+
+const handlePasswordChange = () => {
+  // TODO: 实现修改密码功能
+  alert('修改密码功能开发中...')
+  closeUserMenu()
 }
 
 const handleScroll = (): void => {
   isScrolled.value = window.scrollY > 20
 }
 
+// 点击外部关闭下拉菜单
+const handleDocumentClick = (event: MouseEvent) => {
+  const target = event.target as HTMLElement
+  const userMenu = document.querySelector('.user-menu')
+  const userBtn = document.querySelector('.user-info-btn')
+
+  if (userMenuOpen.value && userMenu && userBtn) {
+    if (!userMenu.contains(target) && !userBtn.contains(target)) {
+      closeUserMenu()
+    }
+  }
+}
+
 onMounted(() => {
   window.addEventListener('scroll', handleScroll, { passive: true })
+  document.addEventListener('click', handleDocumentClick)
 })
 
 onUnmounted(() => {
   window.removeEventListener('scroll', handleScroll)
+  document.removeEventListener('click', handleDocumentClick)
   document.body.style.overflow = ''
 })
 </script>
@@ -237,12 +297,15 @@ onUnmounted(() => {
 
 .nav-link {
   position: relative;
-  display: flex;
-  flex-direction: column;
+  display: inline-flex;
   align-items: center;
   padding: var(--space-2) var(--space-4);
   text-decoration: none;
   color: var(--stone-600);
+  font-family: var(--font-sans);
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-medium);
+  letter-spacing: var(--letter-wide);
   transition: color var(--duration-fast) var(--ease-out-quart);
 }
 
@@ -254,7 +317,7 @@ onUnmounted(() => {
   color: var(--ink-900);
 }
 
-.nav-link--active .nav-indicator {
+.nav-link--active::after {
   transform: scaleX(1);
 }
 
@@ -280,22 +343,157 @@ onUnmounted(() => {
   color: var(--stone-600);
 }
 
-.nav-text {
+.nav-link--button:hover {
+  color: var(--vermilion);
+}
+
+/* User Dropdown */
+.user-dropdown {
+  position: relative;
+}
+
+.user-info-btn {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  padding: var(--space-2) var(--space-4);
+  background: var(--stone-100);
+  border: none;
+  border-radius: var(--radius-full);
+  cursor: pointer;
+  transition: all var(--duration-fast) var(--ease-out-quart);
+}
+
+.user-info-btn:hover {
+  background: var(--stone-200);
+}
+
+.user-name {
   font-family: var(--font-sans);
   font-size: var(--font-size-sm);
   font-weight: var(--font-weight-medium);
-  letter-spacing: var(--letter-wide);
+  color: var(--ink-900);
 }
 
-.nav-indicator {
+.dropdown-arrow {
+  color: var(--stone-600);
+  transition: transform var(--duration-fast) var(--ease-out-quart);
+}
+
+.dropdown-arrow--open {
+  transform: rotate(180deg);
+}
+
+/* User Menu Dropdown */
+.user-menu {
   position: absolute;
-  bottom: var(--space-1);
+  top: calc(100% + var(--space-2));
+  right: 0;
+  min-width: 220px;
+  background: var(--color-surface);
+  border: 1px solid var(--stone-200);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-lg);
+  overflow: hidden;
+  z-index: var(--z-dropdown);
+}
+
+.user-menu-header {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  padding: var(--space-4);
+  background: var(--stone-50);
+}
+
+.user-avatar {
+  width: 40px;
+  height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--vermilion-dim);
+  border-radius: var(--radius-full);
+  font-size: var(--font-size-xl);
+}
+
+.user-details {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-1);
+}
+
+.user-display-name {
+  font-family: var(--font-sans);
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-semibold);
+  color: var(--ink-900);
+}
+
+.user-role {
+  font-family: var(--font-sans);
+  font-size: var(--font-size-xs);
+  color: var(--stone-600);
+}
+
+.user-menu-divider {
+  height: 1px;
+  background: var(--stone-200);
+}
+
+.user-menu-item {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  width: 100%;
+  padding: var(--space-3) var(--space-4);
+  background: transparent;
+  border: none;
+  text-align: left;
+  font-family: var(--font-sans);
+  font-size: var(--font-size-sm);
+  color: var(--stone-700);
+  cursor: pointer;
+  transition: all var(--duration-fast) var(--ease-out-quart);
+}
+
+.user-menu-item:hover {
+  background: var(--stone-100);
+  color: var(--ink-900);
+}
+
+.user-menu-item--danger {
+  color: var(--vermilion);
+}
+
+.user-menu-item--danger:hover {
+  background: var(--vermilion-dim);
+  color: var(--vermilion);
+}
+
+/* Dropdown transition */
+.dropdown-enter-active,
+.dropdown-leave-active {
+  transition: all var(--duration-fast) var(--ease-out-quart);
+}
+
+.dropdown-enter-from,
+.dropdown-leave-to {
+  opacity: 0;
+  transform: translateY(-8px);
+}
+
+.nav-link::after {
+  content: '';
+  position: absolute;
+  bottom: 6px;
   left: 50%;
-  width: 20px;
+  width: 100%;
   height: 2px;
   background: var(--vermilion);
   border-radius: var(--radius-full);
   transform: translateX(-50%) scaleX(0);
+  transform-origin: center;
   transition: transform var(--duration-normal) var(--ease-out-quart);
 }
 
@@ -407,6 +605,37 @@ onUnmounted(() => {
   cursor: default;
   color: var(--stone-500);
   font-size: var(--font-size-sm);
+}
+
+/* Mobile User Info */
+.mobile-user-info {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  padding: var(--space-4) var(--space-3);
+  width: 100%;
+}
+
+.mobile-user-avatar {
+  width: 40px;
+  height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--vermilion-dim);
+  border-radius: var(--radius-full);
+  font-size: var(--font-size-xl);
+}
+
+.mobile-user-name {
+  font-family: var(--font-sans);
+  font-size: var(--font-size-lg);
+  font-weight: var(--font-weight-semibold);
+  color: var(--ink-900);
+}
+
+.mobile-nav-link--logout {
+  border-top: 1px solid var(--stone-100);
 }
 
 .mobile-nav-link:last-child {

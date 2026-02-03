@@ -487,7 +487,7 @@ onUnmounted(() => {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  max-width: var(--container-2xl);
+  max-width: 900px;
   margin: 0 auto;
   padding: var(--space-8) var(--space-6) var(--space-4);
 }
@@ -527,7 +527,7 @@ onUnmounted(() => {
    ======================================== */
 
 .article-header {
-  max-width: var(--container-2xl);
+  max-width: 900px;
   margin: 0 auto;
   padding: var(--space-8) var(--space-6) var(--space-12);
 }
@@ -635,7 +635,7 @@ onUnmounted(() => {
    ======================================== */
 
 .article-body {
-  max-width: var(--container-2xl);
+  max-width: 900px;
   margin: 0 auto;
   padding: 0 var(--space-6) var(--space-20);
 }
@@ -797,7 +797,7 @@ onUnmounted(() => {
    ======================================== */
 
 .article-footer {
-  max-width: var(--container-2xl);
+  max-width: 900px;
   margin: 0 auto;
   padding: var(--space-12) var(--space-6);
   border-top: 1px solid var(--stone-200);

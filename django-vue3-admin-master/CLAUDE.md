@@ -1,11 +1,12 @@
 # Django-Vue3-Admin 项目文档
 
-> 最后更新：2026-01-25 14:09:00
+> 最后更新：2026-02-03 (Django 5.2.0 升级)
 
 ## 变更记录 (Changelog)
 
 | 时间 | 变更内容 | 责任人 |
 |------|----------|--------|
+| 2026-02-03 | Django 升级到 5.2.0 LTS，移除 dvadmin3-celery，手动配置 Celery | Claude AI |
 | 2026-01-25 14:09:00 | 集成 dvadmin3_flow 插件，生成子模块文档，更新项目统计 | Claude AI |
 | 2026-01-24 | 添加 dvadmin_approval 模块文档，更新项目统计 | Claude AI |
 | 2026-01-23 14:19:21 | 初始化 AI 上下文文档 | Claude AI |
@@ -30,12 +31,13 @@ Django-Vue3-Admin 是一个基于 RBAC（基于角色的访问控制）模型的
 ### 技术栈
 
 **后端 (Django)**
-- Django 4.2.14
-- Django REST Framework 3.15.2
-- djangorestframework_simplejwt 5.4.0（JWT 认证）
+- Django 5.2.0 (LTS)
+- Django REST Framework 3.16.0
+- djangorestframework_simplejwt 5.5.0（JWT 认证）
 - drf-yasg 1.21.7（Swagger API 文档）
 - channels 4.1.0（WebSocket 支持）
-- dvadmin3-celery 3.1.6（异步任务）
+- django-celery-beat 2.8.1（Celery 定时任务）
+- django-celery-results 2.5.1（Celery 结果存储）
 
 **前端 (Vue3)**
 - Vue 3.4.38

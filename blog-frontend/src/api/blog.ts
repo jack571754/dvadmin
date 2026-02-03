@@ -56,9 +56,10 @@ const apiClient: AxiosInstance = axios.create({
 apiClient.interceptors.request.use(
   (config: InternalAxiosRequestConfig) => {
     // Add authentication token if available
+    // 后端期望的格式是 "JWT <token>"
     const token = localStorage.getItem('auth_token');
     if (token && config.headers) {
-      config.headers.Authorization = `Bearer ${token}`;
+      config.headers.Authorization = `JWT ${token}`;
     }
     return config;
   },
@@ -278,15 +279,20 @@ class BlogApiService {
 
   /**
    * Login with username and password
-   * Uses DVAdmin /api/system/auth/login/ endpoint
+   * Uses DVAdmin /api/login/ endpoint
+   * Returns JWT access token
    */
   async login(username: string, password: string): Promise<{ token: string; user?: any }> {
     try {
-      const response = await apiClient.post<{ token: string; user?: any }>('/system/auth/login/', {
+      const response = await apiClient.post<{ access: string; refresh: string }>('/login/', {
         username,
         password,
       });
-      return response.data;
+      // Transform JWT response to expected format
+      return {
+        token: response.data.access,
+        refreshToken: response.data.refresh,
+      };
     } catch (error) {
       const message = handleApiError(error);
       throw new Error(message);
@@ -309,11 +315,11 @@ class BlogApiService {
 
   /**
    * Get current user info
-   * Uses DVAdmin /api/system/user/self/ endpoint
+   * Uses DVAdmin /api/system/user/getUserInfo/ endpoint
    */
   async getUserInfo(): Promise<any> {
     try {
-      const response = await apiClient.get('/system/user/self/');
+      const response = await apiClient.get('/system/user/getUserInfo/');
       return response.data;
     } catch (error) {
       const message = handleApiError(error);

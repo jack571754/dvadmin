@@ -1,12 +1,13 @@
 # DVAdmin 项目文档
 
-> 最后更新：2026-01-25 19:11:17
+> 最后更新：2026-02-03 (Django 5.2.0 升级)
 > 项目路径：E:\project\dvadmin
 
 ## 变更记录 (Changelog)
 
 | 时间 | 变更内容 | 责任人 |
 |------|----------|--------|
+| 2026-02-03 | Django 升级到 5.2.0 LTS，移除 dvadmin3-celery 插件，手动配置 Celery | Claude AI |
 | 2026-01-25 19:11:17 | 更新项目统计，完成前端子模块文档（api/components/layout/views/stores/router），覆盖率提升至 100% | Claude AI |
 | 2026-01-25 14:09:00 | 更新项目统计，集成 dvadmin3_flow 插件文档，添加 Mermaid 架构图 | Claude AI |
 | 2026-01-24 | 初始化项目根文档，整合所有模块 | Claude AI |
@@ -196,12 +197,12 @@ graph TD
 
 ### 后端技术
 
-- **框架**：Django 4.2.14
-- **API**：Django REST Framework 3.15.2
-- **认证**：djangorestframework_simplejwt 5.4.0
+- **框架**：Django 5.2.0 (LTS)
+- **API**：Django REST Framework 3.16.0
+- **认证**：djangorestframework_simplejwt 5.5.0
 - **文档**：drf-yasg 1.21.7
 - **WebSocket**：channels 4.1.0
-- **异步任务**：dvadmin3-celery 3.1.6
+- **异步任务**：django-celery-beat 2.8.1, django-celery-results 2.5.1
 
 ### 前端技术
 
@@ -322,6 +323,56 @@ urlpatterns += [
 
 ---
 
+## Django 5.2.0 升级说明
+
+### 升级内容（2026-02-03）
+
+本项目已成功升级到 Django 5.2.0 LTS 版本，主要变更如下：
+
+#### 升级的包
+
+| 包名 | 旧版本 | 新版本 | 说明 |
+|------|--------|--------|------|
+| Django | 4.2.14 | 5.2.0 | LTS版本，支持到2028年4月 |
+| Django REST Framework | 3.15.2 | 3.16.0 | API框架升级 |
+| djangorestframework-simplejwt | 5.4.0 | 5.5.0 | JWT认证升级 |
+| django-celery-beat | 2.7.0 | 2.8.1 | 支持Django 5.2 |
+| django-celery-results | - | 2.5.1 | 新增Celery结果存储 |
+
+#### 移除的包
+
+- **dvadmin3-celery 3.1.6**: 因依赖 django-celery-beat 2.7.0（不支持Django 5.2），已移除并手动配置Celery
+
+#### 配置变更
+
+1. **settings.py**:
+   - 新增 `django_celery_beat` 和 `django_celery_results` 到 INSTALLED_APPS
+   - 手动添加 Celery 配置（Broker、Result Backend、Beat Scheduler等）
+   - 注释掉 `from dvadmin3_celery.settings import *`
+
+2. **requirements.txt**:
+   - 更新所有核心包版本
+   - 移除 dvadmin3-celery
+   - 新增 django-celery-beat、django-celery-results、django-redis、tenant-schemas-celery
+
+#### 验证结果
+
+✅ 所有测试通过：
+- Django 系统检查无错误
+- 数据库迁移正常（40+迁移已应用）
+- 用户模型正常工作
+- Celery 配置正确
+- 开发服务器正常启动
+- 所有 API 端点测试通过
+
+#### 兼容性
+
+- **Python**: 3.10, 3.11, 3.12, 3.13, 3.14
+- **数据库**: PostgreSQL 13+, MariaDB 10.5+, MySQL 8.0.11+, SQLite 3.31.0+
+- **长期支持**: 至 2028年4月
+
+---
+
 ## 相关资源
 
 - 官方网站：https://www.django-vue-admin.com
@@ -402,6 +453,14 @@ urlpatterns += [
 
 ## 最新变更
 
+### 2026-02-03
+- ✅ Django 升级到 5.2.0 LTS（支持到2028年4月）
+- ✅ Django REST Framework 升级到 3.16.0
+- ✅ JWT 认证升级到 5.5.0
+- ✅ 移除 dvadmin3-celery，手动配置 Celery
+- ✅ 新增 django-celery-beat 2.8.1 和 django-celery-results 2.5.1
+- ✅ 所有测试通过，系统运行正常
+
 ### 2026-01-25 19:11:17
 - ✅ 完成前端所有子模块文档生成（api/components/layout/views/stores/router）
 - ✅ 文档覆盖率从 75% 提升至 100%
@@ -423,8 +482,8 @@ urlpatterns += [
 
 本文档由 Claude AI 自动生成和维护，如有问题请联系项目维护者。
 
-**文档版本：** v3.0.0
-**生成时间：** 2026-01-25 19:11:17
+**文档版本：** v3.1.0
+**生成时间：** 2026-02-03
 **文档路径：** E:\project\dvadmin\CLAUDE.md
 **扫描文件数：** 270+
 **文档覆盖率：** 100%
