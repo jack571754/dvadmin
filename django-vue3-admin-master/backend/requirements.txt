@@ -1,4 +1,4 @@
-Django==5.2.0
+Django==5.1.15
 django-comment-migrate==0.1.7
 django-cors-headers==4.4.0
 django-filter==24.2
@@ -19,6 +19,8 @@ typing-extensions==4.12.2
 tzlocal==5.2
 channels==4.1.0
 channels-redis==4.2.0
+daphne==4.2.1
+websockets==16.0
 user-agents==2.2.0
 six==1.16.0
 whitenoise==6.7.0
@@ -28,7 +30,7 @@ gunicorn==23.0.0
 gevent==25.9.1
 Pillow>=11.0.0
 pyinstaller>=6.15.0
-django-celery-beat==2.8.1
+django-celery-beat==2.7.0
 django-celery-results==2.5.1
 django-redis==5.4.0
 tenant-schemas-celery==3.0.0

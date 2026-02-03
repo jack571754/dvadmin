@@ -36,21 +36,21 @@ const viteConfig = defineConfig((mode: ConfigEnv) => {
 			hmr: true,
 			proxy: {
 				'/api': {
-					target: 'http://127.0.0.1:9999',
+					target: 'http://127.0.0.1:8000',
 					ws: true,
 					changeOrigin: true,
 				},
 				'/sse': {
-					target: 'http://127.0.0.1:9999',
+					target: 'http://127.0.0.1:8000',
 					ws: true,
 					changeOrigin: true,
 				},
 				'/swagger.json': {
-					target: 'http://127.0.0.1:9999',
+					target: 'http://127.0.0.1:8000',
 					changeOrigin: true,
 				},
 				'/static': {
-					target: 'http://127.0.0.1:9999',
+					target: 'http://127.0.0.1:8000',
 					changeOrigin: true,
 				},
 				'/gitee': {
