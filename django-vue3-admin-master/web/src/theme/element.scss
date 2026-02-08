@@ -294,8 +294,8 @@
 		width: 100%;
 		white-space: nowrap;
 		height: auto !important;
-		line-height: normal !important;
-		padding: 8px !important;
+		min-height: 36px;
+		padding: 8px 12px !important;
 		display: flex !important;
 		align-items: center !important;
 	}
@@ -303,19 +303,29 @@
 		overflow: visible !important;
 		text-overflow: unset !important;
 		white-space: nowrap !important;
+		line-height: 1.5 !important;
+		display: inline-block;
+		vertical-align: middle;
+	}
+	.el-tree-node__expand-icon,
+	.el-tree-node__loading-icon {
+		margin-right: 8px;
+		vertical-align: middle;
 	}
 }
 /*修复 el-tree-select 下拉框中的树节点高度问题*/
 .el-select-dropdown .el-tree-node__content {
 	height: auto !important;
-	line-height: normal !important;
+	min-height: 36px;
 	padding: 8px 12px !important;
-	min-height: 32px;
 }
 .el-select-dropdown .el-tree-node__label {
 	overflow: visible !important;
 	text-overflow: unset !important;
 	white-space: nowrap !important;
+	line-height: 1.5 !important;
+	display: inline-block;
+	vertical-align: middle;
 }
 /*修复Cascader 级联选择器高度问题*/
 .el-cascader-menu__wrap.el-scrollbar__wrap {

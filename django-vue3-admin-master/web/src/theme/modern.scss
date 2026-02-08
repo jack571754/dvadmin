@@ -1466,8 +1466,7 @@ body,
 		border-radius: var(--radius-sm);
 		padding: 8px 12px;
 		height: auto !important;
-		line-height: normal !important;
-		min-height: 32px;
+		min-height: 36px;
 		display: flex !important;
 		align-items: center !important;
 		transition: all var(--duration-fast) var(--ease-default);
@@ -1484,14 +1483,20 @@ body,
 		font-weight: var(--font-medium);
 	}
 
-	.el-tree-node__expand-icon {
+	.el-tree-node__expand-icon,
+	.el-tree-node__loading-icon {
 		color: var(--text-muted);
+		margin-right: 8px;
+		vertical-align: middle;
 	}
 
 	.el-tree-node__label {
 		overflow: visible !important;
 		text-overflow: unset !important;
 		white-space: nowrap !important;
+		line-height: 1.5 !important;
+		display: inline-block;
+		vertical-align: middle;
 	}
 }
 
