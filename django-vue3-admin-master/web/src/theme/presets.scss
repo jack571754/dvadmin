@@ -194,6 +194,26 @@
 
 	--component-button-padding: var(--spacing-3) var(--spacing-5);
 	--component-button-radius: var(--radius-md);
+
+	// ===== 图表专用颜色 =====
+	--chart-color-1: #51a3fc;
+	--chart-color-2: #36c78b;
+	--chart-color-3: #fec279;
+	--chart-color-4: #968af5;
+	--chart-color-5: #e790e8;
+	--chart-color-6: #ff6462;
+	--chart-color-7: #6690f9;
+	--chart-color-8: #f72b3f;
+	--chart-color-9: #91bff8;
+	--chart-color-10: #88d565;
+	--chart-color-11: #fbd4a0;
+
+	// ===== 登录页渐变 =====
+	--login-bg-gradient-start: #dbeafe;
+	--login-bg-gradient-end: #eff6ff;
+
+	// ===== 状态颜色 =====
+	--text-disabled: #979b9c;
 }
 
 // ============================================

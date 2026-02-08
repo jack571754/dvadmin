@@ -99,6 +99,7 @@ export default defineComponent({
 					color1: '#FF6462',
 					color2: '--next-color-primary-lighter',
 					color3: '--el-color-primary',
+					var1: 'var(--chart-color-6, #FF6462)',
 				},
 				{
 					num1: '653,33',
@@ -283,7 +284,13 @@ export default defineComponent({
 			for (var i = 0; i < getname.length; i++) {
 				data.push({ name: getname[i], value: getvalue[i] });
 			}
-			const colorList = ['#51A3FC', '#36C78B', '#FEC279', '#968AF5', '#E790E8'];
+			const colorList = [
+				'var(--chart-color-1, #51A3FC)',
+				'var(--chart-color-2, #36C78B)',
+				'var(--chart-color-3, #FEC279)',
+				'var(--chart-color-4, #968AF5)',
+				'var(--chart-color-5, #E790E8)'
+			];
 			const option = {
 				backgroundColor: state.charts.bgColor,
 				title: {

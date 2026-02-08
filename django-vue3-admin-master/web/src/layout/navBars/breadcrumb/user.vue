@@ -338,7 +338,7 @@ const getMessageCenterCount = () => {
 			height: 12px;
 			width: 12px;
 			padding: 0;
-			background-color: #18bc9c;
+			background-color: var(--success-base, #18bc9c);
 		}
 	}
 	.online-down {
@@ -350,7 +350,7 @@ const getMessageCenterCount = () => {
 			height: 12px;
 			width: 12px;
 			padding: 0;
-			background-color: #979b9c;
+			background-color: var(--text-disabled, #979b9c);
 		}
 	}
 }

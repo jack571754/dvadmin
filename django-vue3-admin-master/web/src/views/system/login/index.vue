@@ -145,7 +145,7 @@ onMounted(() => {
 	.login-left {
 		flex: 1;
 		position: relative;
-		background-color: rgba(211, 239, 255, 1);
+		background: linear-gradient(135deg, var(--login-bg-gradient-start, #dbeafe) 0%, var(--login-bg-gradient-end, #eff6ff) 100%);
 		margin-right: 100px;
 
 		.login-left-logo {
@@ -348,7 +348,7 @@ onMounted(() => {
 
 		p {
 			font-size: 14px;
-			color: rgba(0, 0, 0, 0.5);
+			color: var(--text-tertiary, rgba(0, 0, 0, 0.5));
 		}
 
 		a {
