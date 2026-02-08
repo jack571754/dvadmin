@@ -276,12 +276,22 @@
 .el-scrollbar__wrap {
 	max-height: 100%;
 }
-.el-select-dropdown .el-scrollbar__wrap {
-	overflow-x: scroll !important;
-}
 /*修复Select 选择器高度问题*/
 .el-select-dropdown__wrap {
 	max-height: 274px !important;
+}
+/*修复树形选择器宽度问题，确保内容完整显示*/
+.el-tree-select-dropdown {
+	.el-select-dropdown__wrap {
+		overflow-x: hidden !important;
+	}
+	.el-tree {
+		min-width: 100%;
+	}
+	.el-tree-node__content {
+		width: 100%;
+		white-space: nowrap;
+	}
 }
 /*修复Cascader 级联选择器高度问题*/
 .el-cascader-menu__wrap.el-scrollbar__wrap {
