@@ -1,0 +1,278 @@
+/* ============================================
+   DVAdmin CSS 变量速查卡片
+   用于快速预览所有可用的设计变量
+   ============================================ */
+
+/* 仅用于开发环境预览，生产环境请勿引入 */
+
+#if-dev-css-vars-preview {
+	font-family: var(--font-sans);
+	padding: var(--spacing-6);
+	background: var(--bg-page);
+	color: var(--text-primary);
+
+	.var-section {
+		margin-bottom: var(--spacing-8);
+
+		.var-section-title {
+			font-size: var(--text-xl);
+			font-weight: var(--font-semibold);
+			color: var(--text-primary);
+			margin-bottom: var(--spacing-4);
+			padding-bottom: var(--spacing-2);
+			border-bottom: 2px solid var(--primary-base);
+		}
+
+		.var-grid {
+			display: grid;
+			grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+			gap: var(--spacing-4);
+
+			.var-card {
+				background: var(--bg-surface);
+				border: 1px solid var(--border-base);
+				border-radius: var(--radius-lg);
+				padding: var(--spacing-4);
+				transition: all var(--duration-base) var(--ease-default);
+
+				&:hover {
+					border-color: var(--primary-base);
+					box-shadow: var(--shadow-md);
+				}
+
+				.var-name {
+					font-family: var(--font-mono);
+					font-size: var(--text-xs);
+					color: var(--text-muted);
+					margin-bottom: var(--spacing-2);
+				}
+
+				.var-value {
+					font-size: var(--text-sm);
+					color: var(--text-secondary);
+					font-family: var(--font-mono);
+					margin-bottom: var(--spacing-3);
+					word-break: break-all;
+				}
+
+				.var-preview {
+					height: 40px;
+					border-radius: var(--radius-md);
+					border: 1px solid var(--border-base);
+					display: flex;
+					align-items: center;
+					justify-content: center;
+					font-size: var(--text-xs);
+					color: var(--text-muted);
+				}
+
+				// 颜色预览
+				&.is-color .var-preview {
+					background: var(--preview-value);
+				}
+
+				// 阴影预览
+				&.is-shadow .var-preview {
+					background: var(--bg-surface);
+					box-shadow: var(--preview-value);
+				}
+
+				// 圆角预览
+				&.is-radius .var-preview {
+					border-radius: var(--preview-value);
+				}
+
+				// 间距预览
+				&.is-spacing .var-preview {
+					background: var(--primary-lightest);
+					position: relative;
+
+					&::after {
+						content: '';
+						position: absolute;
+						left: 50%;
+						top: 50%;
+						transform: translate(-50%, -50%);
+						background: var(--primary-base);
+						width: var(--preview-value);
+						height: var(--preview-value);
+						border-radius: var(--radius-sm);
+					}
+				}
+			}
+		}
+	}
+}
+
+// ============================================
+// 主色调
+// ============================================
+
+#preview-primary {
+	.var-card {
+		--preview-value: var(--primary-base);
+		@extend .is-color;
+
+		&.hover { --preview-value: var(--primary-hover); }
+		&.active { --preview-value: var(--primary-active); }
+		&.light { --preview-value: var(--primary-light); }
+		&.lighter { --preview-value: var(--primary-lighter); }
+		&.lightest { --preview-value: var(--primary-lightest); }
+	}
+}
+
+// ============================================
+// 功能色
+// ============================================
+
+#preview-functional {
+	.var-card {
+		@extend .is-color;
+
+		&.success { --preview-value: var(--success-base); }
+		&.warning { --preview-value: var(--warning-base); }
+		&.danger { --preview-value: var(--danger-base); }
+		&.info { --preview-value: var(--info-base); }
+	}
+}
+
+// ============================================
+// 背景色
+// ============================================
+
+#preview-backgrounds {
+	.var-card {
+		@extend .is-color;
+
+		&.page { --preview-value: var(--bg-page); }
+		&.surface { --preview-value: var(--bg-surface); }
+		&.elevated { --preview-value: var(--bg-elevated); }
+		&.muted { --preview-value: var(--bg-muted); }
+		&.hover { --preview-value: var(--bg-hover); }
+		&.active { --preview-value: var(--bg-active); }
+	}
+}
+
+// ============================================
+// 文字色
+// ============================================
+
+#preview-text {
+	.var-card {
+		@extend .is-color;
+
+		&.primary { --preview-value: var(--text-primary); }
+		&.secondary { --preview-value: var(--text-secondary); }
+		&.tertiary { --preview-value: var(--text-tertiary); }
+		&.muted { --preview-value: var(--text-muted); }
+		&.disabled { --preview-value: var(--text-disabled); }
+	}
+}
+
+// ============================================
+// 边框色
+// ============================================
+
+#preview-borders {
+	.var-card {
+		@extend .is-color;
+
+		&.base { --preview-value: var(--border-base); }
+		&.muted { --preview-value: var(--border-muted); }
+		&.strong { --preview-value: var(--border-strong); }
+		&.focus { --preview-value: var(--border-focus); }
+	}
+}
+
+// ============================================
+// 间距
+// ============================================
+
+#preview-spacing {
+	.var-card {
+		@extend .is-spacing;
+
+		&.s1 { --preview-value: var(--spacing-1); }
+		&.s2 { --preview-value: var(--spacing-2); }
+		&.s3 { --preview-value: var(--spacing-3); }
+		&.s4 { --preview-value: var(--spacing-4); }
+		&.s6 { --preview-value: var(--spacing-6); }
+		&.s8 { --preview-value: var(--spacing-8); }
+	}
+}
+
+// ============================================
+// 圆角
+// ============================================
+
+#preview-radius {
+	.var-card {
+		@extend .is-radius;
+
+		&.xs { --preview-value: var(--radius-xs); }
+		&.sm { --preview-value: var(--radius-sm); }
+		&.md { --preview-value: var(--radius-md); }
+		&.lg { --preview-value: var(--radius-lg); }
+		&.xl { --preview-value: var(--radius-xl); }
+		&.full { --preview-value: var(--radius-full); }
+	}
+}
+
+// ============================================
+// 阴影
+// ============================================
+
+#preview-shadows {
+	.var-card {
+		@extend .is-shadow;
+
+		&.xs { --preview-value: var(--shadow-xs); }
+		&.sm { --preview-value: var(--shadow-sm); }
+		&.md { --preview-value: var(--shadow-md); }
+		&.lg { --preview-value: var(--shadow-lg); }
+		&.xl { --preview-value: var(--shadow-xl); }
+		&.focus { --preview-value: var(--shadow-focus); }
+	}
+}
+
+// ============================================
+// 字体
+// ============================================
+
+#preview-fonts {
+	.var-card {
+		.var-preview {
+			background: var(--bg-surface);
+			display: flex;
+			flex-direction: column;
+			align-items: center;
+			justify-content: center;
+			gap: var(--spacing-2);
+		}
+
+		&.xs .var-preview { font-size: var(--text-xs); }
+		&.sm .var-preview { font-size: var(--text-sm); }
+		&.base .var-preview { font-size: var(--text-base); }
+		&.lg .var-preview { font-size: var(--text-lg); }
+		&.xl .var-preview { font-size: var(--text-xl); }
+		&.xl2 .var-preview { font-size: var(--text-2xl); }
+		&.xl3 .var-preview { font-size: var(--text-3xl); }
+	}
+}
+
+// ============================================
+// 字重
+// ============================================
+
+#preview-weights {
+	.var-card {
+		.var-preview {
+			background: var(--bg-surface);
+		}
+
+		&.normal .var-preview { font-weight: var(--font-normal); }
+		&.medium .var-preview { font-weight: var(--font-medium); }
+		&.semibold .var-preview { font-weight: var(--font-semibold); }
+		&.bold .var-preview { font-weight: var(--font-bold); }
+	}
+}

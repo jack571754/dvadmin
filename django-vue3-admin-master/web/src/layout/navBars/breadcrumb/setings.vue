@@ -9,6 +9,21 @@
 			@close="onDrawerClose"
 		>
 			<el-scrollbar class="layout-breadcrumb-seting-bar">
+				<!-- 主题预设 -->
+				<el-divider content-position="left">主题预设</el-divider>
+				<div class="theme-preset-container">
+					<div
+						v-for="preset in themePresets"
+						:key="preset.key"
+						class="theme-preset-item"
+						:class="{ 'is-active': currentPreset === preset.key }"
+						@click="onPresetClick(preset)"
+					>
+						<div class="preset-color-dot" :style="{ backgroundColor: preset.preview }"></div>
+						<span class="preset-name">{{ preset.name }}</span>
+					</div>
+				</div>
+
 				<!-- 全局主题 -->
 				<el-divider content-position="left">{{ $t('message.layout.oneTitle') }}</el-divider>
 				<div class="layout-breadcrumb-seting-bar-flex">
@@ -430,7 +445,7 @@
 </template>
 
 <script setup lang="ts" name="layoutBreadcrumbSeting">
-import { nextTick, onUnmounted, onMounted, computed, reactive } from 'vue';
+import { nextTick, onUnmounted, onMounted, computed, reactive, ref } from 'vue';
 import { ElMessage } from 'element-plus';
 import { useI18n } from 'vue-i18n';
 import { storeToRefs } from 'pinia';
@@ -442,6 +457,19 @@ import Watermark from '/@/utils/wartermark';
 import commonFunction from '/@/utils/commonFunction';
 import other from '/@/utils/other';
 import mittBus from '/@/utils/mitt';
+
+// 主题预设配置
+const currentPreset = ref('serenity');
+
+const themePresets = [
+	{ key: 'serenity', name: '静谧蓝', preview: '#2563eb', primary: '#2563eb', menuBar: '#ffffff', menuBarColor: '#475569', topBar: '#ffffff', topBarColor: '#475569' },
+	{ key: 'forest', name: '森之绿', preview: '#059669', primary: '#059669', menuBar: '#ffffff', menuBarColor: '#475569', topBar: '#ffffff', topBarColor: '#475569' },
+	{ key: 'twilight', name: '暮光紫', preview: '#7c3aed', primary: '#7c3aed', menuBar: '#ffffff', menuBarColor: '#475569', topBar: '#ffffff', topBarColor: '#475569' },
+	{ key: 'sunset', name: '日落橙', preview: '#ea580c', primary: '#ea580c', menuBar: '#ffffff', menuBarColor: '#475569', topBar: '#ffffff', topBarColor: '#475569' },
+	{ key: 'ocean', name: '海洋青', preview: '#0891b2', primary: '#0891b2', menuBar: '#ffffff', menuBarColor: '#475569', topBar: '#ffffff', topBarColor: '#475569' },
+	{ key: 'rose', name: '玫瑰红', preview: '#e11d48', primary: '#e11d48', menuBar: '#ffffff', menuBarColor: '#475569', topBar: '#ffffff', topBarColor: '#475569' },
+	{ key: 'dark', name: '深色模式', preview: '#1e293b', primary: '#3b82f6', menuBar: '#1e293b', menuBarColor: '#cbd5e1', topBar: '#1e293b', topBarColor: '#cbd5e1', isDark: true },
+];
 
 // 定义变量内容
 const { locale } = useI18n();
@@ -457,6 +485,36 @@ const state = reactive({
 const getThemeConfig = computed(() => {
 	return themeConfig.value;
 });
+
+// 应用主题预设
+const onPresetClick = (preset: any) => {
+	currentPreset.value = preset.key;
+
+	// 更新主题配置
+	getThemeConfig.value.primary = preset.primary;
+	getThemeConfig.value.menuBar = preset.menuBar;
+	getThemeConfig.value.menuBarColor = preset.menuBarColor;
+	getThemeConfig.value.topBar = preset.topBar;
+	getThemeConfig.value.topBarColor = preset.topBarColor;
+
+	// 处理深色模式
+	if (preset.isDark) {
+		getThemeConfig.value.isIsDark = true;
+	} else {
+		getThemeConfig.value.isIsDark = false;
+	}
+
+	// 应用颜色变化
+	onColorPickerChange();
+	onBgColorPickerChange('menuBar');
+	onBgColorPickerChange('menuBarColor');
+	onBgColorPickerChange('topBar');
+	onBgColorPickerChange('topBarColor');
+	onAddDarkChange();
+
+	// 保存配置
+	setLocalThemeConfig();
+};
 // 1、全局主题
 const onColorPickerChange = () => {
 	if (!getThemeConfig.value.primary) return ElMessage.warning('全局主题 primary 颜色值不能为空');
@@ -818,6 +876,54 @@ defineExpose({
 		.copy-config-btn-reset {
 			width: 100%;
 			margin: 10px 0 0;
+		}
+	}
+
+	// 主题预设样式
+	.theme-preset-container {
+		display: flex;
+		flex-wrap: wrap;
+		gap: 8px;
+		margin-bottom: 5px;
+
+		.theme-preset-item {
+			display: flex;
+			align-items: center;
+			gap: 6px;
+			padding: 6px 10px;
+			border: 1px solid var(--el-border-color-light);
+			border-radius: 4px;
+			cursor: pointer;
+			transition: all 0.2s;
+			background: var(--el-bg-color);
+
+			&:hover {
+				border-color: var(--el-color-primary);
+				background: var(--el-color-primary-light-9);
+			}
+
+			&.is-active {
+				border-color: var(--el-color-primary);
+				background: var(--el-color-primary-light-9);
+				color: var(--el-color-primary);
+
+				.preset-color-dot {
+					box-shadow: 0 0 0 2px var(--el-color-primary-light-7);
+				}
+			}
+
+			.preset-color-dot {
+				width: 16px;
+				height: 16px;
+				border-radius: 4px;
+				border: 1px solid var(--el-border-color-lighter);
+				flex-shrink: 0;
+			}
+
+			.preset-name {
+				font-size: 12px;
+				color: var(--el-text-color-regular);
+			}
 		}
 	}
 }

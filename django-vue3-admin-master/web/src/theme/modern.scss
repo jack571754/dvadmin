@@ -1,0 +1,1844 @@
+/* ============================================
+   DVAdmin 现代化组件样式覆盖
+   配合 presets.scss 使用
+   ============================================ */
+
+// ============================================
+// 一、全局重置与基础样式
+// ============================================
+
+* {
+	margin: 0;
+	padding: 0;
+	box-sizing: border-box;
+}
+
+html,
+body,
+#app {
+	margin: 0;
+	padding: 0;
+	width: 100%;
+	height: 100%;
+	font-family: var(--font-sans);
+	font-weight: var(--font-normal);
+	-webkit-font-smoothing: antialiased;
+	-moz-osx-font-smoothing: grayscale;
+	background-color: var(--bg-page);
+	font-size: var(--text-sm);
+	color: var(--text-primary);
+	line-height: var(--leading-normal);
+	overflow: hidden;
+	position: relative;
+}
+
+// ============================================
+// 二、布局样式优化
+// ============================================
+
+.layout-container {
+	width: 100%;
+	height: 100%;
+
+	// 主布局区域
+	.layout-pd {
+		padding: var(--spacing-4) !important;
+	}
+
+	.layout-flex {
+		display: flex;
+		flex-direction: column;
+		flex: 1;
+	}
+
+	// 侧边栏
+	.layout-aside {
+		background: var(--bg-surface);
+		box-shadow: var(--shadow-sm);
+		height: inherit;
+		position: relative;
+		z-index: var(--z-above);
+		display: flex;
+		flex-direction: column;
+		overflow-x: hidden !important;
+		border-right: 1px solid var(--border-base);
+
+		.el-scrollbar__view {
+			overflow: hidden;
+		}
+	}
+
+	// 顶部导航
+	.layout-header {
+		padding: 0 !important;
+		height: auto !important;
+		background: var(--bg-surface);
+		border-bottom: 1px solid var(--divider-base);
+		box-shadow: var(--shadow-xs);
+	}
+
+	// 主内容区
+	.layout-main {
+		padding: 0 !important;
+		overflow: hidden;
+		width: 100%;
+		background-color: var(--bg-page);
+		display: flex;
+		flex-direction: column;
+
+		.layout-main-scroll {
+			@extend .layout-flex;
+			.layout-parent {
+				@extend .layout-flex;
+				position: relative;
+			}
+		}
+	}
+
+	// 页面内边距
+	.layout-padding {
+		@extend .layout-pd;
+		position: absolute;
+		left: 0;
+		top: 0;
+		height: 100%;
+		overflow: hidden;
+		@extend .layout-flex;
+
+		&-auto {
+			height: inherit;
+			@extend .layout-flex;
+		}
+
+		&-view {
+			background: var(--bg-surface);
+			width: 100%;
+			height: 100%;
+			border-radius: var(--radius-xl);
+			border: 1px solid var(--border-base);
+			overflow: hidden;
+		}
+	}
+
+	.layout-aside-pc-220 {
+		width: 220px !important;
+		transition: width var(--duration-slow) var(--ease-smooth);
+	}
+
+	.layout-aside-pc-64 {
+		width: 64px !important;
+		transition: width var(--duration-slow) var(--ease-smooth);
+	}
+
+	.layout-aside-pc-1 {
+		width: 1px !important;
+		transition: width var(--duration-slow) var(--ease-smooth);
+	}
+
+	.layout-columns-warp {
+		flex: 1;
+		display: flex;
+		overflow: hidden;
+	}
+
+	.layout-hide {
+		display: none;
+	}
+}
+
+// ============================================
+// 三、按钮组件优化
+// ============================================
+
+.el-button {
+	font-weight: var(--font-medium);
+	border-radius: var(--radius-md);
+	transition: all var(--duration-base) var(--ease-default);
+
+	// 图标间距
+	:not(.is-circle) i.el-icon,
+	i.iconfont,
+	i.fa {
+		font-size: var(--text-sm) !important;
+		margin-right: var(--spacing-2);
+	}
+
+	&--small i.iconfont,
+	&--small i.fa {
+		font-size: var(--text-xs) !important;
+		margin-right: var(--spacing-1);
+	}
+
+	// 主要按钮
+	&--primary {
+		background: var(--primary-base);
+		border-color: var(--primary-base);
+		box-shadow: var(--shadow-button);
+		color: var(--text-on-primary);
+
+		&:hover,
+		&:focus {
+			background: var(--primary-hover);
+			border-color: var(--primary-hover);
+			box-shadow: var(--shadow-button-hover);
+			transform: translateY(-1px);
+		}
+
+		&:active {
+			background: var(--primary-active);
+			border-color: var(--primary-active);
+			transform: translateY(0);
+		}
+	}
+
+	// 成功按钮
+	&--success {
+		background: var(--success-base);
+		border-color: var(--success-base);
+		color: var(--text-on-primary);
+
+		&:hover,
+		&:focus {
+			background: var(--success-hover);
+			border-color: var(--success-hover);
+		}
+	}
+
+	// 警告按钮
+	&--warning {
+		background: var(--warning-base);
+		border-color: var(--warning-base);
+		color: var(--text-on-primary);
+
+		&:hover,
+		&:focus {
+			background: var(--warning-hover);
+			border-color: var(--warning-hover);
+		}
+	}
+
+	// 危险按钮
+	&--danger {
+		background: var(--danger-base);
+		border-color: var(--danger-base);
+		color: var(--text-on-primary);
+
+		&:hover,
+		&:focus {
+			background: var(--danger-hover);
+			border-color: var(--danger-hover);
+		}
+	}
+
+	// 信息按钮
+	&--info {
+		background: var(--info-base);
+		border-color: var(--info-base);
+		color: var(--text-on-primary);
+
+		&:hover,
+		&:focus {
+			background: var(--info-hover);
+			border-color: var(--info-hover);
+		}
+	}
+
+	// 幽灵按钮
+	&.is-plain {
+		&:hover {
+			background: var(--primary-lightest);
+			border-color: var(--primary-base);
+			color: var(--primary-base);
+		}
+	}
+
+	// 文本按钮
+	&.is-text {
+		color: var(--text-secondary);
+
+		&:hover {
+			color: var(--primary-base);
+			background: var(--primary-gradient-subtle);
+		}
+	}
+
+	// 圆角按钮
+	&.is-round {
+		border-radius: var(--radius-full);
+	}
+
+	// 圆形按钮
+	&.is-circle {
+		border-radius: var(--radius-full);
+		padding: var(--spacing-2);
+	}
+}
+
+// ============================================
+// 四、输入框组件优化
+// ============================================
+
+.el-input__wrapper {
+	background: var(--bg-surface);
+	border: 1px solid var(--border-base);
+	border-radius: var(--radius-md);
+	box-shadow: none;
+	transition: all var(--duration-base) var(--ease-default);
+	padding: var(--spacing-1) var(--spacing-3);
+
+	&:hover {
+		border-color: var(--border-strong);
+	}
+
+	&.is-focus {
+		border-color: var(--primary-base);
+		box-shadow: var(--shadow-focus);
+	}
+
+	.el-input__inner {
+		color: var(--text-primary);
+
+		&::placeholder {
+			color: var(--text-muted);
+		}
+	}
+}
+
+.el-textarea__inner {
+	background: var(--bg-surface);
+	border: 1px solid var(--border-base);
+	border-radius: var(--radius-md);
+	transition: all var(--duration-base) var(--ease-default);
+	padding: var(--spacing-3);
+	color: var(--text-primary);
+
+	&:hover {
+		border-color: var(--border-strong);
+	}
+
+	&:focus {
+		border-color: var(--primary-base);
+		box-shadow: var(--shadow-focus);
+	}
+
+	&::placeholder {
+		color: var(--text-muted);
+	}
+}
+
+// 输入框前后缀
+.el-input-group__append,
+.el-input-group__prepend {
+	background: var(--bg-muted);
+	border: 1px solid var(--border-base);
+	border-radius: var(--radius-md);
+	padding: 0 var(--spacing-3);
+	color: var(--text-secondary);
+}
+
+.el-input-number__decrease,
+.el-input-number__increase {
+	background: var(--bg-muted);
+	border-color: var(--border-base);
+	color: var(--text-secondary);
+
+	&:hover {
+		color: var(--primary-base);
+	}
+}
+
+// ============================================
+// 五、卡片组件优化
+// ============================================
+
+.el-card {
+	background: var(--bg-surface);
+	border: 1px solid var(--border-base);
+	border-radius: var(--radius-xl);
+	box-shadow: var(--shadow-sm);
+	transition: all var(--duration-base) var(--ease-default);
+	overflow: hidden;
+
+	&:hover {
+		box-shadow: var(--shadow-md);
+	}
+
+	.el-card__header {
+		border-bottom: 1px solid var(--divider-base);
+		padding: var(--spacing-4) var(--spacing-6);
+		font-weight: var(--font-semibold);
+		color: var(--text-primary);
+		background: transparent;
+	}
+
+	.el-card__body {
+		padding: var(--spacing-6);
+	}
+}
+
+// ============================================
+// 六、表格组件优化
+// ============================================
+
+.el-table {
+	background: var(--bg-surface);
+	border-radius: var(--radius-xl);
+	overflow: hidden;
+	border: 1px solid var(--border-base);
+	box-shadow: var(--shadow-xs);
+
+	// 表头
+	th.el-table__cell {
+		background: var(--bg-muted);
+		color: var(--text-secondary);
+		font-weight: var(--font-semibold);
+		font-size: var(--text-xs);
+		text-transform: uppercase;
+		letter-spacing: 0.025em;
+		border-bottom: 1px solid var(--border-base);
+		padding: var(--spacing-3) var(--spacing-4);
+		user-select: text;
+	}
+
+	// 表格单元格
+	td.el-table__cell {
+		border-bottom: 1px solid var(--divider-base);
+		padding: var(--spacing-3) var(--spacing-4);
+		color: var(--text-primary);
+	}
+
+	// 悬浮行
+	tr:hover > td {
+		background: var(--bg-hover) !important;
+	}
+
+	// 斑马纹
+	.el-table__row--striped > td {
+		background: var(--bg-subtle);
+	}
+
+	// 展开行
+	.el-table__expanded-cell {
+		background: var(--bg-subtle);
+		padding: var(--spacing-4) var(--spacing-6);
+	}
+
+	// 空状态
+	.el-table__empty-block {
+		background: var(--bg-surface);
+		color: var(--text-muted);
+	}
+
+	// 文本按钮
+	.el-button.is-text {
+		padding: var(--spacing-1) var(--spacing-2);
+	}
+}
+
+// ============================================
+// 七、菜单组件优化
+// ============================================
+
+.el-menu {
+	border-right: none !important;
+	background: transparent;
+}
+
+.el-menu-item,
+.el-sub-menu__title {
+	color: var(--text-secondary);
+	height: 48px !important;
+	line-height: 48px !important;
+	margin: var(--spacing-1) var(--spacing-2);
+	border-radius: var(--radius-md);
+	transition: all var(--duration-base) var(--ease-default);
+
+	&:hover {
+		color: var(--text-primary);
+		background: var(--bg-hover);
+	}
+
+	// 图标
+	.iconfont,
+	.fa,
+	i {
+		color: inherit;
+		margin-right: var(--spacing-2);
+		font-size: var(--text-base);
+	}
+}
+
+.el-menu-item.is-active,
+.el-sub-menu.is-active .el-sub-menu__title {
+	color: var(--primary-base);
+	background: var(--primary-gradient-subtle);
+	font-weight: var(--font-medium);
+}
+
+.el-sub-menu.is-active.is-opened .el-sub-menu__title {
+	background-color: unset !important;
+}
+
+// 折叠菜单
+.el-menu--collapse {
+	width: 64px !important;
+
+	.el-menu-item,
+	.el-sub-menu__title {
+		padding: 0;
+		justify-content: center;
+	}
+}
+
+// 子菜单
+.el-menu--popup {
+	background: var(--bg-surface);
+	border: 1px solid var(--border-base);
+	border-radius: var(--radius-md);
+	box-shadow: var(--shadow-lg);
+	padding: var(--spacing-1);
+
+	.el-menu-item {
+		margin: 0;
+		border-radius: var(--radius-sm);
+	}
+}
+
+// ============================================
+// 八、对话框组件优化
+// ============================================
+
+.el-dialog {
+	background: var(--bg-surface);
+	border: 1px solid var(--border-base);
+	border-radius: var(--radius-xl);
+	box-shadow: var(--shadow-2xl);
+	overflow: hidden;
+
+	.el-dialog__header {
+		padding: var(--spacing-5) var(--spacing-6);
+		border-bottom: 1px solid var(--divider-base);
+		background: transparent;
+
+		.el-dialog__title {
+			font-weight: var(--font-semibold);
+			color: var(--text-primary);
+			font-size: var(--text-lg);
+		}
+
+		.el-dialog__headerbtn {
+			top: var(--spacing-4);
+			right: var(--spacing-4);
+			width: 32px;
+			height: 32px;
+			color: var(--text-muted);
+
+			&:hover {
+				color: var(--text-primary);
+			}
+		}
+	}
+
+	.el-dialog__body {
+		padding: var(--spacing-6);
+		color: var(--text-secondary);
+		max-height: calc(90vh - 140px) !important;
+		overflow-y: auto;
+		overflow-x: hidden;
+	}
+
+	.el-dialog__footer {
+		padding: var(--spacing-4) var(--spacing-6);
+		border-top: 1px solid var(--divider-base);
+	}
+}
+
+.el-overlay {
+	background: var(--bg-overlay);
+}
+
+// ============================================
+// 九、抽屉组件优化
+// ============================================
+
+.el-drawer {
+	background: var(--bg-surface);
+	border-left: 1px solid var(--border-base);
+	box-shadow: var(--shadow-2xl);
+
+	.el-drawer__header {
+		padding: 0 var(--spacing-5);
+		height: var(--layout-header-height);
+		display: flex;
+		align-items: center;
+		margin-bottom: 0 !important;
+		border-bottom: 1px solid var(--divider-base);
+		color: var(--text-primary);
+		font-weight: var(--font-semibold);
+	}
+
+	.el-drawer__body {
+		padding: var(--spacing-6);
+		color: var(--text-secondary);
+	}
+}
+
+// ============================================
+// 十、下拉菜单优化
+// ============================================
+
+.el-dropdown-menu {
+	background: var(--bg-surface);
+	border: 1px solid var(--border-base);
+	border-radius: var(--radius-md);
+	box-shadow: var(--shadow-lg);
+	padding: var(--spacing-1);
+
+	.el-dropdown-menu__item {
+		padding: var(--spacing-2) var(--spacing-3);
+		color: var(--text-secondary);
+		border-radius: var(--radius-sm);
+		transition: all var(--duration-fast) var(--ease-default);
+
+		&:not(.is-disabled):hover {
+			background: var(--bg-hover);
+			color: var(--primary-base);
+		}
+
+		&.is-disabled {
+			color: var(--text-disabled);
+		}
+	}
+}
+
+.el-popper {
+	&.is-light {
+		background: var(--bg-surface);
+		border: 1px solid var(--border-base);
+		color: var(--text-secondary);
+	}
+
+	&.is-dark {
+		background: var(--text-primary);
+		border: none;
+		color: var(--text-on-primary);
+	}
+}
+
+// ============================================
+// 十一、标签页优化
+// ============================================
+
+.el-tabs {
+	.el-tabs__header {
+		margin: 0 0 var(--spacing-4);
+		border-bottom: 1px solid var(--divider-base);
+	}
+
+	.el-tabs__nav-wrap::after {
+		height: 1px;
+		background: var(--divider-base);
+	}
+
+	.el-tabs__item {
+		color: var(--text-secondary);
+		font-weight: var(--font-medium);
+		padding: 0 var(--spacing-4);
+		height: 40px;
+		line-height: 40px;
+
+		&:hover {
+			color: var(--primary-base);
+		}
+
+		&.is-active {
+			color: var(--primary-base);
+		}
+	}
+
+	.el-tabs__active-bar {
+		background: var(--primary-base);
+		height: 2px;
+		border-radius: 2px 2px 0 0;
+	}
+
+	.el-tabs__content {
+		color: var(--text-secondary);
+	}
+}
+
+// 标签页边框模式
+.el-tabs--border-card {
+	background: var(--bg-surface);
+	border: 1px solid var(--border-base);
+	border-radius: var(--radius-md);
+
+	.el-tabs__header {
+		background: var(--bg-muted);
+	}
+
+	.el-tabs__item {
+		border: none;
+		color: var(--text-secondary);
+
+		&.is-active {
+			background: var(--bg-surface);
+			color: var(--primary-base);
+			border-bottom-color: transparent;
+		}
+	}
+}
+
+// ============================================
+// 十二、分页组件优化
+// ============================================
+
+.el-pagination {
+	button,
+	li {
+		background: var(--bg-surface);
+		border: 1px solid var(--border-base);
+		color: var(--text-secondary);
+		border-radius: var(--radius-md);
+		font-weight: var(--font-medium);
+		transition: all var(--duration-fast) var(--ease-default);
+
+		&:hover {
+			color: var(--primary-base);
+			border-color: var(--primary-base);
+		}
+
+		&.active {
+			background: var(--primary-base);
+			border-color: var(--primary-base);
+			color: var(--text-on-primary);
+		}
+
+		&:disabled {
+			background: var(--bg-disabled);
+			color: var(--text-disabled);
+			border-color: var(--border-disabled);
+		}
+	}
+
+	.el-pager li {
+		min-width: 32px;
+		height: 32px;
+		line-height: 30px;
+		margin: 0 var(--spacing-1);
+	}
+
+	.btn-prev,
+	.btn-next {
+		padding: 0 var(--spacing-2);
+		min-width: 32px;
+		height: 32px;
+	}
+
+	&.is-background {
+		.el-pager li,
+		button {
+			background: var(--bg-muted);
+			border: none;
+
+			&:hover {
+				background: var(--bg-hover);
+			}
+
+			&.active {
+				background: var(--primary-base);
+				color: var(--text-on-primary);
+			}
+		}
+	}
+}
+
+// ============================================
+// 十三、选择器组件优化
+// ============================================
+
+.el-select {
+	.el-select__wrapper {
+		background: var(--bg-surface);
+		border: 1px solid var(--border-base);
+		border-radius: var(--radius-md);
+		box-shadow: none;
+		transition: all var(--duration-base) var(--ease-default);
+
+		&:hover {
+			border-color: var(--border-strong);
+		}
+
+		&.is-focus {
+			border-color: var(--primary-base);
+			box-shadow: var(--shadow-focus);
+		}
+	}
+
+	.el-select__input {
+		color: var(--text-primary);
+	}
+
+	.el-select__placeholder {
+		color: var(--text-muted);
+	}
+}
+
+.el-select-dropdown {
+	background: var(--bg-surface);
+	border: 1px solid var(--border-base);
+	border-radius: var(--radius-md);
+	box-shadow: var(--shadow-lg);
+	padding: var(--spacing-1);
+
+	.el-select-dropdown__item {
+		color: var(--text-secondary);
+		padding: var(--spacing-2) var(--spacing-3);
+		border-radius: var(--radius-sm);
+		transition: all var(--duration-fast) var(--ease-default);
+
+		&:hover {
+			background: var(--bg-hover);
+			color: var(--primary-base);
+		}
+
+		&.is-selected {
+			background: var(--primary-gradient-subtle);
+			color: var(--primary-base);
+			font-weight: var(--font-medium);
+		}
+
+		&.is-disabled {
+			color: var(--text-disabled);
+		}
+	}
+}
+
+// ============================================
+// 十四、复选框与单选框优化
+// ============================================
+
+.el-checkbox {
+	.el-checkbox__input.is-checked .el-checkbox__inner {
+		background: var(--primary-base);
+		border-color: var(--primary-base);
+	}
+
+	.el-checkbox__inner {
+		border: 1px solid var(--border-strong);
+		border-radius: var(--radius-xs);
+		transition: all var(--duration-fast) var(--ease-default);
+	}
+
+	.el-checkbox__label {
+		color: var(--text-secondary);
+	}
+
+	&:hover .el-checkbox__inner {
+		border-color: var(--primary-base);
+	}
+}
+
+.el-radio {
+	.el-radio__input.is-checked .el-radio__inner {
+		background: var(--primary-base);
+		border-color: var(--primary-base);
+	}
+
+	.el-radio__inner {
+		border: 1px solid var(--border-strong);
+		transition: all var(--duration-fast) var(--ease-default);
+	}
+
+	.el-radio__label {
+		color: var(--text-secondary);
+	}
+
+	&:hover .el-radio__inner {
+		border-color: var(--primary-base);
+	}
+}
+
+// ============================================
+// 十五、开关组件优化
+// ============================================
+
+.el-switch {
+	--el-switch-on-color: var(--primary-base);
+	--el-switch-off-color: var(--border-strong);
+
+	.el-switch__core {
+		border: 1px solid var(--border-base);
+		transition: all var(--duration-base) var(--ease-default);
+	}
+}
+
+// ============================================
+// 十六、滑块组件优化
+// ============================================
+
+.el-slider {
+	.el-slider__runway {
+		background: var(--bg-muted);
+		border-radius: var(--radius-full);
+	}
+
+	.el-slider__bar {
+		background: var(--primary-base);
+		border-radius: var(--radius-full);
+	}
+
+	.el-slider__button {
+		border: 2px solid var(--primary-base);
+		background: var(--bg-surface);
+		box-shadow: var(--shadow-sm);
+		transition: all var(--duration-fast) var(--ease-default);
+	}
+
+	.el-slider__button-wrapper:hover .el-slider__button {
+		transform: scale(1.1);
+	}
+}
+
+// ============================================
+// 十七、日期选择器优化
+// ============================================
+
+.el-picker-panel {
+	background: var(--bg-surface);
+	border: 1px solid var(--border-base);
+	border-radius: var(--radius-md);
+	box-shadow: var(--shadow-lg);
+	color: var(--text-secondary);
+
+	.el-picker-panel__header {
+		border-bottom: 1px solid var(--divider-base);
+	}
+
+	.el-date-table th {
+		color: var(--text-tertiary);
+		font-weight: var(--font-medium);
+		border-bottom: 1px solid var(--divider-base);
+	}
+
+	.el-date-table td.available:hover {
+		background: var(--bg-hover);
+		color: var(--primary-base);
+	}
+
+	.el-date-table td.current:not(.disabled),
+	.el-date-table td.today {
+		background: var(--primary-base);
+		color: var(--text-on-primary);
+		border-radius: var(--radius-md);
+	}
+
+	.el-picker-panel__icon-btn:hover {
+		color: var(--primary-base);
+	}
+}
+
+// ============================================
+// 十八、时间选择器优化
+// ============================================
+
+.el-time-panel {
+	background: var(--bg-surface);
+	border: 1px solid var(--border-base);
+	border-radius: var(--radius-md);
+	box-shadow: var(--shadow-lg);
+
+	.el-time-panel__content {
+		&::before,
+		&::after {
+			border-top: 1px solid var(--border-base);
+			border-bottom: 1px solid var(--border-base);
+		}
+	}
+
+	.el-time-spinner__item:hover:not(.disabled) {
+		background: var(--bg-hover);
+		color: var(--primary-base);
+	}
+
+	.el-time-spinner__item.active:not(.disabled) {
+		color: var(--primary-base);
+		font-weight: var(--font-semibold);
+	}
+}
+
+// ============================================
+// 十九、通知与消息优化
+// ============================================
+
+.el-message {
+	background: var(--bg-surface);
+	border: 1px solid var(--border-base);
+	border-radius: var(--radius-lg);
+	box-shadow: var(--shadow-lg);
+	padding: var(--spacing-4);
+	min-width: 300px;
+
+	&--success {
+		background: var(--success-lighter);
+		border-color: var(--success-light);
+		.el-message__content {
+			color: var(--success-active);
+		}
+	}
+
+	&--warning {
+		background: var(--warning-lighter);
+		border-color: var(--warning-light);
+		.el-message__content {
+			color: var(--warning-active);
+		}
+	}
+
+	&--error {
+		background: var(--danger-lighter);
+		border-color: var(--danger-light);
+		.el-message__content {
+			color: var(--danger-active);
+		}
+	}
+
+	&--info {
+		background: var(--info-lighter);
+		border-color: var(--info-light);
+		.el-message__content {
+			color: var(--info-active);
+		}
+	}
+}
+
+.el-notification {
+	background: var(--bg-surface);
+	border: 1px solid var(--border-base);
+	border-radius: var(--radius-xl);
+	box-shadow: var(--shadow-2xl);
+	padding: var(--spacing-5);
+
+	.el-notification__group {
+		color: var(--text-secondary);
+	}
+
+	.el-notification__title {
+		color: var(--text-primary);
+		font-weight: var(--font-semibold);
+	}
+
+	.el-notification__closeBtn {
+		color: var(--text-muted);
+
+		&:hover {
+			color: var(--text-primary);
+		}
+	}
+}
+
+// ============================================
+// 二十、警告框优化
+// ============================================
+
+.el-alert {
+	border: 1px solid transparent;
+	border-radius: var(--radius-lg);
+	padding: var(--spacing-4);
+
+	&--success {
+		background: var(--success-lighter);
+		border-color: var(--success-light);
+		.el-alert__title {
+			color: var(--success-active);
+		}
+		.el-alert__description {
+			color: var(--success-base);
+		}
+	}
+
+	&--warning {
+		background: var(--warning-lighter);
+		border-color: var(--warning-light);
+		.el-alert__title {
+			color: var(--warning-active);
+		}
+		.el-alert__description {
+			color: var(--warning-base);
+		}
+	}
+
+	&--error {
+		background: var(--danger-lighter);
+		border-color: var(--danger-light);
+		.el-alert__title {
+			color: var(--danger-active);
+		}
+		.el-alert__description {
+			color: var(--danger-base);
+		}
+	}
+
+	&--info {
+		background: var(--info-lighter);
+		border-color: var(--info-light);
+		.el-alert__title {
+			color: var(--info-active);
+		}
+		.el-alert__description {
+			color: var(--info-base);
+		}
+	}
+
+	.el-alert__title {
+		word-break: break-word;
+		font-weight: var(--font-medium);
+	}
+
+	.el-alert__close-btn {
+		color: var(--text-muted);
+
+		&:hover {
+			color: var(--text-primary);
+		}
+	}
+}
+
+// ============================================
+// 二十一、进度条优化
+// ============================================
+
+.el-progress {
+	.el-progress__text {
+		color: var(--text-secondary);
+		font-weight: var(--font-medium);
+	}
+
+	.el-progress-bar__outer {
+		background: var(--bg-muted);
+		border-radius: var(--radius-full);
+	}
+
+	.el-progress-bar__inner {
+		background: var(--primary-base);
+		border-radius: var(--radius-full);
+		transition: all var(--duration-slow) var(--ease-smooth);
+	}
+
+	&.is-success .el-progress-bar__inner {
+		background: var(--success-base);
+	}
+
+	&.is-warning .el-progress-bar__inner {
+		background: var(--warning-base);
+	}
+
+	&.is-exception .el-progress-bar__inner {
+		background: var(--danger-base);
+	}
+}
+
+// ============================================
+// 二十二、加载中优化
+// ============================================
+
+.el-loading-mask {
+	background: var(--bg-overlay);
+	backdrop-filter: blur(2px);
+
+	.el-loading-spinner {
+		.circular {
+			stroke: var(--primary-base);
+		}
+
+		.el-loading-text {
+			color: var(--text-primary);
+			margin-top: var(--spacing-3);
+		}
+	}
+}
+
+// ============================================
+// 二十三、步骤条优化
+// ============================================
+
+.el-steps {
+	.el-step__head {
+		.el-step__icon {
+			border: 2px solid var(--border-base);
+			background: var(--bg-surface);
+			color: var(--text-muted);
+
+			.is-process &,
+			.is-finish & {
+				background: var(--primary-base);
+				border-color: var(--primary-base);
+				color: var(--text-on-primary);
+			}
+		}
+
+		.el-step__title {
+			color: var(--text-secondary);
+
+			.is-process & {
+				color: var(--primary-base);
+				font-weight: var(--font-medium);
+			}
+
+			.is-finish & {
+				color: var(--primary-base);
+			}
+		}
+	}
+
+	.el-step__line {
+		background: var(--bg-muted);
+
+		.el-step__line-inner {
+			background: var(--primary-base);
+		}
+	}
+}
+
+// ============================================
+// 二十四、标签优化
+// ============================================
+
+.el-tag {
+	border: 1px solid transparent;
+	border-radius: var(--radius-md);
+	font-weight: var(--font-medium);
+	padding: var(--spacing-1) var(--spacing-3);
+
+	&--primary {
+		background: var(--primary-lightest);
+		border-color: var(--primary-light);
+		color: var(--primary-base);
+	}
+
+	&--success {
+		background: var(--success-lighter);
+		border-color: var(--success-light);
+		color: var(--success-base);
+	}
+
+	&--warning {
+		background: var(--warning-lighter);
+		border-color: var(--warning-light);
+		color: var(--warning-base);
+	}
+
+	&--danger {
+		background: var(--danger-lighter);
+		border-color: var(--danger-light);
+		color: var(--danger-base);
+	}
+
+	&--info {
+		background: var(--info-lighter);
+		border-color: var(--info-light);
+		color: var(--info-base);
+	}
+
+	.el-tag__close {
+		color: inherit;
+
+		&:hover {
+			background: rgba(0, 0, 0, 0.1);
+		}
+	}
+}
+
+// ============================================
+// 二十五、徽标优化
+// ============================================
+
+.el-badge {
+	.el-badge__content {
+		background: var(--danger-base);
+		border: 2px solid var(--bg-surface);
+		border-radius: var(--radius-full);
+		font-weight: var(--font-medium);
+	}
+
+	.el-badge__content--primary {
+		background: var(--primary-base);
+	}
+
+	.el-badge__content--success {
+		background: var(--success-base);
+	}
+
+	.el-badge__content--warning {
+		background: var(--warning-base);
+	}
+
+	.el-badge__content--info {
+		background: var(--info-base);
+	}
+}
+
+// ============================================
+// 二十六、工具提示优化
+// ============================================
+
+.el-tooltip__popper {
+	&.is-dark {
+		background: var(--text-primary);
+		color: var(--text-on-primary);
+		border-radius: var(--radius-md);
+		padding: var(--spacing-2) var(--spacing-3);
+		font-size: var(--text-xs);
+	}
+
+	&.is-light {
+		background: var(--bg-surface);
+		color: var(--text-secondary);
+		border: 1px solid var(--border-base);
+		border-radius: var(--radius-md);
+		padding: var(--spacing-2) var(--spacing-3);
+	}
+}
+
+// ============================================
+// 二十七、气泡确认框优化
+// ============================================
+
+.el-popconfirm {
+	.el-popconfirm__main {
+		color: var(--text-primary);
+		margin-bottom: var(--spacing-3);
+	}
+
+	.el-popconfirm__action {
+		display: flex;
+		gap: var(--spacing-2);
+		justify-content: flex-end;
+	}
+}
+
+// ============================================
+// 二十八、穿梭框优化
+// ============================================
+
+.el-transfer {
+	.el-transfer-panel {
+		background: var(--bg-surface);
+		border: 1px solid var(--border-base);
+		border-radius: var(--radius-lg);
+
+		.el-transfer-panel__header {
+			background: var(--bg-muted);
+			border-bottom: 1px solid var(--divider-base);
+			color: var(--text-secondary);
+		}
+
+		.el-transfer-panel__body {
+			.el-transfer-panel__list {
+				background: var(--bg-surface);
+				border: none;
+
+				.el-transfer-panel__item {
+					color: var(--text-secondary);
+
+					&:hover {
+						background: var(--bg-hover);
+						color: var(--text-primary);
+					}
+				}
+			}
+		}
+	}
+}
+
+// ============================================
+// 二十九、表单优化
+// ============================================
+
+.el-form {
+	.el-form-item__label {
+		color: var(--text-secondary);
+		font-weight: var(--font-medium);
+	}
+
+	.el-form-item__error {
+		color: var(--danger-base);
+		font-size: var(--text-xs);
+	}
+
+	// 必填标记
+	.el-form-item.is-required:not(.is-no-asterisk)
+		> .el-form-item__label:before {
+		color: var(--danger-base);
+	}
+
+	// 修复行内表单最后一个 el-form-item 位置下移问题
+	&.el-form--inline {
+		.el-form-item--large.el-form-item:last-of-type {
+			margin-bottom: 22px !important;
+		}
+		.el-form-item--default.el-form-item:last-of-type,
+		.el-form-item--small.el-form-item:last-of-type {
+			margin-bottom: 18px !important;
+		}
+	}
+
+	.el-form-item:last-of-type {
+		margin-bottom: 22px !important;
+	}
+}
+
+// ============================================
+// 三十、分割线优化
+// ============================================
+
+.el-divider {
+	border-color: var(--divider-base);
+
+	&--horizontal {
+		margin: var(--spacing-6) 0;
+	}
+
+	.el-divider__text {
+		background: var(--bg-surface);
+		color: var(--text-secondary);
+		font-weight: var(--font-medium);
+		padding: 0 var(--spacing-3);
+	}
+}
+
+// ============================================
+// 三十一、头像优化
+// ============================================
+
+.el-avatar {
+	background: var(--primary-lightest);
+	color: var(--primary-base);
+	font-weight: var(--font-medium);
+
+	> img {
+		object-fit: cover;
+	}
+}
+
+// ============================================
+// 三十二、Empty 空状态优化
+// ============================================
+
+.el-empty {
+	.el-empty__description {
+		color: var(--text-muted);
+		margin-top: var(--spacing-4);
+	}
+
+	.el-empty__image {
+		opacity: 0.6;
+	}
+}
+
+// ============================================
+// 三十三、图片优化
+// ============================================
+
+.el-image {
+	.el-image__inner {
+		border-radius: var(--radius-md);
+	}
+
+	.el-image__placeholder {
+		background: var(--bg-muted);
+	}
+
+	.el-image__error {
+		background: var(--bg-muted);
+		color: var(--text-muted);
+	}
+}
+
+// ============================================
+// 三十四、树形控件优化
+// ============================================
+
+.el-tree {
+	background: transparent;
+	color: var(--text-secondary);
+
+	.el-tree-node__content {
+		border-radius: var(--radius-sm);
+		padding: var(--spacing-1) var(--spacing-2);
+		transition: all var(--duration-fast) var(--ease-default);
+
+		&:hover {
+			background: var(--bg-hover);
+			color: var(--text-primary);
+		}
+	}
+
+	.el-tree-node.is-current > .el-tree-node__content {
+		background: var(--primary-gradient-subtle);
+		color: var(--primary-base);
+		font-weight: var(--font-medium);
+	}
+
+	.el-tree-node__expand-icon {
+		color: var(--text-muted);
+	}
+}
+
+// ============================================
+// 三十五、级联选择器优化
+// ============================================
+
+.el-cascader-panel {
+	background: var(--bg-surface);
+	border: 1px solid var(--border-base);
+	border-radius: var(--radius-md);
+
+	.el-cascader-menu {
+		border-right: 1px solid var(--divider-base);
+
+		.el-cascader-node {
+			color: var(--text-secondary);
+
+			&:hover {
+				background: var(--bg-hover);
+				color: var(--text-primary);
+			}
+
+			&.is-active {
+				background: var(--primary-gradient-subtle);
+				color: var(--primary-base);
+				font-weight: var(--font-medium);
+			}
+		}
+	}
+}
+
+// ============================================
+// 三十六、骨架屏优化
+// ============================================
+
+.el-skeleton {
+	.el-skeleton__item {
+		background: var(--bg-muted);
+		border-radius: var(--radius-sm);
+
+		&.is-animated {
+			background: linear-gradient(
+				90deg,
+				var(--bg-muted) 25%,
+				var(--bg-hover) 37%,
+				var(--bg-muted) 63%
+			);
+			background-size: 400% 100%;
+			animation: el-skeleton-loading 1.4s ease infinite;
+		}
+	}
+}
+
+// ============================================
+// 三十七、结果页优化
+// ============================================
+
+.el-result {
+	.el-result__title {
+		color: var(--text-primary);
+		font-weight: var(--font-semibold);
+	}
+
+	.el-result__subtitle {
+		color: var(--text-secondary);
+		margin-top: var(--spacing-3);
+	}
+}
+
+// ============================================
+// 三十八、Breadcrumb 面包屑优化
+// ============================================
+
+.el-breadcrumb {
+	font-size: var(--text-sm);
+
+	.el-breadcrumb__item {
+		.el-breadcrumb__inner {
+			color: var(--text-secondary);
+
+			&:hover {
+				color: var(--primary-base);
+			}
+
+			&.is-link {
+				font-weight: var(--font-medium);
+			}
+		}
+
+		&:last-child .el-breadcrumb__inner {
+			color: var(--text-primary);
+			font-weight: var(--font-medium);
+		}
+
+		.el-breadcrumb__separator {
+			color: var(--text-muted);
+			margin: 0 var(--spacing-2);
+		}
+	}
+}
+
+// ============================================
+// 三十九、PageHeader 页头优化
+// ============================================
+
+.el-page-header {
+	.el-page-header__left {
+		.el-page-header__title {
+			color: var(--text-primary);
+			font-weight: var(--font-semibold);
+		}
+
+		.el-page-header__back {
+			color: var(--text-secondary);
+
+			&:hover {
+				color: var(--primary-base);
+			}
+		}
+	}
+
+	.el-page-header__content {
+		color: var(--text-primary);
+		font-weight: var(--font-semibold);
+	}
+}
+
+// ============================================
+// 四十、Scrollbar 滚动条优化
+// ============================================
+
+.el-scrollbar {
+	.el-scrollbar__bar {
+		z-index: var(--z-above);
+
+		&.is-vertical .el-scrollbar__thumb {
+			background: var(--border-strong);
+			border-radius: var(--radius-full);
+			width: 6px;
+			opacity: 0.3;
+			transition: opacity var(--duration-fast) var(--ease-default);
+
+			&:hover {
+				opacity: 0.6;
+				background: var(--text-muted);
+			}
+		}
+
+		&.is-horizontal .el-scrollbar__thumb {
+			background: var(--border-strong);
+			border-radius: var(--radius-full);
+			height: 6px;
+			opacity: 0.3;
+
+			&:hover {
+				opacity: 0.6;
+				background: var(--text-muted);
+			}
+		}
+	}
+}
+
+// ============================================
+// 四十一、Calendar 日历优化
+// ============================================
+
+.el-calendar {
+	background: var(--bg-surface);
+	border: 1px solid var(--border-base);
+	border-radius: var(--radius-lg);
+
+	.el-calendar__header {
+		border-bottom: 1px solid var(--divider-base);
+		padding: var(--spacing-4) var(--spacing-6);
+
+		.el-calendar__title {
+			color: var(--text-primary);
+			font-weight: var(--font-semibold);
+		}
+
+		.el-calendar__button-group {
+			.el-button {
+				color: var(--text-secondary);
+
+				&:hover {
+					color: var(--primary-base);
+				}
+			}
+		}
+	}
+
+	.el-calendar-table {
+		th {
+			color: var(--text-tertiary);
+			font-weight: var(--font-medium);
+			border-bottom: 1px solid var(--divider-base);
+			padding: var(--spacing-2);
+		}
+
+		td {
+			border: 1px solid var(--divider-base);
+
+			&.is-available:hover {
+				background: var(--bg-hover);
+				color: var(--primary-base);
+			}
+
+			&.is-selected {
+				background: var(--primary-gradient-subtle);
+				color: var(--primary-base);
+			}
+
+			&.is-today {
+				background: var(--primary-base);
+				color: var(--text-on-primary);
+				font-weight: var(--font-semibold);
+			}
+		}
+	}
+}
+
+// ============================================
+// 四十二、NProgress 进度条跟随主题颜色
+// ============================================
+
+#nprogress {
+	.bar {
+		background: var(--primary-base) !important;
+		z-index: var(--z-notification) !important;
+	}
+
+	.peg {
+		box-shadow: 0 0 10px var(--primary-base), 0 0 5px var(--primary-base) !important;
+	}
+
+	.spinner {
+		display: none !important;
+	}
+}
+
+// ============================================
+// 四十三、工具类
+// ============================================
+
+// flex 弹性布局
+.flex {
+	display: flex;
+}
+.flex-auto {
+	flex: 1;
+	overflow: hidden;
+}
+.flex-center {
+	@extend .flex;
+	flex-direction: column;
+	width: 100%;
+	overflow: hidden;
+}
+.flex-margin {
+	margin: auto;
+}
+.flex-warp {
+	display: flex;
+	flex-wrap: wrap;
+	align-content: flex-start;
+	margin: 0 -5px;
+
+	.flex-warp-item {
+		padding: 5px;
+
+		.flex-warp-item-box {
+			width: 100%;
+			height: 100%;
+		}
+	}
+}
+
+// cursor 鼠标形状
+.cursor-default {
+	cursor: default !important;
+}
+.cursor-help {
+	cursor: help !important;
+}
+.cursor-pointer {
+	cursor: pointer !important;
+}
+.cursor-move {
+	cursor: move !important;
+}
+
+// 宽高 100%
+.w100 {
+	width: 100% !important;
+}
+.h100 {
+	height: 100% !important;
+}
+.vh100 {
+	height: 100vh !important;
+}
+.max100vh {
+	max-height: 100vh !important;
+}
+.min100vh {
+	min-height: 100vh !important;
+}
+
+// 颜色值
+.color-primary {
+	color: var(--primary-base);
+}
+.color-success {
+	color: var(--success-base);
+}
+.color-warning {
+	color: var(--warning-base);
+}
+.color-danger {
+	color: var(--danger-base);
+}
+.color-info {
+	color: var(--info-base);
+}
+
+// 字体大小
+@for $i from 10 through 32 {
+	.font#{$i} {
+		font-size: #{$i}px !important;
+	}
+}
+
+// 外边距、内边距
+@for $i from 1 through 35 {
+	.mt#{$i} {
+		margin-top: #{$i}px !important;
+	}
+	.mr#{$i} {
+		margin-right: #{$i}px !important;
+	}
+	.mb#{$i} {
+		margin-bottom: #{$i}px !important;
+	}
+	.ml#{$i} {
+		margin-left: #{$i}px !important;
+	}
+	.pt#{$i} {
+		padding-top: #{$i}px !important;
+	}
+	.pr#{$i} {
+		padding-right: #{$i}px !important;
+	}
+	.pb#{$i} {
+		padding-bottom: #{$i}px !important;
+	}
+	.pl#{$i} {
+		padding-left: #{$i}px !important;
+	}
+}
