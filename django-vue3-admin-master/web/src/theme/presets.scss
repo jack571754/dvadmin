@@ -60,6 +60,7 @@
 	--bg-muted: #f1f5f9;
 	--bg-subtle: #f8fafc;
 	--bg-hover: rgba(15, 23, 42, 0.04);
+	--bg-hover-opaque: #f5f7fa;
 	--bg-active: rgba(15, 23, 42, 0.08);
 	--bg-disabled: #f1f5f9;
 
@@ -266,6 +267,7 @@
 	--bg-muted: #1e293b;
 	--bg-subtle: #0f172a;
 	--bg-hover: rgba(255, 255, 255, 0.05);
+	--bg-hover-opaque: #222d3f;
 	--bg-active: rgba(255, 255, 255, 0.08);
 	--bg-disabled: #1e293b;
 
@@ -350,6 +352,11 @@
 	--el-box-shadow-light: var(--shadow-md);
 	--el-box-shadow-base: var(--shadow-lg);
 	--el-box-shadow-dark: var(--shadow-xl);
+
+	--el-table-bg-color: var(--bg-surface);
+	--el-table-tr-bg-color: var(--bg-surface);
+	--el-table-header-bg-color: var(--bg-muted);
+	--el-table-row-hover-bg-color: var(--bg-hover-opaque);
 
 	--el-border-radius-base: var(--radius-md);
 	--el-border-radius-small: var(--radius-sm);

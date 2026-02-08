@@ -91,7 +91,7 @@ export const createCrudOptions = function ({ crudExpose }: CreateCrudOptionsProp
             rowHandle: {
                 //固定右侧
                 fixed: 'right',
-                width: 220,
+                width: 260,
                 buttons: {
                     view: {
                         show: false,

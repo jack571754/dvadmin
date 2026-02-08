@@ -1,6 +1,6 @@
 # 路由配置 - 模块文档
 
-[根目录](../../CLAUDE.md) > [src](../) > **router**
+[项目根](../../../CLAUDE.md) > [blog-frontend](../../CLAUDE.md) > [src](../) > **router**
 
 ---
 

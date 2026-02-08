@@ -1,14 +1,16 @@
 # DVAdmin 项目文档
 
-> 最后更新：2026-02-08 (冗余与兼容性清理)
+> 最后更新：2026-02-08 (项目文档更新 - 新增 blog-frontend 模块)
 > 项目路径：E:\project\dvadmin
 
 ## 变更记录 (Changelog)
 
 | 时间 | 变更内容 | 责任人 |
 |------|----------|--------|
+| 2026-02-08 | 项目文档更新：新增 blog-frontend 模块、前端样式优化方案、主题系统文档 | Claude AI |
 | 2026-02-08 | 冗余与兼容性清理：删除重复API文件、统一端口配置、清理依赖包、删除静态文件压缩、移除无效脚本 | Claude AI |
 | 2026-02-03 | Django 升级到 5.2.0 LTS，移除 dvadmin3-celery 插件，手动配置 Celery | Claude AI |
+| 2026-02-03 | 新增 blog-frontend 博客前端模块，采用东方美学设计系统 | Claude AI |
 | 2026-01-25 19:11:17 | 更新项目统计，完成前端子模块文档（api/components/layout/views/stores/router），覆盖率提升至 100% | Claude AI |
 | 2026-01-25 14:09:00 | 更新项目统计，集成 dvadmin3_flow 插件文档，添加 Mermaid 架构图 | Claude AI |
 | 2026-01-24 | 初始化项目根文档，整合所有模块 | Claude AI |
@@ -17,7 +19,11 @@
 
 ## 项目概述
 
-DVAdmin 是一个基于 RBAC（基于角色的访问控制）模型的企业级权限管理系统开发框架，采用前后端分离架构。本项目包含主项目（django-vue3-admin-master）和独立的审批流程模块（dvadmin_approval）。
+DVAdmin 是一个基于 RBAC（基于角色的访问控制）模型的企业级权限管理系统开发框架，采用前后端分离架构。本项目包含：
+
+1. **django-vue3-admin-master** - 主项目（DVAdmin 框架）
+2. **blog-frontend** - 独立的博客前端应用（东方美学设计）
+3. **dvadmin_approval** - 审批流程模块（已被 dvadmin3_flow 替代，保留参考）
 
 **核心特性：**
 - 列级别的权限控制（字段级显示权限）
@@ -26,6 +32,7 @@ DVAdmin 是一个基于 RBAC（基于角色的访问控制）模型的企业级�
 - 动态菜单权限系统
 - 插件化架构支持
 - 工作流审批引擎
+- 现代化主题系统（静谧科技设计）
 
 ---
 
@@ -39,24 +46,43 @@ E:\project\dvadmin\
 │   │   ├── application/          # Django 应用配置
 │   │   ├── dvadmin/              # 核心业务模块
 │   │   │   ├── system/           # 系统管理模块
+│   │   │   ├── blog/             # 博客管理模块
 │   │   │   ├── book/             # 图书管理模块（示例）
 │   │   │   └── utils/            # 工具类库
 │   │   ├── plugins/              # 插件目录
 │   │   │   └── dvadmin3_flow/    # 工作流审批插件
 │   │   ├── conf/                 # 环境配置
 │   │   └── docs_architecture/    # 后端架构文档
-│   ├── web/                      # Vue3 前端
-│   │   └── src/
-│   │       ├── api/              # API 接口定义
-│   │       ├── components/       # 通用组件
-│   │       ├── layout/           # 布局组件
-│   │       ├── views/            # 页面视图
-│   │       ├── stores/           # Pinia 状态管理
-│   │       └── router/           # 路由配置
+│   ├── web/                      # Vue3 管理后台前端
+│   │   ├── src/
+│   │   │   ├── api/              # API 接口定义
+│   │   │   ├── components/       # 通用组件
+│   │   │   ├── layout/           # 布局组件
+│   │   │   ├── views/            # 页面视图
+│   │   │   ├── stores/           # Pinia 状态管理
+│   │   │   ├── router/           # 路由配置
+│   │   │   └── theme/            # 主题样式系统
+│   │   └── package.json
 │   └── docker_env/               # Docker 配置
 │
-└── dvadmin_approval/             # 审批流程模块（独立，已被 dvadmin3_flow 替代）
-    └── CLAUDE.md                 # 审批模块文档
+├── blog-frontend/                # 博客前端应用（独立）
+│   ├── CLAUDE.md                 # 博客前端文档
+│   ├── src/                      # 源代码
+│   │   ├── api/                  # API 服务层
+│   │   ├── components/           # 通用组件
+│   │   ├── views/                # 页面视图
+│   │   ├── stores/               # Pinia 状态管理
+│   │   ├── router/               # 路由配置
+│   │   └── assets/               # 样式资源
+│   └── package.json
+│
+├── dvadmin_approval/             # 审批流程模块（独立，已被 dvadmin3_flow 替代）
+│   └── CLAUDE.md                 # 审批模块文档
+│
+└── .claude/plan/                 # 项目方案文档
+    ├── 前端样式与配色优化方案.md
+    ├── 前端样式与配色实施方案.md
+    └── 前端美化使用指南.md
 ```
 
 ---
@@ -66,54 +92,70 @@ E:\project\dvadmin\
 ```mermaid
 graph TD
     A["DVAdmin 项目根<br/>E:/project/dvadmin"] --> B["django-vue3-admin-master<br/>(主项目)"];
-    A --> C["dvadmin_approval<br/>(审批模块-已替代)"];
+    A --> C["blog-frontend<br/>(博客前端)"];
+    A --> D["dvadmin_approval<br/>(审批模块-已替代)"];
 
-    B --> D["backend<br/>(Django 后端)"];
-    B --> E["web<br/>(Vue3 前端)"];
-    B --> F["docker_env<br/>(Docker 配置)"];
-    B --> G["docs_architecture<br/>(架构文档)"];
+    B --> E["backend<br/>(Django 后端)"];
+    B --> F["web<br/>(Vue3 管理后台)"];
+    B --> G["docker_env<br/>(Docker 配置)"];
+    B --> H["docs_architecture<br/>(架构文档)"];
 
-    D --> H["application<br/>(应用配置)"];
-    D --> I["dvadmin<br/>(核心业务)"];
-    D --> J["plugins<br/>(插件目录)"];
-    D --> K["conf<br/>(环境配置)"];
+    E --> I["application<br/>(应用配置)"];
+    E --> J["dvadmin<br/>(核心业务)"];
+    E --> K["plugins<br/>(插件目录)"];
+    E --> L["conf<br/>(环境配置)"];
 
-    I --> L["system<br/>(系统管理)"];
-    I --> M["utils<br/>(工具类)"];
+    J --> M["system<br/>(系统管理)"];
+    J --> N["blog<br/>(博客管理)"];
+    J --> O["utils<br/>(工具类)"];
 
-    J --> N["dvadmin3_flow<br/>(工作流审批)"];
+    K --> P["dvadmin3_flow<br/>(工作流审批)"];
 
-    E --> O["src"];
-    O --> P["api<br/>(接口定义)"];
-    O --> Q["components<br/>(通用组件)"];
-    O --> R["layout<br/>(布局组件)"];
-    O --> S["views<br/>(页面视图)"];
-    O --> T["stores<br/>(状态管理)"];
-    O --> U["router<br/>(路由配置)"];
+    F --> Q["src"];
+    Q --> R["api<br/>(接口定义)"];
+    Q --> S["components<br/>(通用组件)"];
+    Q --> T["layout<br/>(布局组件)"];
+    Q --> U["views<br/>(页面视图)"];
+    Q --> V["stores<br/>(状态管理)"];
+    Q --> W["router<br/>(路由配置)"];
+    Q --> X["theme<br/>(主题系统)"];
 
-    S --> V["system<br/>(系统页面)"];
-    S --> W["plugins<br/>(插件页面)"];
+    U --> Y["system<br/>(系统页面)"];
+    U --> Z["plugins<br/>(插件页面)"];
 
-    C --> X["审批流程模块<br/>(Workflow - 已替代)"];
+    C --> AA["博客前端应用<br/>(纸间墨语设计)"];
+    AA --> AB["src"];
+    AB --> AC["api<br/>(API 服务)"];
+    AB --> AD["components<br/>(通用组件)"];
+    AB --> AE["views<br/>(页面视图)"];
+    AB --> AF["stores<br/>(状态管理)"];
+    AB --> AG["assets<br/>(样式资源)"];
+
+    D --> AH["审批流程模块<br/>(Workflow - 已替代)"];
 
     style A fill:#e1f5ff
     style B fill:#fff4e6
-    style D fill:#e8f5e9
-    style E fill:#f3e5f5
-    style I fill:#fff9c4
-    style J fill:#ffccbc
-    style N fill:#b2dfdb
-    style X fill:#ffcdd2
+    style C fill:#f3e5f5
+    style E fill:#e8f5e9
+    style F fill:#f3e5f5
+    style J fill:#fff9c4
+    style K fill:#ffccbc
+    style P fill:#b2dfdb
+    style X fill:#e1bee7
+    style AA fill:#fff9c4
+    style D fill:#ffcdd2
 
-    click D "./django-vue3-admin-master/backend/CLAUDE.md" "查看 backend 模块文档"
-    click E "./django-vue3-admin-master/web/CLAUDE.md" "查看 web 模块文档"
-    click H "./django-vue3-admin-master/backend/application/CLAUDE.md" "查看 application 模块文档"
-    click I "./django-vue3-admin-master/backend/dvadmin/CLAUDE.md" "查看 dvadmin 核心模块"
-    click L "./django-vue3-admin-master/backend/dvadmin/system/CLAUDE.md" "查看 system 模块文档"
-    click M "./django-vue3-admin-master/backend/dvadmin/utils/CLAUDE.md" "查看 utils 模块文档"
-    click N "./django-vue3-admin-master/backend/plugins/dvadmin3_flow/CLAUDE.md" "查看 dvadmin3_flow 插件文档"
-    click C "./dvadmin_approval/CLAUDE.md" "查看 dvadmin_approval 模块文档"
-    click G "./django-vue3-admin-master/backend/docs_architecture/00_索引.md" "查看架构文档索引"
+    click E "./django-vue3-admin-master/backend/CLAUDE.md" "查看 backend 模块文档"
+    click F "./django-vue3-admin-master/web/CLAUDE.md" "查看 web 模块文档"
+    click C "./blog-frontend/CLAUDE.md" "查看 blog-frontend 模块文档"
+    click I "./django-vue3-admin-master/backend/application/CLAUDE.md" "查看 application 模块文档"
+    click J "./django-vue3-admin-master/backend/dvadmin/CLAUDE.md" "查看 dvadmin 核心模块"
+    click M "./django-vue3-admin-master/backend/dvadmin/system/CLAUDE.md" "查看 system 模块文档"
+    click N "./django-vue3-admin-master/backend/dvadmin/blog/CLAUDE.md" "查看 blog 模块文档"
+    click O "./django-vue3-admin-master/backend/dvadmin/utils/CLAUDE.md" "查看 utils 模块文档"
+    click P "./django-vue3-admin-master/backend/plugins/dvadmin3_flow/CLAUDE.md" "查看 dvadmin3_flow 插件文档"
+    click D "./dvadmin_approval/CLAUDE.md" "查看 dvadmin_approval 模块文档"
+    click H "./django-vue3-admin-master/backend/docs_architecture/00_索引.md" "查看架构文档索引"
 ```
 
 ---
@@ -125,6 +167,7 @@ graph TD
 | 文档 | 描述 |
 |------|------|
 | [主项目文档](./django-vue3-admin-master/CLAUDE.md) | django-vue3-admin-master 完整文档 |
+| [博客前端文档](./blog-frontend/CLAUDE.md) | blog-frontend 独立博客前端 |
 | [审批流程文档](./dvadmin_approval/CLAUDE.md) | dvadmin_approval 模块文档 |
 
 ### 后端核心模块
@@ -155,6 +198,7 @@ graph TD
 
 | 模块 | 路径 | 说明 |
 |------|------|------|
+| Blog Frontend | [blog-frontend/](./blog-frontend/CLAUDE.md) | 博客前端应用（纸间墨语设计） |
 | Approval | [dvadmin_approval/](./dvadmin_approval/CLAUDE.md) | 审批流程模块（已替代） |
 
 ---
@@ -166,21 +210,25 @@ graph TD
 | 分类 | 数量 | 说明 |
 |------|------|------|
 | 后端 Python 文件 | 100+ 个 | django-vue3-admin-master/backend 目录（排除 __pycache__ 和 migrations） |
-| 前端源文件 | 150+ 个 | django-vue3-admin-master/web/src 目录（Vue + TS + JSX） |
+| 管理后台前端源文件 | 220+ 个 | django-vue3-admin-master/web/src 目录（Vue + TS + JSX） |
+| 博客前端源文件 | 24 个 | blog-frontend/src 目录 |
 | 插件模块 | 20 个 | backend/plugins/dvadmin3_flow 目录 |
-| **总计** | **270+** | 核心业务代码文件（不含 node_modules/__pycache__） |
+| 文档文件 | 27 个 | CLAUDE.md 文档（7737 行） |
+| **总计** | **370+** | 核心业务代码文件（不含 node_modules/__pycache__） |
 
 ### 文档覆盖率
 
 | 模块 | 文档状态 | 覆盖率 |
 |------|----------|--------|
+| 项目根文档 | ✅ | 100% |
 | 主项目根文档 | ✅ | 100% |
 | Backend 模块 | ✅ | 100% |
 | Web 前端 | ✅ | 100% |
+| Blog Frontend | ✅ | 100% |
 | Application 配置 | ✅ | 100% |
 | System 系统模块 | ✅ | 100% |
 | Utils 工具模块 | ✅ | 100% |
-| Dvadmin 核心包 | ✅ | 100% |
+| Blog 博客模块 | ✅ | 100% |
 | Book 图书模块 | ✅ | 100% |
 | Dvadmin3 Flow 插件 | ✅ | 100% |
 | Approval 审批流程 | ✅ | 100% |
@@ -315,6 +363,24 @@ urlpatterns += [
 3. 审批记录：跟踪审批历史
 4. 动态表单：支持灵活的表单配置
 
+### 博客管理
+
+1. 文章管理：文章发布、编辑、删除
+2. 分类管理：文章分类组织
+3. 标签管理：文章标签系统
+4. 评论管理：用户评论审核
+
+### 现代化主题系统
+
+1. **静谧科技设计**：基于低饱和度蓝色的专业配色
+2. **8 种预设主题**：静谧蓝、森之绿、暮光紫、日落橙、海洋青、玫瑰红、柠檬黄、石墨灰
+3. **深色模式支持**：完整的深色模式适配
+4. **设计系统变量**：间距、圆角、阴影、动画、字体、层级
+5. **组件样式覆盖**：40+ Element Plus 组件的现代化优化
+6. **主题切换组件**：ThemePresetSelector、ThemeColorPicker、ThemeSettings
+
+详见：[前端样式与配色实施方案](./.claude/plan/前端样式与配色实施方案.md) | [现代化主题集成指南](./django-vue3-admin-master/web/src/theme/README.md)
+
 ---
 
 ## API 文档
@@ -436,14 +502,16 @@ urlpatterns += [
 
 ```
 [根目录] (./)
-  └─ [django-vue3-admin-master] (./django-vue3-admin-master/)
-       ├─ [backend] (./django-vue3-admin-master/backend/)
-       │    ├─ [application] (./django-vue3-admin-master/backend/application/)
-       │    └─ [dvadmin] (./django-vue3-admin-master/backend/dvadmin/)
-       │         ├─ [system] (./django-vue3-admin-master/backend/dvadmin/system/)
-       │         └─ [utils] (./django-vue3-admin-master/backend/dvadmin/utils/)
-       ├─ [web] (./django-vue3-admin-master/web/)
-       └─ [docker_env] (./django-vue3-admin-master/docker_env/)
+  ├─ [django-vue3-admin-master] (./django-vue3-admin-master/)
+  │    ├─ [backend] (./django-vue3-admin-master/backend/)
+  │    │    ├─ [application] (./django-vue3-admin-master/backend/application/)
+  │    │    └─ [dvadmin] (./django-vue3-admin-master/backend/dvadmin/)
+  │    │         ├─ [system] (./django-vue3-admin-master/backend/dvadmin/system/)
+  │    │         ├─ [blog] (./django-vue3-admin-master/backend/dvadmin/blog/)
+  │    │         └─ [utils] (./django-vue3-admin-master/backend/dvadmin/utils/)
+  │    ├─ [web] (./django-vue3-admin-master/web/)
+  │    └─ [docker_env] (./django-vue3-admin-master/docker_env/)
+  ├─ [blog-frontend] (./blog-frontend/)
   └─ [dvadmin_approval] (./dvadmin_approval/)
 ```
 
@@ -500,7 +568,12 @@ urlpatterns += [
 
 ## 最新变更
 
-### 2026-02-08
+### 2026-02-08 (项目文档更新)
+- ✅ 新增 blog-frontend 博客前端模块文档
+- ✅ 新增前端样式与配色优化方案文档
+- ✅ 新增现代化主题系统（静谧科技设计）
+- ✅ 新增 8 种预设主题和深色模式支持
+- ✅ 完善项目文档结构（370+ 源文件，27 个文档文件）
 - ✅ 删除重复的前端 API 文件（4个文件）
 - ✅ 统一后端端口配置为 9000
 - ✅ 更新文档版本信息（Django 5.2.0）
@@ -539,8 +612,9 @@ urlpatterns += [
 
 本文档由 Claude AI 自动生成和维护，如有问题请联系项目维护者。
 
-**文档版本：** v3.2.0
+**文档版本：** v3.3.0
 **生成时间：** 2026-02-08
 **文档路径：** E:\project\dvadmin\CLAUDE.md
-**扫描文件数：** 270+
+**扫描文件数：** 370+
+**文档文件数：** 27 个 (7737 行)
 **文档覆盖率：** 100%

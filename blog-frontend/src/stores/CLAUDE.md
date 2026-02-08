@@ -1,6 +1,6 @@
 # 状态管理 - 模块文档
 
-[根目录](../../CLAUDE.md) > [src](../) > **stores**
+[项目根](../../../CLAUDE.md) > [blog-frontend](../../CLAUDE.md) > [src](../) > **stores**
 
 ---
 

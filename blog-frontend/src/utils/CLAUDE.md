@@ -1,6 +1,6 @@
 # 工具函数 - 模块文档
 
-[根目录](../../CLAUDE.md) > [src](../) > **utils**
+[项目根](../../../CLAUDE.md) > [blog-frontend](../../CLAUDE.md) > [src](../) > **utils**
 
 ---
 

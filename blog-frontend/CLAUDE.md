@@ -1,12 +1,13 @@
 # Blog Frontend - AI 上下文文档
 
-> 最后更新：2026-02-03 10:51:57
-> 项目路径：D:\项目开发\dvadmin\blog-frontend
+> 最后更新：2026-02-08
+> 项目路径：E:\project\dvadmin\dvadmin\blog-frontend
 
 ## 变更记录 (Changelog)
 
 | 时间 | 变更内容 | 责任人 |
 |------|----------|--------|
+| 2026-02-08 | 更新项目路径，整合到 DVAdmin 项目文档体系 | Claude AI |
 | 2026-02-03 10:51:57 | 初始化项目 AI 上下文文档，完成全仓清点与模块扫描 | Claude AI |
 
 ---
@@ -29,7 +30,7 @@
 
 ```mermaid
 graph TD
-    A["Blog Frontend<br/>D:/项目开发/dvadmin/blog-frontend"] --> B["src<br/>(源代码)"];
+    A["Blog Frontend<br/>E:/project/dvadmin/dvadmin/blog-frontend"] --> B["src<br/>(源代码)"];
     A --> C["配置文件<br/>(Config)"];
     A --> D["public<br/>(静态资源)"];
 
@@ -381,7 +382,8 @@ server {
 - [Vue 3 文档](https://vuejs.org/)
 - [Vite 文档](https://vitejs.dev/)
 - [Pinia 文档](https://pinia.vuejs.org/)
-- [DVAdmin 后端](../django-vue3-admin-master/)
+- [DVAdmin 后端](../django-vue3-admin-master/backend/CLAUDE.md)
+- [DVAdmin 管理后台](../django-vue3-admin-master/web/CLAUDE.md)
 - [TypeScript 文档](https://www.typescriptlang.org/)
 
 ---
@@ -389,18 +391,19 @@ server {
 ## 面包屑导航
 
 ```text
-[根目录] (./)
-  ├─ [src] (./src/)
-  │    ├─ [api] (./src/api/)
-  │    ├─ [components] (./src/components/)
-  │    ├─ [views] (./src/views/)
-  │    ├─ [stores] (./src/stores/)
-  │    ├─ [router] (./src/router/)
-  │    ├─ [types] (./src/types/)
-  │    ├─ [utils] (./src/utils/)
-  │    └─ [assets] (./src/assets/)
-  ├─ [public] (./public/)
-  └─ 配置文件
+[根目录] (../CLAUDE.md)
+  └─ [blog-frontend] (./)
+       ├─ [src] (./src/)
+       │    ├─ [api] (./src/api/)
+       │    ├─ [components] (./src/components/)
+       │    ├─ [views] (./src/views/)
+       │    ├─ [stores] (./src/stores/)
+       │    ├─ [router] (./src/router/)
+       │    ├─ [types] (./src/types/)
+       │    ├─ [utils] (./src/utils/)
+       │    └─ [assets] (./src/assets/)
+       ├─ [public] (./public/)
+       └─ 配置文件
 ```
 
 ---
@@ -409,8 +412,8 @@ server {
 
 本文档由 Claude AI 自动生成和维护。
 
-**文档版本：** v1.0.0
-**生成时间：** 2026-02-03 10:51:57
-**文档路径：** D:\项目开发\dvadmin\blog-frontend\CLAUDE.md
+**文档版本：** v1.1.0
+**生成时间：** 2026-02-08
+**文档路径：** E:\project\dvadmin\dvadmin\blog-frontend\CLAUDE.md
 **扫描文件数：** 24
 **文档覆盖率：** 100%

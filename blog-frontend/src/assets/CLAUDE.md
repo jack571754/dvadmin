@@ -1,6 +1,6 @@
 # 样式资源 - 模块文档
 
-[根目录](../../CLAUDE.md) > [src](../) > **assets**
+[项目根](../../../CLAUDE.md) > [blog-frontend](../../CLAUDE.md) > [src](../) > **assets**
 
 ---
 

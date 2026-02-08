@@ -1,9 +1,80 @@
+// ============================================
+// Fast CRUD 容器样式修复
+// ============================================
+
 .fs-crud-container {
 	.el-table thead {
 		color: #606266;
 	}
+
 	.el-input__inner::placeholder {
 		color: #dcdfe6;
 		font-size: 12px;
 	}
 }
+
+// ============================================
+// 表格操作列按钮样式修复
+// 覆盖 element.scss 中的 padding: 0
+// ============================================
+
+.el-table {
+	// 文本按钮内边距修复
+	.el-button.is-text {
+		padding: var(--spacing-1, 4px) var(--spacing-2, 8px);
+	}
+
+	// 按钮间距修复
+	.el-button + .el-button {
+		margin-left: var(--spacing-1, 4px);
+	}
+
+	// 防止按钮文本换行
+	.el-button {
+		white-space: nowrap;
+	}
+}
+
+// ============================================
+// 表格固定列背景修复
+// Element Plus sticky 固定列需要不透明背景覆盖滚动内容
+// ============================================
+
+.el-table {
+	// 固定列 td 单元格 - 不透明背景
+	td.el-table-fixed-column--left,
+	td.el-table-fixed-column--right {
+		background-color: var(--bg-surface, #ffffff) !important;
+	}
+
+	// 固定列 th 表头 - 不透明背景
+	th.el-table-fixed-column--left,
+	th.el-table-fixed-column--right {
+		background-color: var(--bg-muted, #f1f5f9) !important;
+	}
+
+	// 悬浮行固定列 - 必须使用不透明颜色（--bg-hover 是半透明的）
+	tr:hover > td.el-table-fixed-column--left,
+	tr:hover > td.el-table-fixed-column--right {
+		background-color: var(--bg-hover-opaque, #f5f7fa) !important;
+	}
+
+	// 斑马纹行固定列
+	.el-table__row--striped > td.el-table-fixed-column--left,
+	.el-table__row--striped > td.el-table-fixed-column--right {
+		background-color: var(--bg-subtle, #f8fafc) !important;
+	}
+
+	// 斑马纹 + 悬浮行固定列
+	.el-table__row--striped:hover > td.el-table-fixed-column--left,
+	.el-table__row--striped:hover > td.el-table-fixed-column--right {
+		background-color: var(--bg-hover-opaque, #f5f7fa) !important;
+	}
+
+	// 当前行（高亮行）固定列
+	.current-row > td.el-table-fixed-column--left,
+	.current-row > td.el-table-fixed-column--right {
+		background-color: var(--bg-hover-opaque, #f5f7fa) !important;
+	}
+}
+

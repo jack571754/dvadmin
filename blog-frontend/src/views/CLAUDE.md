@@ -1,6 +1,6 @@
 # 页面视图 - 模块文档
 
-[根目录](../../CLAUDE.md) > [src](../) > **views**
+[项目根](../../../CLAUDE.md) > [blog-frontend](../../CLAUDE.md) > [src](../) > **views**
 
 ---
 

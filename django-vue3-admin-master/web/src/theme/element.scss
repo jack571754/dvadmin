@@ -254,7 +254,10 @@
 ------------------------------- */
 .el-table {
 	.el-button.is-text {
-		padding: 0;
+		padding: var(--spacing-1, 4px) var(--spacing-2, 8px);
+	}
+	.el-button + .el-button {
+		margin-left: var(--spacing-1, 4px);
 	}
 	th.el-table__cell{
 		-webkit-user-select: text !important;
@@ -262,13 +265,12 @@
 		-ms-user-select: text !important;
 		user-select:text !important;
 	}
-
 }
 
 /* scrollbar
 ------------------------------- */
 .el-scrollbar__bar {
-	z-index: 4;
+	z-index: var(--z-scrollbar, 5);
 }
 /*防止页面切换时，滚动条高度不变的问题（滚动条高度非滚动条滚动高度）*/
 .el-scrollbar__wrap {

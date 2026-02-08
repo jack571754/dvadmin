@@ -383,7 +383,6 @@ body,
 .el-table {
 	background: var(--bg-surface);
 	border-radius: var(--radius-xl);
-	overflow: hidden;
 	border: 1px solid var(--border-base);
 	box-shadow: var(--shadow-xs);
 
@@ -1616,7 +1615,7 @@ body,
 
 .el-scrollbar {
 	.el-scrollbar__bar {
-		z-index: var(--z-above);
+		z-index: var(--z-scrollbar, 5); // 降低滚动条 z-index
 
 		&.is-vertical .el-scrollbar__thumb {
 			background: var(--border-strong);
