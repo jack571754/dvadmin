@@ -1464,9 +1464,9 @@ body,
 
 	.el-tree-node__content {
 		border-radius: var(--radius-sm);
-		padding: 8px 12px;
-		height: auto !important;
-		min-height: 36px;
+		padding: 0 12px;
+		height: 34px !important;
+		line-height: 34px !important;
 		display: flex !important;
 		align-items: center !important;
 		transition: all var(--duration-fast) var(--ease-default);
@@ -1487,16 +1487,20 @@ body,
 	.el-tree-node__loading-icon {
 		color: var(--text-muted);
 		margin-right: 8px;
-		vertical-align: middle;
+		line-height: 34px !important;
+		height: 34px !important;
+		display: inline-flex !important;
+		align-items: center !important;
 	}
 
 	.el-tree-node__label {
 		overflow: visible !important;
 		text-overflow: unset !important;
 		white-space: nowrap !important;
-		line-height: 1.5 !important;
-		display: inline-block;
-		vertical-align: middle;
+		line-height: 34px !important;
+		height: 34px !important;
+		display: inline-flex !important;
+		align-items: center !important;
 	}
 }
 
