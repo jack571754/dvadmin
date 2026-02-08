@@ -284,6 +284,8 @@
 .el-tree-select-dropdown {
 	.el-select-dropdown__wrap {
 		overflow-x: hidden !important;
+		overflow-y: auto !important;
+		max-height: 400px !important;
 	}
 	.el-tree {
 		min-width: 100%;
@@ -291,6 +293,14 @@
 	.el-tree-node__content {
 		width: 100%;
 		white-space: nowrap;
+		height: 32px !important;
+		line-height: 32px !important;
+		padding: 0 8px !important;
+	}
+	.el-tree-node__label {
+		overflow: visible !important;
+		text-overflow: unset !important;
+		white-space: nowrap !important;
 	}
 }
 /*修复Cascader 级联选择器高度问题*/
