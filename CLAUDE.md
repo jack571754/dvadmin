@@ -1,12 +1,13 @@
 # DVAdmin 项目文档
 
-> 最后更新：2026-02-03 (Django 5.2.0 升级)
+> 最后更新：2026-02-08 (冗余与兼容性清理)
 > 项目路径：E:\project\dvadmin
 
 ## 变更记录 (Changelog)
 
 | 时间 | 变更内容 | 责任人 |
 |------|----------|--------|
+| 2026-02-08 | 冗余与兼容性清理：删除重复API文件、统一端口配置、清理依赖包、删除静态文件压缩、移除无效脚本 | Claude AI |
 | 2026-02-03 | Django 升级到 5.2.0 LTS，移除 dvadmin3-celery 插件，手动配置 Celery | Claude AI |
 | 2026-01-25 19:11:17 | 更新项目统计，完成前端子模块文档（api/components/layout/views/stores/router），覆盖率提升至 100% | Claude AI |
 | 2026-01-25 14:09:00 | 更新项目统计，集成 dvadmin3_flow 插件文档，添加 Mermaid 架构图 | Claude AI |
@@ -323,6 +324,52 @@ urlpatterns += [
 
 ---
 
+## 冗余与兼容性清理（2026-02-08）
+
+### 清理内容
+
+本次清理针对 `redundancy_compatibility_report.md` 报告中的高优先级问题进行修复：
+
+#### 1. 前端 API 文件重复
+- 删除 `web/src/views/blog/` 下的重复 API 文件
+- 保留 `web/src/api/blog/` 下的统一 API 文件
+- 减少维护成本，避免修改遗漏
+
+#### 2. 后端端口配置统一
+- 统一后端端口为 9000（避免 Windows 保留端口 8000）
+- 更新 `main.py`、`gunicorn_conf.py`、`vite.config.ts` 配置
+- 确保前后端代理配置一致
+
+#### 3. 文档版本信息同步
+- 更新 `VERSION_COMPATIBILITY.md` 中的 Django 版本为 5.2.0
+- 同步 Python 支持范围（3.10-3.14）
+- 更新 DRF 版本为 3.16.0
+
+#### 4. 根目录冗余文件清理
+- 删除 `dvadmin/web/` 目录（仅包含 .nvmrc，与主项目重复）
+- 删除 `dvadmin/nul` 文件（Windows 特殊设备名，不应存在）
+
+#### 5. 后端依赖包清理
+- 移除 `six==1.16.0`（导入但未使用）
+- 将 `pyinstaller` 和 `Faker` 移至 `requirements-dev.txt`
+- 减少运行时依赖，提高安装效率
+
+#### 6. 冗余文档和无效脚本清理
+- 删除 `backend/main.py`（与 `manage.py runserver` 功能重叠）
+- 删除静态文件目录下所有 `.gz` 压缩文件（48个文件）
+- 更新 `.gitignore` 添加 `**/*.gz` 忽略规则
+- 移除前端 `@great-dream/dvadmin3-celery-web` 依赖
+
+### 清理效果
+
+- **代码质量提升**：消除重复代码，提高可维护性
+- **配置一致性**：统一端口配置，避免运行时错误
+- **文档准确性**：同步版本信息，减少混淆
+- **仓库优化**：删除冗余文件，减小仓库大小
+- **依赖精简**：移除未使用依赖，加快安装速度
+
+---
+
 ## Django 5.2.0 升级说明
 
 ### 升级内容（2026-02-03）
@@ -453,6 +500,16 @@ urlpatterns += [
 
 ## 最新变更
 
+### 2026-02-08
+- ✅ 删除重复的前端 API 文件（4个文件）
+- ✅ 统一后端端口配置为 9000
+- ✅ 更新文档版本信息（Django 5.2.0）
+- ✅ 删除根目录冗余文件（web/、nul）
+- ✅ 清理后端未使用的依赖包（six、pyinstaller、Faker）
+- ✅ 删除冗余文档和无效脚本（main.py、.gz文件）
+- ✅ 移除前端未使用依赖（@great-dream/dvadmin3-celery-web）
+- ✅ 更新 .gitignore 添加静态文件压缩忽略规则
+
 ### 2026-02-03
 - ✅ Django 升级到 5.2.0 LTS（支持到2028年4月）
 - ✅ Django REST Framework 升级到 3.16.0
@@ -482,8 +539,8 @@ urlpatterns += [
 
 本文档由 Claude AI 自动生成和维护，如有问题请联系项目维护者。
 
-**文档版本：** v3.1.0
-**生成时间：** 2026-02-03
+**文档版本：** v3.2.0
+**生成时间：** 2026-02-08
 **文档路径：** E:\project\dvadmin\CLAUDE.md
 **扫描文件数：** 270+
 **文档覆盖率：** 100%

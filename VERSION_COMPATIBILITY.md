@@ -13,23 +13,21 @@
 |------|----------|------|--------|
 | **Python** | 3.13.2 | ❌ 不兼容 | Django 4.2 仅支持 3.8-3.12 |
 | **Node.js** | v23.9.0 | ⚠️ 存在风险 | 过于新，可能有未知问题 |
-| **Django** | 4.2.14 | ✅ LTS | 支持到 2026年4月 |
+| **Django** | 5.2.0 | ✅ LTS | 支持到 2028年4月 |
 | **DRF** | 3.15.2 | ✅ 稳定 | 不支持 Python 3.13 |
 
 ### 兼容性矩阵
 
 ```
-Django 4.2.14 LTS:
-  ✅ Python 3.8
-  ✅ Python 3.9
+Django 5.2.0 LTS:
   ✅ Python 3.10
   ✅ Python 3.11  ← 推荐
   ✅ Python 3.12  ← 推荐
-  ❌ Python 3.13  ← 当前版本（不兼容）
+  ✅ Python 3.13
+  ✅ Python 3.14
 
-Django REST Framework 3.15.2:
-  ✅ Python 3.9+
-  ❌ Python 3.13  ← 尚未支持
+Django REST Framework 3.16.0:
+  ✅ Python 3.10+
 ```
 
 ---
@@ -298,11 +296,11 @@ python --version
 
 # 测试 Django
 python -c "import django; print(django.VERSION)"
-# 预期：(4, 2, 14, 'final', 0)
+# 预期：(5, 2, 0, 'final', 0)
 
 # 测试 DRF
 python -c "import rest_framework; print(rest_framework.__version__)"
-# 预期：3.15.2
+# 预期：3.16.0
 
 # 运行 Django 检查
 python manage.py check
@@ -348,10 +346,9 @@ python3.13 -m venv venv313  # 创建 3.13 虚拟环境
 
 ### Q2: Django 是否支持 Python 3.13？
 
-**A:** 当前不支持：
-- Django 4.2：支持到 Python 3.12
-- Django 5.x：支持到 Python 3.12
-- Django 6.0（2025-12 发布）：支持 Python 3.13
+**A:** Django 5.0+ 支持 Python 3.13：
+- Django 5.0：支持 Python 3.10-3.13
+- Django 5.2：支持 Python 3.10-3.14
 
 ### Q3: 降级后虚拟环境怎么办？
 
@@ -429,7 +426,8 @@ npm outdated
 
 1. **Python/Django**：
    - 每季度检查一次
-   - 等待 Django 6.0 稳定后再考虑 Python 3.13
+   - Python 3.11-3.14 都是稳定选择
+   - Django 5.2 LTS 支持到 2028年4月
 
 2. **Node.js**：
    - 每 6 个月检查一次
@@ -485,6 +483,6 @@ nvm use 23.9.0  # 切回 v23
 
 ---
 
-**文档版本：** v1.0
-**最后更新：** 2026-02-02
+**文档版本：** v2.0 (Django 5.2.0 升级)
+**最后更新：** 2026-02-08
 **维护者：** Claude AI

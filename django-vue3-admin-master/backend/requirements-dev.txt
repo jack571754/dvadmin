@@ -1,0 +1,8 @@
+# 开发依赖包
+# 安装命令: pip install -r requirements-dev.txt
+
+# 打包工具
+pyinstaller>=6.15.0
+
+# 测试数据生成
+Faker>=25.0.0
