@@ -1464,7 +1464,12 @@ body,
 
 	.el-tree-node__content {
 		border-radius: var(--radius-sm);
-		padding: var(--spacing-1) var(--spacing-2);
+		padding: 8px 12px;
+		height: auto !important;
+		line-height: normal !important;
+		min-height: 32px;
+		display: flex !important;
+		align-items: center !important;
 		transition: all var(--duration-fast) var(--ease-default);
 
 		&:hover {
@@ -1481,6 +1486,12 @@ body,
 
 	.el-tree-node__expand-icon {
 		color: var(--text-muted);
+	}
+
+	.el-tree-node__label {
+		overflow: visible !important;
+		text-overflow: unset !important;
+		white-space: nowrap !important;
 	}
 }
 
