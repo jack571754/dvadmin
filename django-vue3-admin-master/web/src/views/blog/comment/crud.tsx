@@ -1,4 +1,4 @@
-import * as api from './api';
+import * as api from '/@/api/blog/comment';
 import { dict, UserPageQuery, AddReq, DelReq, EditReq, CreateCrudOptionsProps, CreateCrudOptionsRet } from '@fast-crud/fast-crud';
 import { auth } from '/@/utils/authFunction';
 

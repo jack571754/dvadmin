@@ -1,6 +1,6 @@
 # API 服务层 - 模块文档
 
-[根目录](../../CLAUDE.md) > [src](../) > **api**
+[项目根](../../../CLAUDE.md) > [blog-frontend](../../CLAUDE.md) > [src](../) > **api**
 
 ---
 

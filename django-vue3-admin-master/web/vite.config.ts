@@ -2,7 +2,7 @@ import vue from '@vitejs/plugin-vue';
 import { resolve } from 'path';
 import { defineConfig, loadEnv, ConfigEnv } from 'vite';
 import vueSetupExtend from 'vite-plugin-vue-setup-extend';
-import vueJsx from '@vitejs/plugin-vue-jsx'
+import vueJsx from '@vitejs/plugin-vue-jsx';
 import { generateVersionFile } from "/@/utils/upgrade";
 
 const pathResolve = (dir: string) => {
@@ -36,21 +36,21 @@ const viteConfig = defineConfig((mode: ConfigEnv) => {
 			hmr: true,
 			proxy: {
 				'/api': {
-					target: 'http://127.0.0.1:8000',
+					target: 'http://127.0.0.1:9000',
 					ws: true,
 					changeOrigin: true,
 				},
 				'/sse': {
-					target: 'http://127.0.0.1:8000',
+					target: 'http://127.0.0.1:9000',
 					ws: true,
 					changeOrigin: true,
 				},
 				'/swagger.json': {
-					target: 'http://127.0.0.1:8000',
+					target: 'http://127.0.0.1:9000',
 					changeOrigin: true,
 				},
 				'/static': {
-					target: 'http://127.0.0.1:8000',
+					target: 'http://127.0.0.1:9000',
 					changeOrigin: true,
 				},
 				'/gitee': {

@@ -608,16 +608,16 @@ watch(
 		color: var(--el-text-color-regular);
 		font-size: 12px;
 		white-space: nowrap;
-		padding: 0 15px;
+		padding: 0 var(--spacing-3, 15px);
 		&-li {
 			height: 26px;
 			line-height: 26px;
 			display: flex;
 			align-items: center;
 			border: 1px solid var(--el-border-color-lighter);
-			padding: 0 15px;
-			margin-right: 5px;
-			border-radius: 2px;
+			padding: 0 var(--spacing-3, 15px);
+			margin-right: var(--spacing-1, 5px);
+			border-radius: var(--radius-sm, 2px);
 			position: relative;
 			z-index: 0;
 			cursor: pointer;

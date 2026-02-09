@@ -6,6 +6,7 @@
 
 | 时间 | 变更内容 | 责任人 |
 |------|----------|--------|
+| 2026-02-08 | 冗余与兼容性清理：删除重复API文件、统一端口配置、清理依赖包、删除静态文件压缩、移除无效脚本、修复WebSocket URL构建逻辑 | Claude AI |
 | 2026-02-03 | Django 升级到 5.2.0 LTS，移除 dvadmin3-celery，手动配置 Celery | Claude AI |
 | 2026-01-25 14:09:00 | 集成 dvadmin3_flow 插件，生成子模块文档，更新项目统计 | Claude AI |
 | 2026-01-24 | 添加 dvadmin_approval 模块文档，更新项目统计 | Claude AI |
@@ -185,6 +186,16 @@ graph TD
 # 进入后端目录
 cd backend
 
+# 方式一：使用虚拟环境（推荐）
+# 创建虚拟环境
+python -m venv venv
+
+# 激活虚拟环境
+# Windows:
+.\venv\Scripts\activate
+# Linux/Mac:
+source venv/bin/activate
+
 # 配置环境变量
 cp ./conf/env.example.py ./conf/env.py
 # 编辑 env.py 配置数据库信息
@@ -208,6 +219,32 @@ python3 manage.py init_area
 python3 manage.py runserver 0.0.0.0:9000
 # 或使用 uvicorn（推荐，支持 WebSocket）
 uvicorn application.asgi:application --port 9000 --host 0.0.0.0 --workers 8
+
+# 退出虚拟环境
+deactivate
+```
+
+```bash
+# 方式二：直接使用系统 Python（不推荐）
+# 配置环境变量
+cp ./conf/env.example.py ./conf/env.py
+# 编辑 env.py 配置数据库信息
+
+# 安装依赖
+pip3 install -r requirements.txt
+
+# 执行数据库迁移
+python3 manage.py makemigrations
+python3 manage.py migrate
+
+# 初始化系统数据
+python3 manage.py init
+
+# 初始化省市区数据（可选）
+python3 manage.py init_area
+
+# 启动开发服务器
+python3 manage.py runserver 0.0.0.0:9000
 ```
 
 ### 前端启动

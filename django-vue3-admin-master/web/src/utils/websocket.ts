@@ -31,9 +31,13 @@ const websocket: socket = {
         const token = Session.get('token')
         if(!token){
             // message.warning('websocket认证失败')
+            console.log('[WebSocket] Token is empty, skipping WebSocket connection')
             return null
         }
         const wsUrl = `${getWsBaseURL()}ws/${token}/`
+        console.log('[WebSocket] Attempting to connect to:', wsUrl)
+        console.log('[WebSocket] Current location:', window.location.href)
+        console.log('[WebSocket] VITE_API_URL:', import.meta.env.VITE_API_URL)
         websocket.websocket = new WebSocket(wsUrl)
         websocket.websocket.onmessage = (e: any) => {
             if (receiveMessage) {
@@ -41,6 +45,7 @@ const websocket: socket = {
             }
         }
         websocket.websocket.onclose = (e: any) => {
+            console.log('[WebSocket] Connection closed:', e.code, e.reason)
             websocket.socket_open = false
             useUserInfo().setWebSocketState(websocket.socket_open);
             // 需要重新连接
@@ -62,6 +67,7 @@ const websocket: socket = {
         }
         // 连接成功
         websocket.websocket.onopen = function () {
+            console.log('[WebSocket] Connection established successfully')
             websocket.socket_open = true
             useUserInfo().setWebSocketState(websocket.socket_open);
             websocket.is_reonnect = true
@@ -69,7 +75,9 @@ const websocket: socket = {
             websocket.heartbeat()
         }
         // 连接发生错误
-        websocket.websocket.onerror = function () { }
+        websocket.websocket.onerror = function (error: any) {
+            console.error('[WebSocket] Connection error:', error)
+        }
     },
     heartbeat: () => {
         websocket.hearbeat_timer && clearInterval(websocket.hearbeat_timer)

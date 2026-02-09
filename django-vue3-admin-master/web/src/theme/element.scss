@@ -254,7 +254,10 @@
 ------------------------------- */
 .el-table {
 	.el-button.is-text {
-		padding: 0;
+		padding: var(--spacing-1, 4px) var(--spacing-2, 8px);
+	}
+	.el-button + .el-button {
+		margin-left: var(--spacing-1, 4px);
 	}
 	th.el-table__cell{
 		-webkit-user-select: text !important;
@@ -262,24 +265,82 @@
 		-ms-user-select: text !important;
 		user-select:text !important;
 	}
-
 }
 
 /* scrollbar
 ------------------------------- */
 .el-scrollbar__bar {
-	z-index: 4;
+	z-index: var(--z-scrollbar, 5);
 }
 /*防止页面切换时，滚动条高度不变的问题（滚动条高度非滚动条滚动高度）*/
 .el-scrollbar__wrap {
 	max-height: 100%;
 }
-.el-select-dropdown .el-scrollbar__wrap {
-	overflow-x: scroll !important;
-}
 /*修复Select 选择器高度问题*/
 .el-select-dropdown__wrap {
 	max-height: 274px !important;
+}
+/*修复树形选择器宽度问题，确保内容完整显示*/
+.el-tree-select__popper,
+.el-popper[data-popper-reference-hidden] {
+	.el-select-dropdown__wrap {
+		overflow-x: hidden !important;
+		overflow-y: auto !important;
+		max-height: 400px !important;
+	}
+	.el-tree {
+		min-width: 100%;
+	}
+	.el-tree-node__content {
+		width: 100%;
+		white-space: nowrap;
+		height: 34px !important;
+		line-height: 34px !important;
+		padding: 0 12px !important;
+		display: flex !important;
+		align-items: center !important;
+	}
+	.el-tree-node__label {
+		overflow: visible !important;
+		text-overflow: unset !important;
+		white-space: nowrap !important;
+		line-height: 34px !important;
+		height: 34px !important;
+		display: inline-flex !important;
+		align-items: center !important;
+	}
+	.el-tree-node__expand-icon,
+	.el-tree-node__loading-icon {
+		margin-right: 8px;
+		line-height: 34px !important;
+		height: 34px !important;
+		display: inline-flex !important;
+		align-items: center !important;
+	}
+}
+/*修复 el-tree-select 下拉框中的树节点高度问题*/
+.el-select-dropdown .el-tree-node__content {
+	height: 34px !important;
+	line-height: 34px !important;
+	padding: 0 12px !important;
+	display: flex !important;
+	align-items: center !important;
+}
+.el-select-dropdown .el-tree-node__label {
+	overflow: visible !important;
+	text-overflow: unset !important;
+	white-space: nowrap !important;
+	line-height: 34px !important;
+	height: 34px !important;
+	display: inline-flex !important;
+	align-items: center !important;
+}
+.el-select-dropdown .el-tree-node__expand-icon,
+.el-select-dropdown .el-tree-node__loading-icon {
+	line-height: 34px !important;
+	height: 34px !important;
+	display: inline-flex !important;
+	align-items: center !important;
 }
 /*修复Cascader 级联选择器高度问题*/
 .el-cascader-menu__wrap.el-scrollbar__wrap {

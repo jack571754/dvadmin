@@ -7,7 +7,7 @@ workers = multiprocessing.cpu_count() * 2 + 1
 # 指定每个进程开启的线程数
 threads = 3
 # 绑定的ip与端口
-bind = '0.0.0.0:8000'
+bind = '0.0.0.0:9000'
 # 设置守护进程,将进程交给第三方管理
 daemon = 'false'
 # 工作模式协程，默认的是sync模式,推荐使用 gevent，此处使用与uvicorn配合使用 uvicorn.workers.UvicornWorker

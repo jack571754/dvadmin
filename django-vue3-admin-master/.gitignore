@@ -7,3 +7,6 @@
 web/package-lock.json
 
 *.bat
+
+# 静态文件压缩文件（由 whitenoise 自动生成）
+**/*.gz

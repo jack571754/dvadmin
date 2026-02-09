@@ -111,18 +111,39 @@ class FlowInfoViewSet(FieldPermissionMixin, CustomModelViewSet):
                 "id": dept.id,
                 "name": dept.name,
                 "avatar": "",
-                "type": "dept"
+                "type": "dept",
+                "dept_id": dept.id
             })
             dept_ids.append(dept.id)
-        if type == 'user' and len(dept_ids) == 0:
-            _Users = Users.objects.filter(dept_id__in=[dept_id])
-            for user in self.filter_queryset(_Users):
-                data.append({
-                    "id": user.id,
-                    "name": user.name,
-                    "avatar": user.avatar,
-                    "type": "user"
-                })
+
+        # 当类型是用户时，还需要显示该部门下的用户
+        if type == 'user':
+            if int(dept_id) == 0:
+                # 根部门，显示所有顶级部门的用户
+                for dept in _Dept:
+                    _Users = Users.objects.filter(dept_id=dept.id)
+                    for user in self.filter_queryset(_Users):
+                        # 检查是否已添加（避免重复）
+                        if not any(u['id'] == user.id and u['type'] == 'user' for u in data):
+                            data.append({
+                                "id": user.id,
+                                "name": user.name,
+                                "avatar": user.avatar,
+                                "type": "user",
+                                "dept_id": dept.id
+                            })
+            else:
+                # 子部门，只显示该部门的用户
+                _Users = Users.objects.filter(dept_id=int(dept_id))
+                for user in self.filter_queryset(_Users):
+                    data.append({
+                        "id": user.id,
+                        "name": user.name,
+                        "avatar": user.avatar,
+                        "type": "user",
+                        "dept_id": int(dept_id)
+                    })
+
         return DetailResponse(data=data, msg="获取成功")
 
     @action(methods=['GET'], detail=False, permission_classes=[IsAuthenticated])

@@ -134,6 +134,7 @@ INSTALLED_APPS = [
     "dvadmin.system",               # 系统管理模块
     "dvadmin.book",                 # 图书管理模块
     "dvadmin.blog",                 # 博客管理模块
+    "dvadmin3_flow",               # 工作流审批插件
 ]
 
 # ================================================= #

@@ -4,7 +4,7 @@ import nodeMixin from "../NodeMixin";
 import WOrgPicker from "../../../common/WOrgPicker.vue";
 import FormPermConf from "../../../admin/config/FormPermConf.vue";
 import WOrgTags from "../../../common/WOrgTags.vue";
-import request from "../../../api/request";
+import request from "../../../../api/request";
 
 const props = defineProps({
   ...nodeMixin.props

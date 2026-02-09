@@ -1,6 +1,6 @@
 # 通用组件 - 模块文档
 
-[根目录](../../CLAUDE.md) > [src](../) > **components**
+[项目根](../../../CLAUDE.md) > [blog-frontend](../../CLAUDE.md) > [src](../) > **components**
 
 ---
 

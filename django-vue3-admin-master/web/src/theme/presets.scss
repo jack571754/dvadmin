@@ -1,0 +1,485 @@
+/* ============================================
+   DVAdmin 现代化主题预设
+   设计理念：静谧科技 - 克制、专业、现代
+   ============================================ */
+
+// ============================================
+// 一、核心配色系统
+// ============================================
+
+:root {
+	// ===== 主色调：静谧蓝 =====
+	// H: 215 | S: 85% | L: 52%
+	--primary-base: #2563eb;
+	--primary-hover: #1d4ed8;
+	--primary-active: #1e40af;
+	--primary-light: #3b82f6;
+	--primary-lighter: #60a5fa;
+	--primary-lightest: #dbeafe;
+
+	// 主色渐变（用于特殊强调）
+	--primary-gradient: linear-gradient(135deg, #2563eb 0%, #3b82f6 100%);
+	--primary-gradient-subtle: linear-gradient(135deg, rgba(37, 99, 235, 0.05) 0%, rgba(59, 130, 246, 0.02) 100%);
+	--primary-gradient-strong: linear-gradient(135deg, rgba(37, 99, 235, 0.15) 0%, rgba(59, 130, 246, 0.08) 100%);
+
+	// ===== 功能色 =====
+	// 成功 - 森林绿
+	--success-base: #059669;
+	--success-hover: #047857;
+	--success-active: #065f46;
+	--success-light: #d1fae5;
+	--success-lighter: #ecfdf5;
+
+	// 警告 - 琥珀橙
+	--warning-base: #d97706;
+	--warning-hover: #b45309;
+	--warning-active: #92400e;
+	--warning-light: #fef3c7;
+	--warning-lighter: #fffbeb;
+
+	// 危险 - 朱砂红
+	--danger-base: #dc2626;
+	--danger-hover: #b91c1c;
+	--danger-active: #991b1b;
+	--danger-light: #fee2e2;
+	--danger-lighter: #fef2f2;
+
+	// 信息 - 钢青色
+	--info-base: #0891b2;
+	--info-hover: #0e7490;
+	--info-active: #155e75;
+	--info-light: #cffafe;
+	--info-lighter: #ecfeff;
+
+	// ===== 中性色：浅色模式 =====
+	// 背景色 - 温润白
+	--bg-page: #fafbfc;
+	--bg-surface: #ffffff;
+	--bg-elevated: #ffffff;
+	--bg-overlay: rgba(15, 23, 42, 0.4);
+	--bg-muted: #f1f5f9;
+	--bg-subtle: #f8fafc;
+	--bg-hover: rgba(15, 23, 42, 0.04);
+	--bg-hover-opaque: #f5f7fa;
+	--bg-active: rgba(15, 23, 42, 0.08);
+	--bg-disabled: #f1f5f9;
+
+	// 边框色 - 精致灰
+	--border-base: #e2e8f0;
+	--border-muted: #f1f5f9;
+	--border-strong: #cbd5e1;
+	--border-focus: var(--primary-base);
+	--border-disabled: #e2e8f0;
+
+	// 分割线
+	--divider-base: rgba(15, 23, 42, 0.06);
+	--divider-strong: rgba(15, 23, 42, 0.12);
+
+	// 文字色 - 墨色系
+	--text-primary: #0f172a;
+	--text-secondary: #475569;
+	--text-tertiary: #64748b;
+	--text-muted: #94a3b8;
+	--text-disabled: #cbd5e1;
+	--text-on-primary: #ffffff;
+	--text-on-dark: #f8fafc;
+
+	// ===== 间距系统 (8px 基准) =====
+	--spacing-0: 0;
+	--spacing-1: 4px;
+	--spacing-2: 8px;
+	--spacing-3: 12px;
+	--spacing-4: 16px;
+	--spacing-5: 20px;
+	--spacing-6: 24px;
+	--spacing-7: 28px;
+	--spacing-8: 32px;
+	--spacing-10: 40px;
+	--spacing-12: 48px;
+	--spacing-16: 64px;
+	--spacing-20: 80px;
+
+	// ===== 圆角系统 =====
+	--radius-none: 0;
+	--radius-xs: 2px;
+	--radius-sm: 4px;
+	--radius-md: 6px;
+	--radius-lg: 8px;
+	--radius-xl: 12px;
+	--radius-2xl: 16px;
+	--radius-full: 9999px;
+
+	// ===== 阴影系统：浅色模式 =====
+	--shadow-xs: 0 1px 2px rgba(15, 23, 42, 0.04);
+	--shadow-sm: 0 1px 3px rgba(15, 23, 42, 0.06), 0 1px 2px rgba(15, 23, 42, 0.04);
+	--shadow-md: 0 4px 6px -1px rgba(15, 23, 42, 0.08), 0 2px 4px -2px rgba(15, 23, 42, 0.04);
+	--shadow-lg: 0 10px 15px -3px rgba(15, 23, 42, 0.08), 0 4px 6px -4px rgba(15, 23, 42, 0.04);
+	--shadow-xl: 0 20px 25px -5px rgba(15, 23, 42, 0.08), 0 8px 10px -6px rgba(15, 23, 42, 0.04);
+	--shadow-2xl: 0 25px 50px -12px rgba(15, 23, 42, 0.15);
+
+	// 焦点阴影
+	--shadow-focus: 0 0 0 3px rgba(37, 99, 235, 0.12);
+	--shadow-focus-strong: 0 0 0 3px rgba(37, 99, 235, 0.2);
+
+	// 内阴影
+	--shadow-inner: inset 0 2px 4px rgba(15, 23, 42, 0.04);
+
+	// 按钮阴影
+	--shadow-button: 0 1px 2px rgba(37, 99, 235, 0.2);
+	--shadow-button-hover: 0 2px 4px rgba(37, 99, 235, 0.3);
+
+	// ===== 动画系统 =====
+	--duration-instant: 100ms;
+	--duration-fast: 150ms;
+	--duration-base: 200ms;
+	--duration-slow: 300ms;
+	--duration-slower: 500ms;
+
+	--ease-default: cubic-bezier(0.4, 0, 0.2, 1);
+	--ease-in: cubic-bezier(0.4, 0, 1, 1);
+	--ease-out: cubic-bezier(0, 0, 0.2, 1);
+	--ease-in-out: cubic-bezier(0.4, 0, 0.6, 1);
+	--ease-bounce: cubic-bezier(0.68, -0.55, 0.265, 1.55);
+	--ease-smooth: cubic-bezier(0.25, 0.46, 0.45, 0.94);
+
+	// ===== 字体系统 =====
+	--font-sans: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', 'PingFang SC', 'Hiragino Sans GB', 'Microsoft YaHei', sans-serif;
+	--font-mono: 'JetBrains Mono', 'Fira Code', 'SF Mono', Consolas, monospace;
+
+	--text-xs: 12px;
+	--text-sm: 14px;
+	--text-base: 16px;
+	--text-lg: 18px;
+	--text-xl: 20px;
+	--text-2xl: 24px;
+	--text-3xl: 30px;
+	--text-4xl: 36px;
+	--text-5xl: 48px;
+
+	--font-normal: 400;
+	--font-medium: 500;
+	--font-semibold: 600;
+	--font-bold: 700;
+
+	--leading-tight: 1.25;
+	--leading-snug: 1.375;
+	--leading-normal: 1.5;
+	--leading-relaxed: 1.625;
+	--leading-loose: 2;
+
+	// ===== Z-index 层级 =====
+	--z-base: 0;
+	--z-above: 10;
+	--z-dropdown: 100;
+	--z-sticky: 200;
+	--z-fixed: 300;
+	--z-modal-backdrop: 400;
+	--z-modal: 500;
+	--z-popover: 600;
+	--z-tooltip: 700;
+	--z-notification: 800;
+
+	// ===== 布局变量 =====
+	--layout-header-height: 56px;
+	--layout-sidebar-width: 240px;
+	--layout-sidebar-collapsed: 64px;
+	--layout-footer-height: 48px;
+
+	// ===== 组件变量 =====
+	--component-card-padding: var(--spacing-6);
+	--component-card-radius: var(--radius-xl);
+	--component-card-shadow: var(--shadow-sm);
+
+	--component-input-padding: var(--spacing-3) var(--spacing-4);
+	--component-input-radius: var(--radius-md);
+
+	--component-button-padding: var(--spacing-3) var(--spacing-5);
+	--component-button-radius: var(--radius-md);
+
+	// ===== 图表专用颜色 =====
+	--chart-color-1: #51a3fc;
+	--chart-color-2: #36c78b;
+	--chart-color-3: #fec279;
+	--chart-color-4: #968af5;
+	--chart-color-5: #e790e8;
+	--chart-color-6: #ff6462;
+	--chart-color-7: #6690f9;
+	--chart-color-8: #f72b3f;
+	--chart-color-9: #91bff8;
+	--chart-color-10: #88d565;
+	--chart-color-11: #fbd4a0;
+
+	// ===== 登录页渐变 =====
+	--login-bg-gradient-start: #dbeafe;
+	--login-bg-gradient-end: #eff6ff;
+
+	// ===== 状态颜色 =====
+	--text-disabled: #979b9c;
+}
+
+// ============================================
+// 二、深色模式
+// ============================================
+
+[data-theme='dark'] {
+	// 主色调 - 深色模式下使用更亮的蓝色
+	--primary-base: #3b82f6;
+	--primary-hover: #60a5fa;
+	--primary-active: #2563eb;
+	--primary-light: #1e40af;
+	--primary-lighter: #1e3a8a;
+	--primary-lightest: #0f172a;
+
+	--primary-gradient: linear-gradient(135deg, #3b82f6 0%, #60a5fa 100%);
+	--primary-gradient-subtle: linear-gradient(135deg, rgba(59, 130, 246, 0.1) 0%, rgba(96, 165, 250, 0.05) 100%);
+	--primary-gradient-strong: linear-gradient(135deg, rgba(59, 130, 246, 0.2) 0%, rgba(96, 165, 250, 0.1) 100%);
+
+	// 功能色 - 深色模式调整
+	--success-base: #10b981;
+	--success-hover: #34d399;
+	--success-active: #059669;
+	--success-light: #064e3b;
+	--success-lighter: #022c22;
+
+	--warning-base: #f59e0b;
+	--warning-hover: #fbbf24;
+	--warning-active: #d97706;
+	--warning-light: #78350f;
+	--warning-lighter: #451a03;
+
+	--danger-base: #ef4444;
+	--danger-hover: #f87171;
+	--danger-active: #dc2626;
+	--danger-light: #7f1d1d;
+	--danger-lighter: #450a0a;
+
+	--info-base: #06b6d4;
+	--info-hover: #22d3ee;
+	--info-active: #0891b2;
+	--info-light: #164e63;
+	--info-lighter: #083344;
+
+	// 中性色：深色模式
+	--bg-page: #0f172a;
+	--bg-surface: #1e293b;
+	--bg-elevated: #334155;
+	--bg-overlay: rgba(0, 0, 0, 0.6);
+	--bg-muted: #1e293b;
+	--bg-subtle: #0f172a;
+	--bg-hover: rgba(255, 255, 255, 0.05);
+	--bg-hover-opaque: #222d3f;
+	--bg-active: rgba(255, 255, 255, 0.08);
+	--bg-disabled: #1e293b;
+
+	--border-base: #334155;
+	--border-muted: #1e293b;
+	--border-strong: #475569;
+	--border-focus: var(--primary-base);
+	--border-disabled: #334155;
+
+	--divider-base: rgba(255, 255, 255, 0.06);
+	--divider-strong: rgba(255, 255, 255, 0.12);
+
+	--text-primary: #f1f5f9;
+	--text-secondary: #cbd5e1;
+	--text-tertiary: #94a3b8;
+	--text-muted: #64748b;
+	--text-disabled: #475569;
+	--text-on-primary: #ffffff;
+	--text-on-dark: #f8fafc;
+
+	// 阴影系统：深色模式
+	--shadow-xs: 0 1px 2px rgba(0, 0, 0, 0.3);
+	--shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.4), 0 1px 2px rgba(0, 0, 0, 0.3);
+	--shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.4), 0 2px 4px -2px rgba(0, 0, 0, 0.3);
+	--shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.4), 0 4px 6px -4px rgba(0, 0, 0, 0.3);
+	--shadow-xl: 0 20px 25px -5px rgba(0, 0, 0, 0.4), 0 8px 10px -6px rgba(0, 0, 0, 0.3);
+	--shadow-2xl: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+
+	--shadow-focus: 0 0 0 3px rgba(59, 130, 246, 0.2);
+	--shadow-focus-strong: 0 0 0 3px rgba(59, 130, 246, 0.3);
+	--shadow-inner: inset 0 2px 4px rgba(0, 0, 0, 0.3);
+
+	--shadow-button: 0 1px 2px rgba(59, 130, 246, 0.3);
+	--shadow-button-hover: 0 2px 4px rgba(59, 130, 246, 0.4);
+}
+
+// ============================================
+// 三、兼容性映射（映射到现有变量名）
+// ============================================
+
+:root {
+	// 映射到现有的 next-* 变量（保持向后兼容）
+	--next-color-white: var(--bg-surface);
+	--next-bg-main-color: var(--bg-page);
+	--next-bg-color: var(--bg-muted);
+	--next-border-color-light: var(--border-base);
+	--next-color-primary-lighter: var(--primary-lightest);
+	--next-color-success-lighter: var(--success-lighter);
+	--next-color-warning-lighter: var(--warning-lighter);
+	--next-color-danger-lighter: var(--danger-lighter);
+	--next-color-dark-hover: var(--bg-hover);
+	--next-color-menu-hover: var(--bg-hover);
+	--next-color-user-hover: var(--bg-hover);
+
+	// Element Plus 覆盖
+	--el-color-primary: var(--primary-base);
+	--el-color-success: var(--success-base);
+	--el-color-warning: var(--warning-base);
+	--el-color-danger: var(--danger-base);
+	--el-color-info: var(--info-base);
+
+	--el-text-color-primary: var(--text-primary);
+	--el-text-color-regular: var(--text-secondary);
+	--el-text-color-secondary: var(--text-tertiary);
+	--el-text-color-placeholder: var(--text-muted);
+
+	--el-border-color: var(--border-base);
+	--el-border-color-light: var(--border-base);
+	--el-border-color-lighter: var(--border-muted);
+	--el-border-color-extra-light: var(--border-muted);
+	--el-border-color-dark: var(--border-strong);
+
+	--el-bg-color: var(--bg-surface);
+	--el-fill-color: var(--bg-muted);
+	--el-fill-color-light: var(--bg-subtle);
+	--el-fill-color-lighter: var(--bg-hover);
+	--el-fill-color-extra-light: var(--bg-subtle);
+	--el-fill-color-dark: var(--bg-active);
+	--el-fill-color-darker: var(--bg-hover);
+
+	--el-box-shadow: var(--shadow-sm);
+	--el-box-shadow-light: var(--shadow-md);
+	--el-box-shadow-base: var(--shadow-lg);
+	--el-box-shadow-dark: var(--shadow-xl);
+
+	--el-table-bg-color: var(--bg-surface);
+	--el-table-tr-bg-color: var(--bg-surface);
+	--el-table-header-bg-color: var(--bg-muted);
+	--el-table-row-hover-bg-color: var(--bg-hover-opaque);
+
+	--el-border-radius-base: var(--radius-md);
+	--el-border-radius-small: var(--radius-sm);
+	--el-border-radius-round: var(--radius-full);
+	--el-border-radius-circle: var(--radius-full);
+
+	--el-font-size-base: var(--text-sm);
+	--el-font-size-small: var(--text-xs);
+	--el-font-size-large: var(--text-base);
+
+	--el-transition-duration: var(--duration-base);
+	--el-transition-duration-fast: var(--duration-fast);
+}
+
+// ============================================
+// 四、深色模式兼容性映射
+// ============================================
+
+[data-theme='dark'] {
+	--next-bg-main: var(--bg-page);
+	--next-color-white: var(--text-on-primary);
+	--next-color-disabled: var(--bg-disabled);
+	--next-color-bar: var(--text-secondary);
+	--next-color-primary: var(--bg-elevated);
+	--next-border-color: var(--border-base);
+	--next-border-black: var(--border-muted);
+	--next-border-columns: var(--border-base);
+	--next-color-seting: var(--bg-elevated);
+	--next-text-color-regular: var(--text-tertiary);
+	--next-text-color-placeholder: var(--text-muted);
+	--next-color-hover: var(--bg-hover);
+	--next-color-hover-rgba: var(--bg-hover);
+
+	// Element Plus 深色模式
+	--el-color-white: var(--bg-surface);
+	--el-bg-color: var(--bg-surface);
+	--el-text-color-primary: var(--text-primary);
+	--el-border-color: var(--border-base);
+	--el-border-color-light: var(--border-base);
+	--el-border-color-lighter: var(--border-muted);
+	--el-border-color-extra-light: var(--border-muted);
+	--el-text-color-regular: var(--text-secondary);
+	--el-text-color-disabled: var(--text-disabled);
+	--el-text-color-placeholder: var(--text-muted);
+	--el-disabled-bg-color: var(--bg-disabled);
+	--el-fill-color-blank: var(--bg-surface);
+	--el-fill-color: var(--bg-hover);
+	--el-fill-color-light: var(--bg-hover);
+	--el-fill-color-lighter: var(--bg-active);
+	--el-bg-color-overlay: var(--bg-elevated);
+	--el-mask-color: var(--bg-overlay);
+}
+
+// ============================================
+// 五、预设主题类
+// ============================================
+
+// 森之绿主题
+.theme-forest {
+	--primary-base: #059669;
+	--primary-hover: #047857;
+	--primary-active: #065f46;
+	--primary-light: #10b981;
+	--bg-page: #f0fdf4;
+	--text-primary: #14532d;
+}
+
+// 暮光紫主题
+.theme-twilight {
+	--primary-base: #7c3aed;
+	--primary-hover: #6d28d9;
+	--primary-active: #5b21b6;
+	--primary-light: #8b5cf6;
+	--bg-page: #faf5ff;
+	--text-primary: #1e1b4b;
+}
+
+// 日落橙主题
+.theme-sunset {
+	--primary-base: #ea580c;
+	--primary-hover: #c2410c;
+	--primary-active: #9a3412;
+	--primary-light: #f97316;
+	--bg-page: #fff7ed;
+	--text-primary: #1c1917;
+}
+
+// 海洋青主题
+.theme-ocean {
+	--primary-base: #0891b2;
+	--primary-hover: #0e7490;
+	--primary-active: #155e75;
+	--primary-light: #06b6d4;
+	--bg-page: #f0fdfa;
+	--text-primary: #134e4a;
+}
+
+// 玫瑰红主题
+.theme-rose {
+	--primary-base: #e11d48;
+	--primary-hover: #be123c;
+	--primary-active: #9f1239;
+	--primary-light: #f43f5e;
+	--bg-page: #fff1f2;
+	--text-primary: #1c1917;
+}
+
+// 柠檬黄主题
+.theme-lemon {
+	--primary-base: #ca8a04;
+	--primary-hover: #a16207;
+	--primary-active: #854d0e;
+	--primary-light: #eab308;
+	--bg-page: #fefce8;
+	--text-primary: #1c1917;
+}
+
+// 石墨灰主题（极简）
+.theme-graphite {
+	--primary-base: #374151;
+	--primary-hover: #1f2937;
+	--primary-active: #111827;
+	--primary-light: #4b5563;
+	--bg-page: #ffffff;
+	--text-primary: #000000;
+}
