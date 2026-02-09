@@ -27,4 +27,5 @@ application = ProtocolTypeRouter({
             websocket_urlpatterns
         )
     ),
+    "lifespan": http_application,
 })

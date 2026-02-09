@@ -110,17 +110,15 @@ function close() {
 function jumpDept(dept, i) {
   orgPath.value.length = i + 1
   let id = dept.id
-  if(dept.type=='dept'){
-    id = dept.dept_id
-  }
+  // 部门直接使用 id，不需要 dept_id 字段
+  // dept_id 字段只在已选择的标签对象中使用
   getOrgList(id)
 }
 
 function toSubDept(dept) {
   let id = dept.id
-  if(dept.type=='dept'){
-    id = dept.dept_id
-  }
+  // 部门直接使用 id，不需要 dept_id 字段
+  // dept_id 字段只在已选择的标签对象中使用
   getOrgList(id, rsp => {
     orgPath.value.push(dept)
   })
@@ -199,13 +197,18 @@ function change(val) {
 
 function getValues(){
   return selected.value.map(v => {
-    return {
+    const result = {
       id: v.id,
       name: v.name,
       type: v.type,
-      avatar: v.avatar,
-      dept_id:v.dept_id || null
+      avatar: v.avatar
     }
+    // 对于部门类型，添加 dept_id 字段（与 id 相同）
+    // 这是为了后端保存审批人配置时使用
+    if (v.type === 'dept') {
+      result.dept_id = v.id
+    }
+    return result
   })
 }
 

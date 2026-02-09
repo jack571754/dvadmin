@@ -211,6 +211,17 @@ python manage.py makemigrations
 python manage.py migrate
 ```
 
+### 5. 任务管理页面报错
+
+**问题：** 访问"任务管理"菜单时提示"Celery 任务管理功能未启用"
+
+**说明：** 这是正常的。项目升级时移除了 `dvadmin3-celery` 插件，改为手动配置 Celery。
+
+**解决方案：**
+- **方案 1（推荐）：** 忽略此菜单，不影响其他功能
+- **方案 2：** 在管理后台的"菜单管理"中删除"任务管理"菜单
+- **方案 3：** 安装完整的 `dvadmin3-celery` 插件（参考 `backend/CELERY_STUB.md`）
+
 ## 📚 相关文档
 
 - [主文档](./CLAUDE.md) - 完整的项目文档

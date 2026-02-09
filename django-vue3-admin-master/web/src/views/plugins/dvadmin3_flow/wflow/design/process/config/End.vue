@@ -9,15 +9,30 @@ const props = defineProps({
 const emit = defineEmits(nodeMixin.emits)
 const _value = computed(nodeMixin.computed._value(props, emit))
 
-const workFlowList = ref()
-const getWorkFlow = ()=>{
+const workFlowList = ref([])
+const getWorkFlow = () => {
   request({
     url: '/api/dvadmin3_flow/flow_info/get_end_function_list/',
     method: 'get',
-  }).then(res=>{
-    console.log(res)
-    workFlowList.value = res.data
   })
+    .then(res => {
+      if (Array.isArray(res?.data)) {
+        workFlowList.value = res.data
+        return
+      }
+      if (Array.isArray(res?.data?.data)) {
+        workFlowList.value = res.data.data
+        return
+      }
+      if (Array.isArray(res)) {
+        workFlowList.value = res
+        return
+      }
+      workFlowList.value = []
+    })
+    .catch(() => {
+      workFlowList.value = []
+    })
 }
 
 onMounted(()=>{

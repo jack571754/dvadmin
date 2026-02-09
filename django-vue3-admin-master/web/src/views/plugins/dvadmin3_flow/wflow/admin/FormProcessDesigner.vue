@@ -8,6 +8,7 @@ import {ElMessage, ElMessageBox} from "element-plus";
 import WDialog from "../common/WDialog.vue";
 import request from '../../api/request'
 import nodeType from "../design/process/ProcessNodes"
+import { Icon as iconify } from '@iconify/vue';
 
 const _this = getCurrentInstance()
 const active = ref('BASE')

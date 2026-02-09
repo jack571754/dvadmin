@@ -4,7 +4,7 @@ import nodeMixin from "../NodeMixin";
 import WOrgPicker from "../../../common/WOrgPicker.vue";
 import FormPermConf from "../../../admin/config/FormPermConf.vue";
 import WOrgTags from "../../../common/WOrgTags.vue";
-import request from "../../../api/request";
+import request from "../../../../api/request";
 
 const props = defineProps({
   ...nodeMixin.props
@@ -50,14 +50,30 @@ function selectOk(orgs) {
 
 
 // 自定义函数
-const workFlowList = ref()
-const getWorkFlow = ()=>{
+const workFlowList = ref([])
+const getWorkFlow = () => {
   request({
     url: '/api/dvadmin3_flow/flow_info/get_approval_function_list/',
     method: 'get',
-  }).then(res=>{
-    workFlowList.value = res.data
   })
+    .then(res => {
+      if (Array.isArray(res?.data)) {
+        workFlowList.value = res.data
+        return
+      }
+      if (Array.isArray(res?.data?.data)) {
+        workFlowList.value = res.data.data
+        return
+      }
+      if (Array.isArray(res)) {
+        workFlowList.value = res
+        return
+      }
+      workFlowList.value = []
+    })
+    .catch(() => {
+      workFlowList.value = []
+    })
 }
 onMounted(()=>{
   getWorkFlow()

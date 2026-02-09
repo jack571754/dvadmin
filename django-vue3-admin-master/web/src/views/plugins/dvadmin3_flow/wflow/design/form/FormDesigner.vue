@@ -10,6 +10,7 @@ import WDialog from "../../common/WDialog.vue";
 import FormComponent from "./component/FormComponent.vue";
 import {generateStr, deepCopy} from "../../../utils/GlobalFunc";
 import {formJson} from "../FormInterface";
+import { Icon as iconify } from '@iconify/vue';
 
 //保存编辑历史
 const history = []

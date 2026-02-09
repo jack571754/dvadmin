@@ -36,6 +36,7 @@ from dvadmin.system.views.login import (
 )
 from dvadmin.system.views.system_config import InitSettingsViewSet
 from dvadmin.utils.swagger import CustomOpenAPISchemaGenerator
+# Celery 任务管理由 dvadmin3_celery 插件提供
 
 # =========== 初始化系统配置 =================
 dispatch.init_system_config()
@@ -104,6 +105,7 @@ urlpatterns = (
             path("api/system/", include("dvadmin.system.urls")),
             path("api/book/", include("dvadmin.book.urls")),
             path("api/blog/", include("dvadmin.blog.urls")),
+            # Celery 任务管理由 dvadmin3_celery 插件提供（通过 PLUGINS_URL_PATTERNS 自动添加）
             path("api/login/", LoginView.as_view(), name="token_obtain_pair"),
             path("api/logout/", LogoutView.as_view(), name="token_obtain_pair"),
             path("token/refresh/", TokenRefreshView.as_view(), name="token_refresh"),

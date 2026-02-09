@@ -619,7 +619,7 @@ SHARED_APPS = []
 # 这里可以导入各种插件的配置
 # 例如:
 # from dvadmin_upgrade_center.settings import *    # 升级中心
-# from dvadmin3_celery.settings import *            # Celery 异步任务插件（已移除，手动配置）
+from dvadmin3_celery.settings import *            # Celery 异步任务插件
 from dvadmin3_flow.settings import *              # 审批流程插件
 # from dvadmin_third.settings import *            # 第三方用户管理
 # from dvadmin_ak_sk.settings import *            # 秘钥管理
