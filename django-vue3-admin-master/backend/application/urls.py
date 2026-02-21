@@ -157,8 +157,6 @@ urlpatterns = (
             ),
             # 系统管理模块API路由
             path("api/system/", include("dvadmin.system.urls")),
-            # 图书管理模块API路由
-            path("api/book/", include("dvadmin.book.urls")),
             # 博客管理模块API路由
             path("api/blog/", include("dvadmin.blog.urls")),
             # 用户登录认证接口

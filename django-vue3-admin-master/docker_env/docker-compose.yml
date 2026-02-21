@@ -1,0 +1,175 @@
+# DVAdmin 开发环境 Docker Compose 配置
+# 版本: 2.1
+# 更新时间: 2026-02-21
+#
+# 注意：此文件位于 docker_env 目录下
+# 使用方法：
+#   cd docker_env
+#   docker-compose up -d
+#
+# 端口映射：
+#   管理后台:  8080
+#   博客前端:  5173
+#   Django API: 9000
+#   MySQL:      3306
+#   Redis:      6379
+
+services:
+  # ============================================
+  # 前端服务
+  # ============================================
+  
+  # 管理后台前端 (Vue3 Admin)
+  dvadmin3-web:
+    container_name: dvadmin3-web
+    build:
+      context: ../
+      dockerfile: docker_env/web/Dockerfile
+    ports:
+      - "8080:8080"
+    environment:
+      TZ: Asia/Shanghai
+    volumes:
+      - ./nginx/my.conf:/etc/nginx/conf.d/my.conf:ro
+      - ../backend/media:/backend/media:ro
+    restart: always
+    networks:
+      dvadmin-network:
+        ipv4_address: 177.10.0.11
+    depends_on:
+      - dvadmin3-django
+
+  # ============================================
+  # 后端服务
+  # ============================================
+  
+  # Django 后端 API
+  dvadmin3-django:
+    container_name: dvadmin3-django
+    build:
+      context: ../
+      dockerfile: docker_env/django/Dockerfile
+    working_dir: /backend
+    environment:
+      PYTHONUNBUFFERED: 1
+      DATABASE_HOST: dvadmin3-mysql
+      DATABASE_PORT: 3306
+      DATABASE_USER: root
+      DATABASE_PASSWORD: ${MYSQL_PASSWORD:-DVADMIN3}
+      DATABASE_NAME: django-vue3-admin
+      REDIS_HOST: dvadmin3-redis
+      REDIS_PORT: 6379
+      REDIS_PASSWORD: ${REDIS_PASSWORD:-DVADMIN3}
+      TZ: Asia/Shanghai
+    volumes:
+      - ../backend:/backend:cached
+      - ../logs/django:/var/log/django
+    ports:
+      - "9000:9000"
+    restart: always
+    depends_on:
+      - dvadmin3-mysql
+      - dvadmin3-redis
+    networks:
+      dvadmin-network:
+        ipv4_address: 177.10.0.12
+
+  # ============================================
+  # 数据库服务
+  # ============================================
+  
+  # MySQL 数据库
+  dvadmin3-mysql:
+    container_name: dvadmin3-mysql
+    image: mysql:8.0
+    privileged: true
+    restart: always
+    ports:
+      - "3306:3306"
+    environment:
+      MYSQL_ROOT_PASSWORD: ${MYSQL_PASSWORD:-DVADMIN3}
+      MYSQL_DATABASE: "django-vue3-admin"
+      TZ: Asia/Shanghai
+    command:
+      --wait_timeout=31536000
+      --interactive_timeout=31536000
+      --max_connections=1000
+      --default-authentication-plugin=mysql_native_password
+      --character-set-server=utf8mb4
+      --collation-server=utf8mb4_unicode_ci
+    volumes:
+      - "./mysql/data:/var/lib/mysql"
+      - "./mysql/conf.d:/etc/mysql/conf.d"
+      - "./mysql/logs:/var/log/mysql"
+      - "./mysql/init:/docker-entrypoint-initdb.d:ro"
+    networks:
+      dvadmin-network:
+        ipv4_address: 177.10.0.13
+
+  # ============================================
+  # Celery 异步任务
+  # ============================================
+  
+  # Celery Worker
+  dvadmin3-celery:
+    container_name: dvadmin3-celery
+    build:
+      context: ../
+      dockerfile: docker_env/celery/Dockerfile
+    working_dir: /backend
+    environment:
+      PYTHONUNBUFFERED: 1
+      DATABASE_HOST: dvadmin3-mysql
+      DATABASE_PORT: 3306
+      DATABASE_USER: root
+      DATABASE_PASSWORD: ${MYSQL_PASSWORD:-DVADMIN3}
+      REDIS_HOST: dvadmin3-redis
+      REDIS_PORT: 6379
+      REDIS_PASSWORD: ${REDIS_PASSWORD:-DVADMIN3}
+      TZ: Asia/Shanghai
+    volumes:
+      - ../backend:/backend:cached
+      - ../logs/celery:/var/log/celery
+    restart: always
+    depends_on:
+      - dvadmin3-mysql
+      - dvadmin3-redis
+    networks:
+      dvadmin-network:
+        ipv4_address: 177.10.0.14
+
+  # ============================================
+  # 缓存与消息队列
+  # ============================================
+  
+  # Redis 缓存
+  dvadmin3-redis:
+    container_name: dvadmin3-redis
+    image: redis:6.2.6-alpine
+    restart: always
+    ports:
+      - "6379:6379"
+    environment:
+      - TZ=Asia/Shanghai
+    volumes:
+      - ./redis/data:/data
+      - ./redis/redis.conf:/etc/redis/redis.conf:ro
+    command: /bin/sh -c "echo 'vm.overcommit_memory = 1' >> /etc/sysctl.conf && redis-server /etc/redis/redis.conf --appendonly yes --requirepass ${REDIS_PASSWORD:-DVADMIN3}"
+    sysctls:
+      - net.core.somaxconn=1024
+    privileged: true
+    networks:
+      dvadmin-network:
+        ipv4_address: 177.10.0.15
+
+# ============================================
+# 网络配置
+# ============================================
+networks:
+  dvadmin-network:
+    driver: bridge
+    ipam:
+      driver: default
+      config:
+        - subnet: '177.10.0.0/16'
+          gateway: '177.10.0.1'

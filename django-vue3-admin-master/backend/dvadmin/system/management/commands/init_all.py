@@ -26,13 +26,13 @@ class Command(BaseCommand):
             '--modules',
             nargs='+',
             dest='modules',
-            default=['system', 'blog', 'book'],
-            help='指定要初始化的模块列表，默认: system blog book',
+            default=['system', 'blog'],
+            help='指定要初始化的模块列表，默认: system blog',
         )
 
     def handle(self, *args, **options):
         reset = options.get('reset', False)
-        modules = options.get('modules', ['system', 'blog', 'book'])
+        modules = options.get('modules', ['system', 'blog'])
 
         self.stdout.write('=' * 60)
         self.stdout.write(self.style.SUCCESS('开始初始化所有模块...'))
@@ -50,9 +50,6 @@ class Command(BaseCommand):
                     elif module == 'blog':
                         from dvadmin.blog.fixtures.initialize import BlogInitialize
                         BlogInitialize(app='dvadmin.blog', reset=reset).run()
-                    elif module == 'book':
-                        from dvadmin.book.fixtures.initialize import BookInitialize
-                        BookInitialize(app='dvadmin.book', reset=reset).run()
                     else:
                         self.stdout.write(self.style.WARNING(f'未知模块: {module}'))
                 except Exception as e:

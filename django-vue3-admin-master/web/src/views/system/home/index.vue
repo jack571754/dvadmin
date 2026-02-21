@@ -349,7 +349,7 @@ export default defineComponent({
 				series: [
 					{
 						type: 'pie',
-						radius: ['82', themeConfig.value.isIsDark ? '50' : '102'],
+						radius: themeConfig.value.isIsDark ? ['50', '70'] : ['82', '102'],
 						center: ['32%', '50%'],
 						itemStyle: {
 							color: function (params: any) {

@@ -1,0 +1,304 @@
+# DVAdmin 生产环境 Docker Compose 配置
+# 版本: 2.1
+# 更新时间: 2026-02-21
+#
+# 使用方法：
+#   cd docker_env
+#   docker-compose -f docker-compose.prod.yml --env-file .env.prod up -d
+#
+# 包含服务：
+# - dvadmin3-web: 管理后台前端 (Vue3)
+# - blog-frontend: 博客前端 (Vue3)
+# - dvadmin3-django: 后端API (Django 5.2.0)
+# - dvadmin3-mysql: 数据库 (MySQL 8.0)
+# - dvadmin3-redis: 缓存&消息队列 (Redis 6.2)
+# - dvadmin3-celery: 异步任务Worker
+
+version: "3.8"
+
+services:
+  # ============================================
+  # 前端服务
+  # ============================================
+  
+  # 管理后台前端 (Vue3 Admin)
+  dvadmin3-web:
+    container_name: dvadmin3-web
+    build:
+      context: ../
+      dockerfile: docker_env/web/Dockerfile
+    image: dvadmin3-web:latest
+    restart: always
+    ports:
+      - "8080:8080"
+    environment:
+      TZ: Asia/Shanghai
+      NODE_ENV: production
+    volumes:
+      - ./nginx/my.conf:/etc/nginx/conf.d/my.conf:ro
+      - ../backend/media:/backend/media:ro
+    networks:
+      dvadmin-network:
+        ipv4_address: 177.10.0.11
+    healthcheck:
+      test: ["CMD", "wget", "--quiet", "--tries=1", "--spider", "http://localhost:8080/"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+    depends_on:
+      dvadmin3-django:
+        condition: service_healthy
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"
+
+  # 博客前端 (Vue3 Blog)
+  blog-frontend:
+    container_name: blog-frontend
+    build:
+      context: ../../blog-frontend
+      dockerfile: ../django-vue3-admin-master/docker_env/blog/Dockerfile
+    image: blog-frontend:latest
+    restart: always
+    ports:
+      - "5173:80"
+    environment:
+      TZ: Asia/Shanghai
+      NODE_ENV: production
+    volumes:
+      - ./blog/nginx.conf:/etc/nginx/conf.d/default.conf:ro
+    networks:
+      dvadmin-network:
+        ipv4_address: 177.10.0.16
+    healthcheck:
+      test: ["CMD", "wget", "--quiet", "--tries=1", "--spider", "http://localhost/"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+    depends_on:
+      dvadmin3-django:
+        condition: service_healthy
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"
+
+  # ============================================
+  # 后端服务
+  # ============================================
+  
+  # Django 后端 API
+  dvadmin3-django:
+    container_name: dvadmin3-django
+    build:
+      context: ../
+      dockerfile: docker_env/django/Dockerfile
+    image: dvadmin3-django:latest
+    restart: always
+    working_dir: /backend
+    environment:
+      PYTHONUNBUFFERED: 1
+      DATABASE_HOST: dvadmin3-mysql
+      DATABASE_PORT: 3306
+      DATABASE_USER: root
+      DATABASE_PASSWORD: ${MYSQL_PASSWORD:-DVADMIN3}
+      DATABASE_NAME: django-vue3-admin
+      REDIS_HOST: dvadmin3-redis
+      REDIS_PORT: 6379
+      REDIS_PASSWORD: ${REDIS_PASSWORD:-DVADMIN3}
+      TZ: Asia/Shanghai
+      DJANGO_SETTINGS_MODULE: application.settings
+      DJANGO_SERVER_MODE: asgi
+      DJANGO_WORKERS: 4
+    volumes:
+      - ../backend:/backend:cached
+      - ../logs/django:/var/log/django
+      - ../backend/media:/backend/media
+    ports:
+      - "9000:9000"
+    networks:
+      dvadmin-network:
+        ipv4_address: 177.10.0.12
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:9000/healthz/"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 60s
+    depends_on:
+      dvadmin3-mysql:
+        condition: service_healthy
+      dvadmin3-redis:
+        condition: service_healthy
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "50m"
+        max-file: "5"
+    deploy:
+      resources:
+        limits:
+          cpus: '2'
+          memory: 2G
+        reservations:
+          cpus: '0.5'
+          memory: 512M
+
+  # ============================================
+  # 数据库服务
+  # ============================================
+  
+  # MySQL 数据库
+  dvadmin3-mysql:
+    container_name: dvadmin3-mysql
+    image: mysql:8.0
+    restart: always
+    privileged: true
+    ports:
+      - "3306:3306"
+    environment:
+      MYSQL_ROOT_PASSWORD: ${MYSQL_PASSWORD:-DVADMIN3}
+      MYSQL_DATABASE: "django-vue3-admin"
+      TZ: Asia/Shanghai
+    command:
+      --wait_timeout=31536000
+      --interactive_timeout=31536000
+      --max_connections=1000
+      --default-authentication-plugin=mysql_native_password
+      --character-set-server=utf8mb4
+      --collation-server=utf8mb4_unicode_ci
+    volumes:
+      - "./mysql/data:/var/lib/mysql"
+      - "./mysql/conf.d:/etc/mysql/conf.d"
+      - "./mysql/logs:/var/log/mysql"
+      - "./mysql/init:/docker-entrypoint-initdb.d:ro"
+    networks:
+      dvadmin-network:
+        ipv4_address: 177.10.0.13
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-u", "root", "-p${MYSQL_PASSWORD:-DVADMIN3}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 30s
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "50m"
+        max-file: "5"
+    deploy:
+      resources:
+        limits:
+          cpus: '2'
+          memory: 2G
+
+  # ============================================
+  # Celery 异步任务
+  # ============================================
+  
+  # Celery Worker
+  dvadmin3-celery:
+    container_name: dvadmin3-celery
+    build:
+      context: ../
+      dockerfile: docker_env/celery/Dockerfile
+    image: dvadmin3-celery:latest
+    restart: always
+    working_dir: /backend
+    environment:
+      PYTHONUNBUFFERED: 1
+      DATABASE_HOST: dvadmin3-mysql
+      DATABASE_PORT: 3306
+      DATABASE_USER: root
+      DATABASE_PASSWORD: ${MYSQL_PASSWORD:-DVADMIN3}
+      DATABASE_NAME: django-vue3-admin
+      REDIS_HOST: dvadmin3-redis
+      REDIS_PORT: 6379
+      REDIS_PASSWORD: ${REDIS_PASSWORD:-DVADMIN3}
+      TZ: Asia/Shanghai
+      CELERY_BROKER_URL: redis://:${REDIS_PASSWORD:-DVADMIN3}@dvadmin3-redis:6379/3
+      CELERY_RESULT_BACKEND: redis://:${REDIS_PASSWORD:-DVADMIN3}@dvadmin3-redis:6379/4
+    volumes:
+      - ../backend:/backend:cached
+      - ../logs/celery:/var/log/celery
+    networks:
+      dvadmin-network:
+        ipv4_address: 177.10.0.14
+    depends_on:
+      dvadmin3-mysql:
+        condition: service_healthy
+      dvadmin3-redis:
+        condition: service_healthy
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "20m"
+        max-file: "3"
+    deploy:
+      resources:
+        limits:
+          cpus: '1'
+          memory: 1G
+
+  # ============================================
+  # 缓存与消息队列
+  # ============================================
+  
+  # Redis 缓存
+  dvadmin3-redis:
+    container_name: dvadmin3-redis
+    image: redis:6.2.6-alpine
+    restart: always
+    ports:
+      - "6379:6379"
+    environment:
+      TZ: Asia/Shanghai
+    volumes:
+      - ./redis/data:/data
+      - ./redis/redis.conf:/etc/redis/redis.conf:ro
+    command: >
+      /bin/sh -c "
+        echo 'vm.overcommit_memory = 1' >> /etc/sysctl.conf &&
+        redis-server /etc/redis/redis.conf 
+        --appendonly yes 
+        --requirepass ${REDIS_PASSWORD:-DVADMIN3}
+      "
+    sysctls:
+      - net.core.somaxconn=1024
+    privileged: true
+    networks:
+      dvadmin-network:
+        ipv4_address: 177.10.0.15
+    healthcheck:
+      test: ["CMD", "redis-cli", "-a", "${REDIS_PASSWORD:-DVADMIN3}", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 10s
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "20m"
+        max-file: "3"
+    deploy:
+      resources:
+        limits:
+          cpus: '1'
+          memory: 1G
+
+# ============================================
+# 网络配置
+# ============================================
+networks:
+  dvadmin-network:
+    driver: bridge
+    ipam:
+      driver: default
+      config:
+        - subnet: '177.10.0.0/16'
+          gateway: '177.10.0.1'

@@ -132,7 +132,6 @@ INSTALLED_APPS = [
     "django_celery_beat",           # Celery 定时任务
     "django_celery_results",        # Celery 结果存储
     "dvadmin.system",               # 系统管理模块
-    "dvadmin.book",                 # 图书管理模块
     "dvadmin.blog",                 # 博客管理模块
     "dvadmin3_flow",               # 工作流审批插件
 ]

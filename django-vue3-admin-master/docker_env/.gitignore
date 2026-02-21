@@ -1,0 +1,21 @@
+# Data directories
+mysql/data/
+redis/data/
+
+# Python
+*.pyc
+__pycache__/
+*.pyo
+
+# Environment
+.env
+.env.local
+
+# Logs
+*.log
+logs/
+
+# IDE
+.idea/
+.vscode/
+*.swp

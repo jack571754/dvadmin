@@ -1,3 +1,4 @@
+# Web 前端基础镜像构建文件
 FROM node:16.19-alpine
 WORKDIR /
 COPY ./web/package.json .
