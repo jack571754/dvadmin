@@ -33,10 +33,14 @@ class CategoryViewSet(CustomModelViewSet):
     permission_classes = [CustomPermission]
     filter_fields = ['name', 'is_active']
     search_fields = ['name', 'description']
+    # 不使用数据权限过滤（访客访问时不需要）
+    extra_filter_class = []
+    # 显式指定过滤器后端，不使用数据权限过滤器
+    filter_backends = [CustomDjangoFilterBackend, SearchFilter, OrderingFilter]
 
     def get_permissions(self):
         """列表和详情公开，创建/更新/删除需要管理员权限"""
-        if self.action in ['list', 'retrieve', 'dict']:
+        if self.action in ['list', 'retrieve', 'dict', 'articles']:
             return [permissions.AllowAny()]
         return super().get_permissions()
 
@@ -46,6 +50,36 @@ class CategoryViewSet(CustomModelViewSet):
         categories = self.queryset.filter(is_active=True).order_by('sort_order')
         data = [{'label': cat.name, 'value': cat.id} for cat in categories]
         return DetailResponse(data=data, msg="获取分类字典成功")
+
+    @action(detail=True, methods=['get'], permission_classes=[permissions.AllowAny])
+    def articles(self, request, pk=None):
+        """获取指定分类下的文章列表"""
+        category = self.get_object()
+        page = int(request.query_params.get('page', 1))
+        page_size = int(request.query_params.get('page_size', 10))
+
+        # 获取该分类下已发布的文章
+        queryset = Article.objects.filter(
+            category=category,
+            status='published'
+        ).select_related('category', 'creator').prefetch_related('tags')
+
+        # 计算分页
+        total = queryset.count()
+        start = (page - 1) * page_size
+        end = start + page_size
+        articles = queryset[start:end]
+
+        serializer = ArticleListSerializer(articles, many=True)
+        return DetailResponse(
+            data=serializer.data,
+            msg="获取分类文章成功",
+            page=page,
+            limit=page_size,
+            total=total,
+            is_next=end < total,
+            is_previous=page > 1
+        )
 
 
 class TagViewSet(CustomModelViewSet):
@@ -57,6 +91,10 @@ class TagViewSet(CustomModelViewSet):
     permission_classes = [CustomPermission]
     filter_fields = ['name']
     search_fields = ['name']
+    # 不使用数据权限过滤（访客访问时不需要）
+    extra_filter_class = []
+    # 显式指定过滤器后端，不使用数据权限过滤器
+    filter_backends = [CustomDjangoFilterBackend, SearchFilter, OrderingFilter]
 
     def get_permissions(self):
         """列表和详情公开，创建/更新/删除需要管理员权限"""
@@ -147,6 +185,10 @@ class CommentViewSet(CustomModelViewSet):
     serializer_class = CommentSerializer
     permission_classes = [CustomPermission]
     filter_fields = ['article', 'is_active']
+    # 不使用数据权限过滤（访客访问时不需要）
+    extra_filter_class = []
+    # 显式指定过滤器后端，不使用数据权限过滤器
+    filter_backends = [CustomDjangoFilterBackend, SearchFilter, OrderingFilter]
 
     def get_serializer_class(self):
         """创建评论时使用专用序列化器"""

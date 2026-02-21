@@ -31,14 +31,31 @@
 
       <!-- Back Navigation -->
       <nav class="article-nav">
-        <button @click="goBack" class="nav-back">
-          <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
-            <path d="M10 3L5 8L10 13" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
-          </svg>
-          <span>返回</span>
-        </button>
-        <div class="nav-meta">
-          <span class="nav-date">{{ formatDate(article.createdAt) }}</span>
+        <div class="article-nav-inner">
+          <button @click="goBack" class="nav-back">
+            <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+              <path d="M10 3L5 8L10 13" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+            <span>返回</span>
+          </button>
+          <div class="nav-meta">
+            <span class="nav-date">{{ formatDate(article.createdAt) }}</span>
+            <!-- Admin Actions -->
+            <div v-if="authStore.isAdmin" class="admin-actions">
+              <button @click="openEditor" class="admin-btn edit-btn" title="编辑文章">
+                <svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5">
+                  <path d="M11.5 2.5l2 2M2 12v2h2l8.5-8.5-2-2L2 12z" stroke-linecap="round" stroke-linejoin="round"/>
+                </svg>
+                <span>编辑</span>
+              </button>
+              <button @click="handleDeleteArticle" class="admin-btn delete-btn" title="删除文章">
+                <svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5">
+                  <path d="M3 4h10M6 4V3a1 1 0 011-1h2a1 1 0 011 1v1M5 4v9a1 1 0 001 1h4a1 1 0 001-1V4" stroke-linecap="round" stroke-linejoin="round"/>
+                </svg>
+                <span>删除</span>
+              </button>
+            </div>
+          </div>
         </div>
       </nav>
 
@@ -60,6 +77,19 @@
             <span v-if="article.author" class="meta-author">{{ article.author }}</span>
           </div>
           <div class="meta-right">
+            <span class="meta-views">
+              <svg width="14" height="14" viewBox="0 0 16 16" fill="currentColor">
+                <path d="M8 3C4.5 3 1.5 5.5 0 8c1.5 2.5 4.5 5 8 5s6.5-2.5 8-5c-1.5-2.5-4.5-5-8-5zm0 8.5c-1.9 0-3.5-1.6-3.5-3.5S6.1 4.5 8 4.5s3.5 1.6 3.5 3.5S9.9 11.5 8 11.5z"/>
+                <circle cx="8" cy="8" r="1.5"/>
+              </svg>
+              {{ article.viewsCount || 0 }}
+            </span>
+            <span class="meta-likes">
+              <svg width="14" height="14" viewBox="0 0 16 16" fill="currentColor">
+                <path d="M8 14l-6-6c-1.5-1.5-1.5-4 0-5.5s4-1.5 5.5 0l.5.5.5-.5c1.5-1.5 4-1.5 5.5 0s1.5 4 0 5.5l-6 6z"/>
+              </svg>
+              {{ article.likesCount || 0 }}
+            </span>
             <span class="meta-read-time">{{ readTime }} 分钟阅读</span>
           </div>
         </div>
@@ -75,52 +105,86 @@
         </div>
       </header>
 
-      <!-- Article Body -->
-      <div class="article-body" ref="articleBodyRef">
-        <div class="markdown-content" v-html="renderedContent" @click="handleCodeCopy"></div>
+      <!-- Article Content with TOC -->
+      <div class="article-content-wrapper">
+        <!-- Article Body -->
+        <div class="article-body" ref="articleBodyRef">
+          <div class="markdown-content" v-html="renderedContent" @click="handleCodeCopy"></div>
+        </div>
+
+        <!-- Table of Contents - 右侧 -->
+        <div class="toc-sidebar">
+          <TableOfContents :content="renderedContent" />
+        </div>
       </div>
 
       <!-- Article Footer -->
       <footer class="article-footer">
-        <!-- Share Section -->
-        <div class="share-section">
-          <span class="share-label">分享</span>
-          <div class="share-buttons">
-            <a
-              :href="twitterUrl"
-              target="_blank"
-              rel="noopener noreferrer"
-              class="share-btn"
-              title="分享到 Twitter"
-            >
-              <svg width="16" height="16" viewBox="0 0 16 16" fill="currentColor">
-                <path d="M14.5 4.5c-.4.2-.9.3-1.4.4.5-.3.9-.8 1.1-1.3-.5.3-1 .5-1.5.6-.4-.5-1-.8-1.7-.8-1.3 0-2.3 1-2.3 2.3 0 .2 0 .4.1.5-2-.1-3.7-1-4.9-2.4-.2.4-.3.8-.3 1.2 0 .8.4 1.5 1 2-.4 0-.7-.1-1-.3v.1c0 1.1.8 2 1.8 2.2-.2.1-.4.1-.6.1-.1 0-.3 0-.4-.1.3.9 1.1 1.5 2.1 1.5-.8.6-1.7.9-2.7.9-.2 0-.3 0-.5 0 1 .6 2.1 1 3.3 1 4 0 6.1-3.3 6.1-6.1v-.3c.4-.3.8-.7 1.1-1.1z"/>
-              </svg>
-            </a>
-            <button
-              @click="copyLink"
-              class="share-btn"
-              title="复制链接"
-            >
+        <!-- Actions Row: Like + Share + Nav -->
+        <div class="footer-actions">
+          <!-- Like Button -->
+          <button
+            @click="handleLike"
+            :disabled="liking"
+            class="like-btn"
+            :class="{ 'like-btn--liked': hasLiked }"
+          >
+            <svg width="18" height="18" viewBox="0 0 16 16" fill="currentColor">
+              <path d="M8 14l-6-6c-1.5-1.5-1.5-4 0-5.5s4-1.5 5.5 0l.5.5.5-.5c1.5-1.5 4-1.5 5.5 0s1.5 4 0 5.5l-6 6z"/>
+            </svg>
+            <span>{{ hasLiked ? '已赞' : '点赞' }}</span>
+            <span class="like-count">{{ article?.likesCount || 0 }}</span>
+          </button>
+
+          <!-- Right Side: Share + Nav -->
+          <div class="footer-right">
+            <div class="share-group">
+              <a
+                :href="twitterUrl"
+                target="_blank"
+                rel="noopener noreferrer"
+                class="action-btn"
+                title="分享到 Twitter"
+              >
+                <svg width="16" height="16" viewBox="0 0 16 16" fill="currentColor">
+                  <path d="M14.5 4.5c-.4.2-.9.3-1.4.4.5-.3.9-.8 1.1-1.3-.5.3-1 .5-1.5.6-.4-.5-1-.8-1.7-.8-1.3 0-2.3 1-2.3 2.3 0 .2 0 .4.1.5-2-.1-3.7-1-4.9-2.4-.2.4-.3.8-.3 1.2 0 .8.4 1.5 1 2-.4 0-.7-.1-1-.3v.1c0 1.1.8 2 1.8 2.2-.2.1-.4.1-.6.1-.1 0-.3 0-.4-.1.3.9 1.1 1.5 2.1 1.5-.8.6-1.7.9-2.7.9-.2 0-.3 0-.5 0 1 .6 2.1 1 3.3 1 4 0 6.1-3.3 6.1-6.1v-.3c.4-.3.8-.7 1.1-1.1z"/>
+                </svg>
+              </a>
+              <button @click="copyLink" class="action-btn" title="复制链接">
+                <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5">
+                  <path d="M6 9H4.5C3.1 9 2 7.9 2 6.5v-1C2 4.1 3.1 3 4.5 3h1M10 7h1.5c1.4 0 2.5 1.1 2.5 2.5v1c0 1.4-1.1 2.5-2.5 2.5h-1M5 8h6" stroke-linecap="round"/>
+                </svg>
+              </button>
+            </div>
+            <button @click="goBack" class="action-btn nav-return">
               <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5">
-                <path d="M6 9H4.5C3.1 9 2 7.9 2 6.5v-1C2 4.1 3.1 3 4.5 3h1M10 7h1.5c1.4 0 2.5 1.1 2.5 2.5v1c0 1.4-1.1 2.5-2.5 2.5h-1M5 8h6" stroke-linecap="round"/>
+                <path d="M10 3L5 8L10 13" stroke-linecap="round" stroke-linejoin="round"/>
               </svg>
+              <span>返回</span>
             </button>
           </div>
         </div>
 
-        <!-- Navigation -->
-        <div class="article-navigation">
-          <button @click="goBack" class="nav-btn">
-            <span>← 返回列表</span>
-          </button>
-        </div>
-
-        <!-- Decorative Element -->
-        <div class="footer-decoration">
-          <span class="decoration-seal">完</span>
+        <!-- Decorative Seal -->
+        <div class="footer-seal">
+          <span class="seal-text">完</span>
         </div>
       </footer>
+
+      <!-- Comments Section (Collapsible) -->
+      <div class="comments-wrapper">
+        <button class="comments-toggle" @click="commentsExpanded = !commentsExpanded">
+          <svg class="toggle-icon" :class="{ expanded: commentsExpanded }" width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5">
+            <path d="M4 6L8 10L12 6" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+          <span class="toggle-text">{{ commentsExpanded ? '收起评论' : '展开评论' }}</span>
+        </button>
+        <transition name="collapse">
+          <div v-show="commentsExpanded" class="comments-content">
+            <CommentSection v-if="article" :article-id="article.id" />
+          </div>
+        </transition>
+      </div>
     </template>
 
     <!-- Not Found -->
@@ -139,6 +203,16 @@
         <span class="toast-message">{{ toastMessage }}</span>
       </div>
     </transition>
+
+    <!-- Article Editor Modal (Admin Only) -->
+    <ArticleEditor
+      v-if="authStore.isAdmin"
+      v-model:visible="showEditor"
+      :article="article"
+      :categories="categories"
+      :tags="tags"
+      @saved="handleArticleSaved"
+    />
   </article>
 </template>
 
@@ -146,7 +220,7 @@
 import { ref, computed, onMounted, onUnmounted } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import MarkdownIt from 'markdown-it'
-import { blogApi } from '@/api/blog'
+import { blogApi, type Category, type Tag } from '@/api/blog'
 import hljs from 'highlight.js/lib/core'
 import javascript from 'highlight.js/lib/languages/javascript'
 import typescript from 'highlight.js/lib/languages/typescript'
@@ -156,6 +230,12 @@ import xml from 'highlight.js/lib/languages/xml'
 import css from 'highlight.js/lib/languages/css'
 import sql from 'highlight.js/lib/languages/sql'
 import bash from 'highlight.js/lib/languages/bash'
+import CommentSection from '@/components/CommentSection.vue'
+import ArticleEditor from '@/components/admin/ArticleEditor.vue'
+import TableOfContents from '@/components/TableOfContents.vue'
+import { useAuthStore } from '@/stores/auth'
+
+const authStore = useAuthStore()
 
 // Register highlight.js languages
 hljs.registerLanguage('javascript', javascript)
@@ -169,6 +249,8 @@ hljs.registerLanguage('sql', sql)
 hljs.registerLanguage('bash', bash)
 hljs.registerLanguage('shell', bash)
 
+const LIKED_ARTICLES_KEY = 'blog_liked_articles'
+
 interface Article {
   id: string
   title: string
@@ -178,6 +260,8 @@ interface Article {
   author?: string
   tags?: string[]
   excerpt?: string
+  viewsCount?: number
+  likesCount?: number
 }
 
 const route = useRoute()
@@ -191,6 +275,37 @@ const error = ref('')
 const readingProgress = ref(0)
 const showToast = ref(false)
 const toastMessage = ref('')
+const liking = ref(false)
+const hasLiked = ref(false)
+const commentsExpanded = ref(false)
+
+// Editor state
+const showEditor = ref(false)
+const categories = ref<Category[]>([])
+const tags = ref<Tag[]>([])
+
+// Check if article was liked before
+const checkLikedStatus = (articleId: string) => {
+  try {
+    const liked = JSON.parse(localStorage.getItem(LIKED_ARTICLES_KEY) || '[]')
+    hasLiked.value = liked.includes(articleId)
+  } catch {
+    hasLiked.value = false
+  }
+}
+
+// Save liked status
+const saveLikedStatus = (articleId: string) => {
+  try {
+    const liked = JSON.parse(localStorage.getItem(LIKED_ARTICLES_KEY) || '[]')
+    if (!liked.includes(articleId)) {
+      liked.push(articleId)
+      localStorage.setItem(LIKED_ARTICLES_KEY, JSON.stringify(liked))
+    }
+  } catch {
+    // ignore
+  }
+}
 
 // Markdown renderer
 const md = new MarkdownIt({
@@ -198,17 +313,66 @@ const md = new MarkdownIt({
   linkify: true,
   typographer: true,
   highlight: (str, lang) => {
-    if (lang && hljs.getLanguage(lang)) {
+    // Detect language
+    let detectedLang = lang
+    if (!detectedLang) {
+      // Simple auto-detection based on content
+      if (str.includes('def ') || str.includes('import ')) detectedLang = 'python'
+      else if (str.includes('function ') || str.includes('const ') || str.includes('let ')) detectedLang = 'javascript'
+      else if (str.includes('interface ') || str.includes(': string') || str.includes(': number')) detectedLang = 'typescript'
+      else detectedLang = 'code'
+    }
+
+    // Highlight code
+    let highlighted = md.utils.escapeHtml(str)
+    if (detectedLang && hljs.getLanguage(detectedLang)) {
       try {
-        const highlighted = hljs.highlight(str, { language: lang }).value
-        return `<pre class="hljs"><code class="hljs">${highlighted}</code><button class="copy-btn" data-code="${encodeURIComponent(str)}" aria-label="复制代码">复制</button></pre>`
+        highlighted = hljs.highlight(str, { language: detectedLang }).value
       } catch {
         // ignore
       }
     }
-    return `<pre class="hljs"><code class="hljs">${md.utils.escapeHtml(str)}</code><button class="copy-btn" data-code="${encodeURIComponent(str)}" aria-label="复制代码">复制</button></pre>`
+
+    // Generate line numbers
+    const lines = str.split('\n')
+    const lineNumbers = lines.slice(0, -1).map((_, i) => `<span class="line-number">${i + 1}</span>`).join('\n')
+
+    // Build Mac-style code block HTML
+    return `
+      <div class="code-block mac-style">
+        <div class="code-header">
+          <span class="window-dots">
+            <span class="dot red"></span>
+            <span class="dot yellow"></span>
+            <span class="dot green"></span>
+          </span>
+          <span class="code-lang">${detectedLang}</span>
+          <button class="copy-btn" data-code="${encodeURIComponent(str)}" aria-label="复制代码">复制</button>
+        </div>
+        <div class="code-body">
+          <pre class="line-numbers">${lineNumbers}</pre>
+          <pre class="code-content"><code class="hljs">${highlighted}</code></pre>
+        </div>
+      </div>
+    `
   },
 })
+
+// Add heading IDs for TOC
+const originalHeadingOpen = md.renderer.rules.heading_open || function(tokens, idx, options, env, self) {
+  return self.renderToken(tokens, idx, options)
+}
+
+md.renderer.rules.heading_open = function(tokens, idx, options, env, self) {
+  const token = tokens[idx]
+  const contentToken = tokens[idx + 1]
+  if (contentToken && contentToken.type === 'inline') {
+    const text = contentToken.content || ''
+    const slug = text.toLowerCase().replace(/[^\w\u4e00-\u9fa5]+/g, '-').replace(/^-|-$/g, '')
+    token.attrSet('id', slug)
+  }
+  return originalHeadingOpen(tokens, idx, options, env, self)
+}
 
 // Computed
 const renderedContent = computed(() => {
@@ -236,6 +400,7 @@ const fetchArticle = async () => {
   try {
     const articleId = route.params.id as string
     article.value = await blogApi.getArticle(articleId)
+    checkLikedStatus(articleId)
   } catch (err) {
     if (err instanceof Error && err.message.includes('404')) {
       article.value = null
@@ -244,6 +409,45 @@ const fetchArticle = async () => {
     }
   } finally {
     loading.value = false
+  }
+}
+
+const fetchCategoriesAndTags = async () => {
+  try {
+    const [cats, tagsList] = await Promise.all([
+      blogApi.getCategories(),
+      blogApi.getTags(),
+    ])
+    categories.value = cats
+    tags.value = tagsList
+  } catch (err) {
+    console.error('Failed to fetch categories/tags:', err)
+  }
+}
+
+const openEditor = () => {
+  showEditor.value = true
+}
+
+const handleArticleSaved = (updatedArticle: Article) => {
+  article.value = updatedArticle
+  showToastNotification('文章保存成功')
+}
+
+const handleDeleteArticle = async () => {
+  if (!article.value?.id) return
+  
+  if (!confirm('确定要删除这篇文章吗？此操作不可撤销。')) {
+    return
+  }
+
+  try {
+    await blogApi.deleteArticle(article.value.id)
+    showToastNotification('文章已删除')
+    router.push('/')
+  } catch (err) {
+    console.error('Failed to delete article:', err)
+    showToastNotification('删除失败，请重试')
   }
 }
 
@@ -309,6 +513,24 @@ const handleCodeCopy = async (e: MouseEvent) => {
   }
 }
 
+const handleLike = async () => {
+  if (!article.value || liking.value || hasLiked.value) return
+  
+  liking.value = true
+  try {
+    const result = await blogApi.likeArticle(article.value.id)
+    article.value.likesCount = result.likes_count
+    hasLiked.value = true
+    saveLikedStatus(article.value.id)
+    showToastNotification('点赞成功，感谢支持！')
+  } catch (err) {
+    console.error('Failed to like article:', err)
+    showToastNotification('点赞失败，请重试')
+  } finally {
+    liking.value = false
+  }
+}
+
 const handleScroll = () => {
   if (!articleBodyRef.value) return
 
@@ -324,6 +546,11 @@ const handleScroll = () => {
 onMounted(() => {
   fetchArticle()
   window.addEventListener('scroll', handleScroll, { passive: true })
+  
+  // Fetch categories and tags if user is admin
+  if (authStore.isAdmin) {
+    fetchCategoriesAndTags()
+  }
 })
 
 onUnmounted(() => {
@@ -335,25 +562,25 @@ onUnmounted(() => {
 .article-detail {
   min-height: 100vh;
   background: var(--color-background);
+  padding-top: 64px;
 }
 
 /* ========================================
-   Reading Progress - 墨韵进度条
+   Reading Progress
    ======================================== */
 
 .reading-progress {
   position: fixed;
-  top: 0;
+  top: 56px;
   left: 0;
   right: 0;
-  height: 3px;
-  z-index: var(--z-fixed);
+  height: 2px;
+  z-index: calc(var(--z-sticky) + 1);
+  background: transparent;
 }
 
 .progress-track {
-  position: absolute;
-  inset: 0;
-  background: var(--stone-200);
+  display: none;
 }
 
 .progress-fill {
@@ -361,7 +588,7 @@ onUnmounted(() => {
   top: 0;
   left: 0;
   height: 100%;
-  background: linear-gradient(to right, var(--vermilion), #e85544);
+  background: var(--vermilion);
   transition: width 0.1s ease-out;
 }
 
@@ -480,16 +707,28 @@ onUnmounted(() => {
 }
 
 /* ========================================
-   Article Navigation
+   Article Navigation - 悬浮上层
    ======================================== */
 
 .article-nav {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  max-width: 900px;
+  width: 100%;
+  padding: var(--space-4) var(--space-6);
+  position: sticky;
+  top: 56px;
+  background: var(--paper-50);
+  z-index: 10;
+}
+
+.article-nav-inner {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  max-width: 760px;
+  width: 100%;
   margin: 0 auto;
-  padding: var(--space-8) var(--space-6) var(--space-4);
 }
 
 .nav-back {
@@ -500,6 +739,7 @@ onUnmounted(() => {
   font-family: var(--font-sans);
   font-size: var(--font-size-sm);
   color: var(--stone-600);
+  background: transparent;
   border-radius: var(--radius-base);
   transition: all var(--duration-fast) var(--ease-out-quart);
 }
@@ -512,6 +752,7 @@ onUnmounted(() => {
 .nav-meta {
   display: flex;
   align-items: center;
+  gap: var(--space-4);
 }
 
 .nav-date {
@@ -522,14 +763,56 @@ onUnmounted(() => {
   text-transform: uppercase;
 }
 
+.admin-actions {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+}
+
+.admin-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-1);
+  padding: var(--space-1) var(--space-2);
+  font-family: var(--font-sans);
+  font-size: var(--font-size-xs);
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+  transition: all var(--duration-fast) var(--ease-out-quart);
+}
+
+.edit-btn {
+  color: var(--stone-600);
+  background: transparent;
+  border: 1px solid var(--stone-300);
+}
+
+.edit-btn:hover {
+  color: var(--indigo);
+  background: rgba(79, 70, 229, 0.1);
+  border-color: var(--indigo);
+}
+
+.delete-btn {
+  color: var(--stone-600);
+  background: transparent;
+  border: 1px solid var(--stone-300);
+}
+
+.delete-btn:hover {
+  color: var(--vermilion);
+  background: var(--vermilion-dim);
+  border-color: var(--vermilion);
+}
+
 /* ========================================
    Article Header
    ======================================== */
 
 .article-header {
-  max-width: 900px;
+  max-width: 760px;
   margin: 0 auto;
-  padding: var(--space-8) var(--space-6) var(--space-12);
+  padding: var(--space-8) var(--space-6) var(--space-10);
 }
 
 .category-badge {
@@ -585,10 +868,15 @@ onUnmounted(() => {
 
 .meta-date,
 .meta-author,
-.meta-read-time {
+.meta-read-time,
+.meta-views,
+.meta-likes {
   font-family: var(--font-sans);
   font-size: var(--font-size-sm);
   color: var(--stone-600);
+  display: flex;
+  align-items: center;
+  gap: var(--space-1);
 }
 
 .meta-date {
@@ -631,13 +919,30 @@ onUnmounted(() => {
 }
 
 /* ========================================
-   Article Body
+   Article Content with TOC
    ======================================== */
 
-.article-body {
-  max-width: 900px;
+.article-content-wrapper {
+  display: flex;
+  max-width: 1100px;
   margin: 0 auto;
-  padding: 0 var(--space-6) var(--space-20);
+  gap: var(--space-8);
+  padding: 0 var(--space-6);
+}
+
+/* 文章主体 */
+.article-body {
+  flex: 1;
+  min-width: 0;
+  max-width: 720px;
+  padding: 0 0 var(--space-16);
+}
+
+/* 目录侧边栏 - 右侧 */
+.toc-sidebar {
+  flex-shrink: 0;
+  width: 220px;
+  padding-top: var(--space-4);
 }
 
 .markdown-content {
@@ -702,30 +1007,62 @@ onUnmounted(() => {
   color: var(--indigo);
 }
 
-.markdown-content :deep(pre) {
-  position: relative;
-  margin: var(--space-8) 0;
-  padding: var(--space-5);
-  background: var(--ink-900);
+/* Mac-style Code Block */
+.markdown-content :deep(.code-block.mac-style) {
+  margin: var(--space-6) 0;
+  background: #1e1e1e;
   border-radius: var(--radius-lg);
-  overflow-x: auto;
+  overflow: hidden;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
 }
 
-.markdown-content :deep(pre code) {
-  background: transparent;
-  padding: 0;
-  color: var(--paper-50);
-  font-size: var(--font-size-sm);
+.markdown-content :deep(.code-header) {
+  display: flex;
+  align-items: center;
+  padding: var(--space-2) var(--space-4);
+  background: #2d2d2d;
+  border-bottom: 1px solid #3d3d3d;
+}
+
+.markdown-content :deep(.window-dots) {
+  display: flex;
+  gap: var(--space-2);
+}
+
+.markdown-content :deep(.dot) {
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+}
+
+.markdown-content :deep(.dot.red) {
+  background: #ff5f56;
+}
+
+.markdown-content :deep(.dot.yellow) {
+  background: #ffbd2e;
+}
+
+.markdown-content :deep(.dot.green) {
+  background: #27c93f;
+}
+
+.markdown-content :deep(.code-lang) {
+  flex: 1;
+  text-align: center;
+  font-family: var(--font-sans);
+  font-size: var(--font-size-xs);
+  font-weight: var(--font-weight-medium);
+  color: #888;
+  text-transform: uppercase;
+  letter-spacing: var(--letter-wide);
 }
 
 .markdown-content :deep(.copy-btn) {
-  position: absolute;
-  top: var(--space-3);
-  right: var(--space-3);
-  padding: var(--space-1) var(--space-3);
-  background: rgba(255, 255, 255, 0.1);
-  color: var(--stone-400);
-  border: 1px solid rgba(255, 255, 255, 0.1);
+  padding: var(--space-1) var(--space-2);
+  background: transparent;
+  color: #888;
+  border: 1px solid #444;
   border-radius: var(--radius-sm);
   font-family: var(--font-sans);
   font-size: var(--font-size-xs);
@@ -734,8 +1071,82 @@ onUnmounted(() => {
 }
 
 .markdown-content :deep(.copy-btn:hover) {
-  background: rgba(255, 255, 255, 0.15);
-  color: white;
+  background: #3d3d3d;
+  color: #fff;
+  border-color: #555;
+}
+
+.markdown-content :deep(.code-body) {
+  display: flex;
+  overflow-x: auto;
+}
+
+.markdown-content :deep(.line-numbers) {
+  display: flex;
+  flex-direction: column;
+  padding: var(--space-4) var(--space-3);
+  margin: 0;
+  background: #252525;
+  border-right: 1px solid #3d3d3d;
+  font-family: var(--font-mono);
+  font-size: var(--font-size-sm);
+  line-height: 1.6;
+  color: #555;
+  text-align: right;
+  user-select: none;
+  min-width: 50px;
+}
+
+.markdown-content :deep(.line-number) {
+  display: block;
+}
+
+.markdown-content :deep(.code-content) {
+  flex: 1;
+  padding: var(--space-4);
+  margin: 0;
+  background: #1e1e1e;
+  overflow-x: auto;
+}
+
+.markdown-content :deep(.code-content code) {
+  display: block;
+  font-family: var(--font-mono);
+  font-size: var(--font-size-sm);
+  line-height: 1.6;
+  color: #d4d4d4;
+  background: transparent;
+  padding: 0;
+  white-space: pre;
+}
+
+/* Inline code (not in code-block) */
+.markdown-content :deep(p code),
+.markdown-content :deep(li code),
+.markdown-content :deep(td code) {
+  font-family: var(--font-mono);
+  font-size: 0.9em;
+  padding: 0.2em 0.5em;
+  background: var(--stone-100);
+  border-radius: var(--radius-sm);
+  color: var(--indigo);
+}
+
+/* Legacy pre/code support */
+.markdown-content :deep(pre:not(.line-numbers):not(.code-content)) {
+  position: relative;
+  margin: var(--space-8) 0;
+  padding: var(--space-5);
+  background: var(--ink-900);
+  border-radius: var(--radius-lg);
+  overflow-x: auto;
+}
+
+.markdown-content :deep(pre:not(.line-numbers):not(.code-content)) code {
+  background: transparent;
+  padding: 0;
+  color: var(--paper-50);
+  font-size: var(--font-size-sm);
 }
 
 .markdown-content :deep(img) {
@@ -793,95 +1204,117 @@ onUnmounted(() => {
 }
 
 /* ========================================
-   Article Footer
+   Article Footer - Horizontal Layout
    ======================================== */
 
 .article-footer {
-  max-width: 900px;
+  max-width: 760px;
   margin: 0 auto;
-  padding: var(--space-12) var(--space-6);
+  padding: var(--space-6) var(--space-6);
   border-top: 1px solid var(--stone-200);
 }
 
-.share-section {
+.footer-actions {
   display: flex;
-  flex-direction: column;
+  justify-content: space-between;
   align-items: center;
   gap: var(--space-4);
-  margin-bottom: var(--space-10);
 }
 
-.share-label {
-  font-family: var(--font-sans);
-  font-size: var(--font-size-xs);
-  color: var(--stone-500);
-  letter-spacing: var(--letter-wider);
-  text-transform: uppercase;
-}
-
-.share-buttons {
-  display: flex;
-  gap: var(--space-3);
-}
-
-.share-btn {
+.like-btn {
   display: flex;
   align-items: center;
-  justify-content: center;
-  width: 40px;
-  height: 40px;
+  gap: var(--space-2);
+  padding: var(--space-2) var(--space-4);
+  font-family: var(--font-sans);
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-medium);
   color: var(--stone-600);
   background: var(--stone-100);
   border: 1px solid var(--stone-200);
   border-radius: var(--radius-full);
-  transition: all var(--duration-fast) var(--ease-out-quart);
-}
-
-.share-btn:hover {
-  color: var(--vermilion);
-  background: var(--vermilion-dim);
-  border-color: var(--vermilion);
-  transform: translateY(-2px);
-}
-
-.article-navigation {
-  display: flex;
-  justify-content: center;
-  margin-bottom: var(--space-12);
-}
-
-.nav-btn {
-  padding: var(--space-3) var(--space-8);
-  font-family: var(--font-sans);
-  font-size: var(--font-size-sm);
-  font-weight: var(--font-weight-medium);
-  color: var(--stone-700);
-  background: var(--stone-100);
-  border: 1px solid var(--stone-200);
-  border-radius: var(--radius-base);
   cursor: pointer;
   transition: all var(--duration-fast) var(--ease-out-quart);
 }
 
-.nav-btn:hover {
+.like-btn:hover:not(:disabled) {
+  color: var(--vermilion);
+  border-color: var(--vermilion);
+  background: var(--vermilion-dim);
+}
+
+.like-btn:disabled {
+  cursor: not-allowed;
+  opacity: 0.7;
+}
+
+.like-btn--liked {
+  color: var(--vermilion);
+  border-color: var(--vermilion);
+  background: var(--vermilion-dim);
+}
+
+.like-count {
+  font-variant-numeric: tabular-nums;
+  padding: var(--space-1) var(--space-2);
+  background: rgba(0, 0, 0, 0.05);
+  border-radius: var(--radius-sm);
+  font-size: var(--font-size-xs);
+}
+
+.footer-right {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+}
+
+.share-group {
+  display: flex;
+  gap: var(--space-2);
+}
+
+.action-btn {
+  display: flex;
+  align-items: center;
+  gap: var(--space-1);
+  padding: var(--space-2) var(--space-3);
+  font-family: var(--font-sans);
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-medium);
+  color: var(--stone-600);
+  background: transparent;
+  border: 1px solid var(--stone-200);
+  border-radius: var(--radius-base);
+  cursor: pointer;
+  transition: all var(--duration-fast) var(--ease-out-quart);
+  text-decoration: none;
+}
+
+.action-btn:hover {
   color: var(--vermilion);
   background: var(--vermilion-dim);
   border-color: var(--vermilion);
 }
 
-.footer-decoration {
-  display: flex;
-  justify-content: center;
+.nav-return {
+  background: var(--stone-50);
 }
 
-.decoration-seal {
+.footer-seal {
+  display: flex;
+  justify-content: center;
+  margin-top: var(--space-6);
+}
+
+.seal-text {
   font-family: var(--font-serif);
-  font-size: var(--font-size-base);
-  font-weight: var(--font-weight-bold);
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-medium);
   color: var(--stone-400);
-  padding: var(--space-2) var(--space-4);
-  border: 1px solid var(--stone-300);
+  padding: var(--space-1) var(--space-3);
+  border: 1px solid var(--stone-200);
   border-radius: var(--radius-sm);
+  letter-spacing: var(--letter-wide);
 }
 
 /* ========================================
@@ -930,6 +1363,75 @@ onUnmounted(() => {
 .toast-leave-to {
   opacity: 0;
   transform: translateX(-50%) translateY(8px);
+}
+
+/* ========================================
+   Comments Wrapper - Collapsible
+   ======================================== */
+
+.comments-wrapper {
+  max-width: 760px;
+  margin: 0 auto;
+  padding: 0 var(--space-6) var(--space-12);
+}
+
+.comments-toggle {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-2);
+  width: 100%;
+  padding: var(--space-3) var(--space-4);
+  font-family: var(--font-sans);
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-medium);
+  color: var(--stone-600);
+  background: var(--stone-50);
+  border: 1px solid var(--stone-200);
+  border-radius: var(--radius-base);
+  cursor: pointer;
+  transition: all var(--duration-fast) var(--ease-out-quart);
+}
+
+.comments-toggle:hover {
+  color: var(--vermilion);
+  background: var(--vermilion-dim);
+  border-color: var(--vermilion);
+}
+
+.toggle-icon {
+  transition: transform var(--duration-fast) var(--ease-out-quart);
+}
+
+.toggle-icon.expanded {
+  transform: rotate(180deg);
+}
+
+.toggle-text {
+  letter-spacing: var(--letter-wide);
+}
+
+.comments-content {
+  margin-top: var(--space-4);
+}
+
+.collapse-enter-active,
+.collapse-leave-active {
+  transition: all var(--duration-normal) var(--ease-out-quart);
+  overflow: hidden;
+}
+
+.collapse-enter-from,
+.collapse-leave-to {
+  opacity: 0;
+  max-height: 0;
+  margin-top: 0;
+}
+
+.collapse-enter-to,
+.collapse-leave-from {
+  opacity: 1;
+  max-height: 2000px;
 }
 
 /* ========================================

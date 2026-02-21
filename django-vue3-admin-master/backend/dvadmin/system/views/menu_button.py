@@ -108,17 +108,63 @@ class MenuButtonViewSet(CustomModelViewSet):
                 code=4000
             )
 
+        # 使用 web_path 构建 API 路径，如果没有 web_path 则使用 component_name
+        # 注意：web_path 可能是 '/blog/article' 格式，需要确保以 '/' 开头
+        api_path = menu_obj.web_path or f'/{menu_obj.component_name.replace(":", "/")}'
+
         result_list = [
-            {'menu': menu_obj.id, 'name': '新增', 'value': f'{menu_obj.component_name}:Create', 'api': f'/api/{menu_obj.component_name}/', 'method': 1},
-            {'menu': menu_obj.id, 'name': '删除', 'value': f'{menu_obj.component_name}:Delete', 'api': f'/api/{menu_obj.component_name}/{{id}}/', 'method': 3},
-            {'menu': menu_obj.id, 'name': '编辑', 'value': f'{menu_obj.component_name}:Update', 'api': f'/api/{menu_obj.component_name}/{{id}}/', 'method': 2},
-            {'menu': menu_obj.id, 'name': '查询', 'value': f'{menu_obj.component_name}:Search', 'api': f'/api/{menu_obj.component_name}/', 'method': 0},
-            {'menu': menu_obj.id, 'name': '详情', 'value': f'{menu_obj.component_name}:Retrieve', 'api': f'/api/{menu_obj.component_name}/{{id}}/', 'method': 0},
-            {'menu': menu_obj.id, 'name': '复制', 'value': f'{menu_obj.component_name}:Copy', 'api': f'/api/{menu_obj.component_name}/', 'method': 1},
-            {'menu': menu_obj.id, 'name': '导入', 'value': f'{menu_obj.component_name}:Import', 'api': f'/api/{menu_obj.component_name}/import_data/', 'method': 1},
-            {'menu': menu_obj.id, 'name': '导出', 'value': f'{menu_obj.component_name}:Export', 'api': f'/api/{menu_obj.component_name}/export_data/', 'method': 1},
+            {'name': '新增', 'value': f'{menu_obj.component_name}:Create', 'api': f'/api{api_path}/', 'method': 1},
+            {'name': '删除', 'value': f'{menu_obj.component_name}:Delete', 'api': f'/api{api_path}/{{id}}/', 'method': 3},
+            {'name': '编辑', 'value': f'{menu_obj.component_name}:Update', 'api': f'/api{api_path}/{{id}}/', 'method': 2},
+            {'name': '查询', 'value': f'{menu_obj.component_name}:Query', 'api': f'/api{api_path}/', 'method': 0},
+            {'name': '详情', 'value': f'{menu_obj.component_name}:Retrieve', 'api': f'/api{api_path}/{{id}}/', 'method': 0},
+            {'name': '复制', 'value': f'{menu_obj.component_name}:Copy', 'api': f'/api{api_path}/', 'method': 1},
+            {'name': '导入', 'value': f'{menu_obj.component_name}:Import', 'api': f'/api{api_path}/import_data/', 'method': 1},
+            {'name': '导出', 'value': f'{menu_obj.component_name}:Export', 'api': f'/api{api_path}/export_data/', 'method': 1},
         ]
-        serializer = self.get_serializer(data=result_list, many=True)
-        serializer.is_valid(raise_exception=True)
-        serializer.save()
-        return SuccessResponse(serializer.data, msg="批量创建成功")
+
+        # 创建结果统计
+        created_list = []
+        skipped_list = []
+        created_count = 0
+        skipped_count = 0
+
+        for item in result_list:
+            # 检查是否已存在该权限值
+            existing_btn = MenuButton.objects.filter(value=item['value']).first()
+
+            if existing_btn:
+                # 如果已存在，检查是否属于当前菜单
+                if existing_btn.menu_id == menu_obj.id:
+                    skipped_list.append(item['name'])
+                    skipped_count += 1
+                    continue  # 跳过，不更新
+                else:
+                    # 属于其他菜单，更新到当前菜单
+                    existing_btn.menu = menu_obj
+                    existing_btn.name = item['name']
+                    existing_btn.api = item['api']
+                    existing_btn.method = item['method']
+                    existing_btn.save()
+                    created_list.append(existing_btn)
+                    created_count += 1
+            else:
+                # 不存在，创建新的
+                btn = MenuButton.objects.create(
+                    menu=menu_obj,
+                    name=item['name'],
+                    value=item['value'],
+                    api=item['api'],
+                    method=item['method'],
+                )
+                created_list.append(btn)
+                created_count += 1
+
+        msg = f"批量创建完成：新增 {created_count} 个"
+        if skipped_count > 0:
+            msg += f"，跳过 {skipped_count} 个已存在（{', '.join(skipped_list)}）"
+
+        return SuccessResponse(
+            self.get_serializer(created_list, many=True).data,
+            msg=msg
+        )

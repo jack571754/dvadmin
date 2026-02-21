@@ -1,0 +1,502 @@
+[
+    {
+        "label": "图书状态",
+        "value": "book_status",
+        "parent": null,
+        "type": 0,
+        "color": null,
+        "is_value": false,
+        "status": true,
+        "sort": 1,
+        "remark": "图书上下架状态",
+        "children": [
+            {
+                "label": "上架",
+                "value": "0",
+                "type": 1,
+                "color": "success",
+                "is_value": true,
+                "status": true,
+                "sort": 1,
+                "remark": null,
+                "children": []
+            },
+            {
+                "label": "下架",
+                "value": "1",
+                "type": 1,
+                "color": "warning",
+                "is_value": true,
+                "status": true,
+                "sort": 2,
+                "remark": null,
+                "children": []
+            },
+            {
+                "label": "遗失",
+                "value": "2",
+                "type": 1,
+                "color": "danger",
+                "is_value": true,
+                "status": true,
+                "sort": 3,
+                "remark": null,
+                "children": []
+            },
+            {
+                "label": "报废",
+                "value": "3",
+                "type": 1,
+                "color": "info",
+                "is_value": true,
+                "status": true,
+                "sort": 4,
+                "remark": null,
+                "children": []
+            }
+        ]
+    },
+    {
+        "label": "借阅状态",
+        "value": "borrow_status",
+        "parent": null,
+        "type": 0,
+        "color": null,
+        "is_value": false,
+        "status": true,
+        "sort": 2,
+        "remark": "图书借阅状态",
+        "children": [
+            {
+                "label": "借阅中",
+                "value": "0",
+                "type": 1,
+                "color": "primary",
+                "is_value": true,
+                "status": true,
+                "sort": 1,
+                "remark": null,
+                "children": []
+            },
+            {
+                "label": "已归还",
+                "value": "1",
+                "type": 1,
+                "color": "success",
+                "is_value": true,
+                "status": true,
+                "sort": 2,
+                "remark": null,
+                "children": []
+            },
+            {
+                "label": "逾期未还",
+                "value": "2",
+                "type": 1,
+                "color": "danger",
+                "is_value": true,
+                "status": true,
+                "sort": 3,
+                "remark": null,
+                "children": []
+            },
+            {
+                "label": "已续借",
+                "value": "3",
+                "type": 1,
+                "color": "warning",
+                "is_value": true,
+                "status": true,
+                "sort": 4,
+                "remark": null,
+                "children": []
+            }
+        ]
+    },
+    {
+        "label": "预约状态",
+        "value": "reservation_status",
+        "parent": null,
+        "type": 0,
+        "color": null,
+        "is_value": false,
+        "status": true,
+        "sort": 3,
+        "remark": "图书预约状态",
+        "children": [
+            {
+                "label": "等待中",
+                "value": "0",
+                "type": 1,
+                "color": "warning",
+                "is_value": true,
+                "status": true,
+                "sort": 1,
+                "remark": null,
+                "children": []
+            },
+            {
+                "label": "已取消",
+                "value": "1",
+                "type": 1,
+                "color": "info",
+                "is_value": true,
+                "status": true,
+                "sort": 2,
+                "remark": null,
+                "children": []
+            },
+            {
+                "label": "已完成",
+                "value": "2",
+                "type": 1,
+                "color": "success",
+                "is_value": true,
+                "status": true,
+                "sort": 3,
+                "remark": null,
+                "children": []
+            },
+            {
+                "label": "已过期",
+                "value": "3",
+                "type": 1,
+                "color": "danger",
+                "is_value": true,
+                "status": true,
+                "sort": 4,
+                "remark": null,
+                "children": []
+            }
+        ]
+    },
+    {
+        "label": "作者性别",
+        "value": "author_gender",
+        "parent": null,
+        "type": 0,
+        "color": null,
+        "is_value": false,
+        "status": true,
+        "sort": 4,
+        "remark": "作者性别类型",
+        "children": [
+            {
+                "label": "未知",
+                "value": "0",
+                "type": 1,
+                "color": "info",
+                "is_value": true,
+                "status": true,
+                "sort": 1,
+                "remark": null,
+                "children": []
+            },
+            {
+                "label": "男",
+                "value": "1",
+                "type": 1,
+                "color": "primary",
+                "is_value": true,
+                "status": true,
+                "sort": 2,
+                "remark": null,
+                "children": []
+            },
+            {
+                "label": "女",
+                "value": "2",
+                "type": 1,
+                "color": "danger",
+                "is_value": true,
+                "status": true,
+                "sort": 3,
+                "remark": null,
+                "children": []
+            }
+        ]
+    },
+    {
+        "label": "图书语言",
+        "value": "book_language",
+        "parent": null,
+        "type": 0,
+        "color": null,
+        "is_value": false,
+        "status": true,
+        "sort": 5,
+        "remark": "图书语言类型",
+        "children": [
+            {
+                "label": "中文",
+                "value": "zh",
+                "type": 0,
+                "color": "primary",
+                "is_value": true,
+                "status": true,
+                "sort": 1,
+                "remark": null,
+                "children": []
+            },
+            {
+                "label": "英文",
+                "value": "en",
+                "type": 0,
+                "color": "success",
+                "is_value": true,
+                "status": true,
+                "sort": 2,
+                "remark": null,
+                "children": []
+            },
+            {
+                "label": "日文",
+                "value": "ja",
+                "type": 0,
+                "color": "warning",
+                "is_value": true,
+                "status": true,
+                "sort": 3,
+                "remark": null,
+                "children": []
+            },
+            {
+                "label": "韩文",
+                "value": "ko",
+                "type": 0,
+                "color": "info",
+                "is_value": true,
+                "status": true,
+                "sort": 4,
+                "remark": null,
+                "children": []
+            },
+            {
+                "label": "法文",
+                "value": "fr",
+                "type": 0,
+                "color": null,
+                "is_value": true,
+                "status": true,
+                "sort": 5,
+                "remark": null,
+                "children": []
+            },
+            {
+                "label": "德文",
+                "value": "de",
+                "type": 0,
+                "color": null,
+                "is_value": true,
+                "status": true,
+                "sort": 6,
+                "remark": null,
+                "children": []
+            },
+            {
+                "label": "俄文",
+                "value": "ru",
+                "type": 0,
+                "color": null,
+                "is_value": true,
+                "status": true,
+                "sort": 7,
+                "remark": null,
+                "children": []
+            },
+            {
+                "label": "其他",
+                "value": "other",
+                "type": 0,
+                "color": null,
+                "is_value": true,
+                "status": true,
+                "sort": 8,
+                "remark": null,
+                "children": []
+            }
+        ]
+    },
+    {
+        "label": "图书装帧",
+        "value": "book_packaging",
+        "parent": null,
+        "type": 0,
+        "color": null,
+        "is_value": false,
+        "status": true,
+        "sort": 6,
+        "remark": "图书装帧类型",
+        "children": [
+            {
+                "label": "平装",
+                "value": "paperback",
+                "type": 0,
+                "color": "primary",
+                "is_value": true,
+                "status": true,
+                "sort": 1,
+                "remark": null,
+                "children": []
+            },
+            {
+                "label": "精装",
+                "value": "hardcover",
+                "type": 0,
+                "color": "success",
+                "is_value": true,
+                "status": true,
+                "sort": 2,
+                "remark": null,
+                "children": []
+            },
+            {
+                "label": "线装",
+                "value": "thread_bound",
+                "type": 0,
+                "color": "warning",
+                "is_value": true,
+                "status": true,
+                "sort": 3,
+                "remark": null,
+                "children": []
+            },
+            {
+                "label": "骑马钉",
+                "value": "saddle_stitched",
+                "type": 0,
+                "color": "info",
+                "is_value": true,
+                "status": true,
+                "sort": 4,
+                "remark": null,
+                "children": []
+            }
+        ]
+    },
+    {
+        "label": "图书开本",
+        "value": "book_format",
+        "parent": null,
+        "type": 0,
+        "color": null,
+        "is_value": false,
+        "status": true,
+        "sort": 7,
+        "remark": "图书开本类型",
+        "children": [
+            {
+                "label": "16开",
+                "value": "16",
+                "type": 0,
+                "color": null,
+                "is_value": true,
+                "status": true,
+                "sort": 1,
+                "remark": null,
+                "children": []
+            },
+            {
+                "label": "32开",
+                "value": "32",
+                "type": 0,
+                "color": null,
+                "is_value": true,
+                "status": true,
+                "sort": 2,
+                "remark": null,
+                "children": []
+            },
+            {
+                "label": "64开",
+                "value": "64",
+                "type": 0,
+                "color": null,
+                "is_value": true,
+                "status": true,
+                "sort": 3,
+                "remark": null,
+                "children": []
+            },
+            {
+                "label": "大16开",
+                "value": "large_16",
+                "type": 0,
+                "color": null,
+                "is_value": true,
+                "status": true,
+                "sort": 4,
+                "remark": null,
+                "children": []
+            },
+            {
+                "label": "大32开",
+                "value": "large_32",
+                "type": 0,
+                "color": null,
+                "is_value": true,
+                "status": true,
+                "sort": 5,
+                "remark": null,
+                "children": []
+            },
+            {
+                "label": "A4",
+                "value": "a4",
+                "type": 0,
+                "color": null,
+                "is_value": true,
+                "status": true,
+                "sort": 6,
+                "remark": null,
+                "children": []
+            },
+            {
+                "label": "A5",
+                "value": "a5",
+                "type": 0,
+                "color": null,
+                "is_value": true,
+                "status": true,
+                "sort": 7,
+                "remark": null,
+                "children": []
+            }
+        ]
+    },
+    {
+        "label": "罚金支付状态",
+        "value": "fine_payment_status",
+        "parent": null,
+        "type": 0,
+        "color": null,
+        "is_value": false,
+        "status": true,
+        "sort": 8,
+        "remark": "罚金支付状态",
+        "children": [
+            {
+                "label": "未支付",
+                "value": "false",
+                "type": 6,
+                "color": "danger",
+                "is_value": true,
+                "status": true,
+                "sort": 1,
+                "remark": null,
+                "children": []
+            },
+            {
+                "label": "已支付",
+                "value": "true",
+                "type": 6,
+                "color": "success",
+                "is_value": true,
+                "status": true,
+                "sort": 2,
+                "remark": null,
+                "children": []
+            }
+        ]
+    }
+]

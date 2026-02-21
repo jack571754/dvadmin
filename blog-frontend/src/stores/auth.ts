@@ -5,9 +5,9 @@
 
 import { defineStore } from 'pinia'
 import { ref, computed } from 'vue'
-import apiClient from '@/api/blog'
 
-const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:9000'
+// 使用代理路径，与 blog.ts 保持一致
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || '/api'
 
 // Create axios instance for auth
 import axios from 'axios'
@@ -36,6 +36,8 @@ export interface User {
   username: string
   name?: string
   email?: string
+  is_superuser?: boolean
+  role?: string
 }
 
 export interface LoginData {
@@ -63,8 +65,12 @@ export const useAuthStore = defineStore('auth', () => {
   const token = ref<string | null>(localStorage.getItem('auth_token'))
   const user = ref<User | null>(null)
 
-  // Computed
+// Computed
   const isLoggedIn = computed(() => !!token.value)
+  const isAdmin = computed(() => {
+    if (!user.value) return false
+    return user.value.is_superuser === true || user.value.role === 'admin'
+  })
 
   /**
    * Login with username and password
@@ -72,27 +78,53 @@ export const useAuthStore = defineStore('auth', () => {
    */
   async function login(username: string, password: string) {
     try {
-      // JWT endpoint returns { access: string, refresh: string }
-      const response = await authClient.post<{ access: string; refresh: string }>('/login/', {
+      const response = await authClient.post('/login/', {
         username,
         password,
       })
 
-      // Extract access token as the main token
-      const newToken = response.data.access
+      console.log('[Auth] Login response:', response.data)
+
+      const responseData = response.data
+      let newToken: string | null = null
+
+      // Check for error response first
+      if (responseData.code && responseData.code !== 2000) {
+        throw new Error(responseData.msg || '登录失败')
+      }
+
+      // Try different response formats
+      if (responseData.data?.access) {
+        newToken = responseData.data.access
+      } else if (responseData.access) {
+        newToken = responseData.access
+      }
+
+      if (!newToken) {
+        console.error('[Auth] No token in response:', responseData)
+        throw new Error('登录返回数据格式错误')
+      }
 
       // Store token
       token.value = newToken
       localStorage.setItem('auth_token', newToken)
+      console.log('[Auth] Token stored successfully')
 
       // Fetch user info after successful login
-      // 传入 false 避免在获取用户信息失败时跳回登录页
-      await fetchUserInfo(false)
+      try {
+        await fetchUserInfo(false)
+        console.log('[Auth] User info fetched after login')
+      } catch (error) {
+        console.warn('[Auth] Failed to fetch user info after login:', error)
+        // Don't throw error, user can still use the app
+      }
 
-      return response.data
+      return responseData
     } catch (error) {
+      console.error('[Auth] Login error:', error)
       if (axios.isAxiosError(error)) {
-        const message = error.response?.data?.msg || error.response?.data?.detail || error.message
+        const data = error.response?.data
+        const message = data?.msg || data?.detail || error.message
         throw new Error(message)
       }
       throw error
@@ -209,17 +241,25 @@ export const useAuthStore = defineStore('auth', () => {
     const storedToken = localStorage.getItem('auth_token')
     if (storedToken) {
       token.value = storedToken
-      // Fetch user info on init
-      await fetchUserInfo()
+      // Fetch user info on init, but don't redirect on error
+      // (token might be expired, just clear it silently)
+      try {
+        await fetchUserInfo(false)
+      } catch (error) {
+        console.warn('[Auth] Failed to fetch user info on init:', error)
+        // Don't clear token here, let the user try to use the app
+        // If API calls fail, they'll be redirected then
+      }
     }
   }
 
-  return {
+return {
     // State
     token,
     user,
     // Computed
     isLoggedIn,
+    isAdmin,
     // Actions
     login,
     register,

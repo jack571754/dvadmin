@@ -15,9 +15,9 @@ export default defineConfig({
     host: '0.0.0.0',
     proxy: {
       '/api': {
-        target: 'http://localhost:9000',
+        target: 'http://localhost:10025',
         changeOrigin: true,
-        // Don't rewrite - keep /api prefix
+        // Keep /api prefix when forwarding to backend
       },
     },
   },

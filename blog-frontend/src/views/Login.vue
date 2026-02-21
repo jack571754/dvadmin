@@ -119,13 +119,68 @@ const handleLogin = async () => {
 
   try {
     await authStore.login(form.username, form.password)
-    // 登录成功后刷新页面以更新状态
-    window.location.href = '/'
+    
+    // Show success message
+    showSuccessMessage('登录成功！正在跳转...')
+    
+    // Redirect after short delay
+    setTimeout(() => {
+      const redirect = router.currentRoute.value.query.redirect as string
+      router.push(redirect || '/')
+    }, 500)
   } catch (err) {
-    error.value = err instanceof Error ? err.message : '登录失败，请检查用户名和密码'
+    // User-friendly error messages
+    let errorMessage = '登录失败，请稍后重试'
+    
+    if (err instanceof Error) {
+      const msg = err.message.toLowerCase()
+      
+      if (msg.includes('验证码')) {
+        errorMessage = '验证码错误或已过期，请刷新页面重试'
+      } else if (msg.includes('账号') || msg.includes('密码')) {
+        errorMessage = '用户名或密码错误'
+      } else if (msg.includes('锁定')) {
+        errorMessage = '账号已被锁定，请联系管理员'
+      } else if (msg.includes('不存在')) {
+        errorMessage = '该用户不存在'
+      } else {
+        errorMessage = err.message
+      }
+    }
+    
+    error.value = errorMessage
   } finally {
     loading.value = false
   }
+}
+
+const showSuccessMessage = (message: string) => {
+  // Create and show success toast
+  const toast = document.createElement('div')
+  toast.className = 'success-toast'
+  toast.textContent = message
+  toast.style.cssText = `
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    background: #10b981;
+    color: white;
+    padding: 12px 24px;
+    border-radius: 8px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+    z-index: 9999;
+    font-size: 14px;
+    font-weight: 500;
+    animation: slideIn 0.3s ease;
+  `
+  document.body.appendChild(toast)
+  
+  setTimeout(() => {
+    toast.style.animation = 'slideOut 0.3s ease'
+    setTimeout(() => {
+      document.body.removeChild(toast)
+    }, 300)
+  }, 2000)
 }
 </script>
 
@@ -298,5 +353,34 @@ const handleLogin = async () => {
   color: #dc2626;
   font-size: var(--font-size-sm);
   text-align: center;
+  animation: shake 0.5s ease-in-out;
+}
+
+@keyframes shake {
+  0%, 100% { transform: translateX(0); }
+  25% { transform: translateX(-5px); }
+  75% { transform: translateX(5px); }
+}
+
+@keyframes slideIn {
+  from {
+    opacity: 0;
+    transform: translateX(100px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+@keyframes slideOut {
+  from {
+    opacity: 1;
+    transform: translateX(0);
+  }
+  to {
+    opacity: 0;
+    transform: translateX(100px);
+  }
 }
 </style>

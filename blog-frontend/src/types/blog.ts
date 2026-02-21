@@ -17,6 +17,9 @@ export interface Article {
   author: string
   slug: string
   tags?: string[]  // 标签列表
+  viewsCount?: number  // 阅读量
+  likesCount?: number  // 点赞数
+  isTop?: boolean  // 是否置顶
 }
 
 /**

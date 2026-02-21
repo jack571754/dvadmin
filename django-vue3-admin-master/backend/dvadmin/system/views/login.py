@@ -68,11 +68,19 @@ class LoginSerializer(TokenObtainPairSerializer):
 
     def validate(self, attrs):
         captcha = self.initial_data.get("captcha", None)
-        if dispatch.get_system_config_values("base.captcha_state"):
+        # 检查是否跳过验证码（开发环境配置 LOGIN_NO_CAPTCHA_AUTH=True）
+        from django.conf import settings
+        from application import settings as app_settings
+        skip_captcha = getattr(app_settings, 'LOGIN_NO_CAPTCHA_AUTH', False)
+        
+        # 开发环境跳过验证码，或者系统配置中禁用验证码时跳过
+        if skip_captcha:
+            print("[Login] Skipping captcha validation (LOGIN_NO_CAPTCHA_AUTH=True)")
+        elif dispatch.get_system_config_values("base.captcha_state"):
             if captcha is None:
                 raise CustomValidationError("验证码不能为空")
             self.image_code = CaptchaStore.objects.filter(
-                id=self.initial_data["captchaKey"]
+                id=self.initial_data.get("captchaKey")
             ).first()
             five_minute_ago = datetime.now() - timedelta(hours=0, minutes=5, seconds=0)
             if self.image_code and five_minute_ago > self.image_code.expiration:

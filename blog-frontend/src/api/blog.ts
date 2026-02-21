@@ -1,11 +1,25 @@
 /**
  * Blog API Service Layer
  * Provides API communication with the backend using Axios
+ * 
+ * 后端接口清单：
+ * - GET  /api/blog/categories/        分类列表（公开）
+ * - GET  /api/blog/categories/dict/   分类字典（公开）
+ * - GET  /api/blog/tags/              标签列表（公开）
+ * - GET  /api/blog/tags/dict/         标签字典（公开）
+ * - GET  /api/blog/articles/          文章列表（公开，支持搜索/分类筛选）
+ * - GET  /api/blog/articles/{id}/     文章详情（公开，自动增加阅读量）
+ * - GET  /api/blog/articles/hot/      热门文章（公开，前10篇）
+ * - POST /api/blog/articles/{id}/like/ 点赞文章（公开）
+ * - GET  /api/blog/comments/          评论列表（公开）
+ * - GET  /api/blog/comments/by_article/?article_id={id} 按文章获取评论（公开）
+ * - POST /api/blog/comments/          创建评论（需登录）
+ * - POST /api/blog/register/          用户注册（公开）
  */
 
 import axios, { AxiosInstance, AxiosError, InternalAxiosRequestConfig, AxiosResponse } from 'axios';
 import type { Article, Category, Tag, PaginatedResponse } from '@/types/blog';
-import { formatDate, calculateReadTime } from '@/utils/date';
+import { calculateReadTime } from '@/utils/date';
 import { handleApiError } from '@/utils/errorHandler';
 
 // API Response Interfaces - Backend format
@@ -39,9 +53,81 @@ export interface ArticleApiResponse {
   update_datetime?: string;
 }
 
+// Comment interface from backend API
+export interface CommentApiResponse {
+  id: number;
+  article: number;
+  article_title?: string;
+  content: string;
+  user: number;
+  user_info?: {
+    id: number;
+    username: string;
+    name: string;
+    avatar?: string;
+  };
+  parent?: number;
+  replies_list?: CommentApiResponse[];
+  is_active: boolean;
+  create_datetime: string;
+}
+
+// Dict item interface
+export interface DictItem {
+  label: string;
+  value: number;
+}
+
+// Article input interface for create/update
+export interface ArticleInput {
+  title: string;
+  content: string;
+  summary?: string;
+  cover_image?: string;
+  category?: number | null;
+  tags?: number[];
+  status?: 'draft' | 'published';
+  is_top?: boolean;
+}
+
+// Category input interface
+export interface CategoryInput {
+  name: string;
+  description?: string;
+  sort_order?: number;
+  is_active?: boolean;
+}
+
+// Tag input interface
+export interface TagInput {
+  name: string;
+  color?: string;
+}
+
 // API Configuration
-const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:9000';
+// Use proxy path '/api' for development, backend will handle the routing
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || '/api';
 const API_TIMEOUT = 10000;
+
+// Check if backend is available
+export const isBackendAvailable = async (): Promise<boolean> => {
+  try {
+    const controller = new AbortController();
+    const timeoutId = setTimeout(() => controller.abort(), 3000);
+    
+    // Use proxy path /api which will be forwarded to backend
+    await fetch(`/api/blog/categories/`, {
+      method: 'GET',
+      signal: controller.signal,
+    });
+    
+    clearTimeout(timeoutId);
+    // Any HTTP response means backend is reachable
+    return true;
+  } catch {
+    return false;
+  }
+};
 
 // Create Axios instance
 const apiClient: AxiosInstance = axios.create({
@@ -109,6 +195,9 @@ function transformArticle(apiArticle: ArticleApiResponse): Article {
     author,
     slug: apiArticle.title.toLowerCase().replace(/\s+/g, '-'),
     tags,
+    viewsCount: apiArticle.views_count || 0,
+    likesCount: apiArticle.likes_count || 0,
+    isTop: apiArticle.is_top || false,
   };
 }
 
@@ -145,14 +234,9 @@ class BlogApiService {
   /**
    * Fetch a single article by ID
    */
-  async getArticle(id: string): Promise<Article> {
+async getArticle(id: string): Promise<Article> {
     try {
       const response = await apiClient.get<any>(`/blog/articles/${id}/`);
-
-      // Debug: log full response
-      console.log('[API] getArticle response status:', response.status);
-      console.log('[API] getArticle response data:', response.data);
-      console.log('[API] getArticle response.data.data:', response.data?.data);
 
       // Check response structure
       if (!response.data) {
@@ -161,17 +245,14 @@ class BlogApiService {
 
       // Check if data field exists and is not null
       if (response.data.data === null || response.data.data === undefined) {
-        console.error('[API] Article data is null. Full response:', response.data);
         throw new Error('文章不存在或已被删除');
       }
 
       return transformArticle(response.data.data);
     } catch (error) {
-      console.error('[API] getArticle error:', error);
       if (axios.isAxiosError(error)) {
         const status = error.response?.status;
         const data = error.response?.data;
-        console.error('[API] Error details:', { status, data });
         throw new Error(data?.msg || data?.message || `请求失败 (${status})`);
       }
       const message = handleApiError(error);
@@ -206,12 +287,93 @@ class BlogApiService {
   }
 
   /**
+   * Fetch category dictionary (for dropdowns)
+   */
+  async getCategoryDict(): Promise<DictItem[]> {
+    try {
+      const response = await apiClient.get<BackendResponse<DictItem[]>>('/blog/categories/dict/');
+      return response.data.data || [];
+    } catch (error) {
+      const message = handleApiError(error);
+      throw new Error(message);
+    }
+  }
+
+  /**
+   * Fetch tag dictionary (for dropdowns)
+   */
+  async getTagDict(): Promise<DictItem[]> {
+    try {
+      const response = await apiClient.get<BackendResponse<DictItem[]>>('/blog/tags/dict/');
+      return response.data.data || [];
+    } catch (error) {
+      const message = handleApiError(error);
+      throw new Error(message);
+    }
+  }
+
+  /**
+   * Fetch hot articles (top 10 by views and likes)
+   */
+  async getHotArticles(): Promise<Article[]> {
+    try {
+      const response = await apiClient.get<BackendResponse<ArticleApiResponse[]>>('/blog/articles/hot/');
+      return (response.data.data || []).map(transformArticle);
+    } catch (error) {
+      const message = handleApiError(error);
+      throw new Error(message);
+    }
+  }
+
+  /**
+   * Like an article
+   */
+  async likeArticle(id: string): Promise<{ likes_count: number }> {
+    try {
+      const response = await apiClient.post<BackendResponse<{ likes_count: number }>>(`/blog/articles/${id}/like/`);
+      return response.data.data;
+    } catch (error) {
+      const message = handleApiError(error);
+      throw new Error(message);
+    }
+  }
+
+  /**
+   * Fetch comments by article ID
+   */
+  async getCommentsByArticle(articleId: string): Promise<CommentApiResponse[]> {
+    try {
+      const response = await apiClient.get<BackendResponse<CommentApiResponse[]>>('/blog/comments/by_article/', {
+        params: { article_id: articleId }
+      });
+      return response.data.data || [];
+    } catch (error) {
+      const message = handleApiError(error);
+      throw new Error(message);
+    }
+  }
+
+  /**
+   * Create a comment
+   */
+  async createComment(data: { article: number; content: string; parent?: number }): Promise<CommentApiResponse> {
+    try {
+      const response = await apiClient.post<BackendResponse<CommentApiResponse>>('/blog/comments/', data);
+      return response.data.data;
+    } catch (error) {
+      const message = handleApiError(error);
+      throw new Error(message);
+    }
+  }
+
+  /**
    * Fetch articles by category
    */
   async getArticlesByCategory(categoryId: string, page: number = 1, pageSize: number = 10): Promise<PaginatedResponse<Article>> {
     try {
-      const response = await apiClient.get<BackendResponse<ArticleApiResponse[]>>(`/blog/categories/${categoryId}/articles/`, {
-        params: { page, page_size: pageSize },
+      // 使用文章列表接口 + category 参数筛选，而不是分类子资源接口
+      const response = await apiClient.get<BackendResponse<ArticleApiResponse[]>>('/blog/articles/', {
+        params: { page, page_size: pageSize, category: categoryId, status: 'published' },
       });
 
       const backendData = response.data;
@@ -291,7 +453,7 @@ class BlogApiService {
       // Transform JWT response to expected format
       return {
         token: response.data.access,
-        refreshToken: response.data.refresh,
+        user: undefined, // TODO: 获取用户信息
       };
     } catch (error) {
       const message = handleApiError(error);
@@ -317,10 +479,99 @@ class BlogApiService {
    * Get current user info
    * Uses DVAdmin /api/system/user/getUserInfo/ endpoint
    */
-  async getUserInfo(): Promise<any> {
+async getUserInfo(): Promise<any> {
     try {
       const response = await apiClient.get('/system/user/getUserInfo/');
       return response.data;
+    } catch (error) {
+      const message = handleApiError(error);
+      throw new Error(message);
+    }
+  }
+
+  // ==================== Admin APIs ====================
+
+  async createArticle(data: ArticleInput): Promise<ArticleApiResponse> {
+    try {
+      const response = await apiClient.post<BackendResponse<ArticleApiResponse>>('/blog/articles/', data);
+      return response.data.data;
+    } catch (error) {
+      const message = handleApiError(error);
+      throw new Error(message);
+    }
+  }
+
+  async updateArticle(id: string | number, data: Partial<ArticleInput>): Promise<ArticleApiResponse> {
+    try {
+      const response = await apiClient.put<BackendResponse<ArticleApiResponse>>(`/blog/articles/${id}/`, data);
+      return response.data.data;
+    } catch (error) {
+      const message = handleApiError(error);
+      throw new Error(message);
+    }
+  }
+
+  async deleteArticle(id: string | number): Promise<void> {
+    try {
+      await apiClient.delete(`/blog/articles/${id}/`);
+    } catch (error) {
+      const message = handleApiError(error);
+      throw new Error(message);
+    }
+  }
+
+  async createCategory(data: CategoryInput): Promise<Category> {
+    try {
+      const response = await apiClient.post<BackendResponse<Category>>('/blog/categories/', data);
+      return response.data.data;
+    } catch (error) {
+      const message = handleApiError(error);
+      throw new Error(message);
+    }
+  }
+
+  async updateCategory(id: number, data: Partial<CategoryInput>): Promise<Category> {
+    try {
+      const response = await apiClient.put<BackendResponse<Category>>(`/blog/categories/${id}/`, data);
+      return response.data.data;
+    } catch (error) {
+      const message = handleApiError(error);
+      throw new Error(message);
+    }
+  }
+
+  async deleteCategory(id: number): Promise<void> {
+    try {
+      await apiClient.delete(`/blog/categories/${id}/`);
+    } catch (error) {
+      const message = handleApiError(error);
+      throw new Error(message);
+    }
+  }
+
+  async createTag(data: TagInput): Promise<Tag> {
+    try {
+      const response = await apiClient.post<BackendResponse<Tag>>('/blog/tags/', data);
+      return response.data.data;
+    } catch (error) {
+      const message = handleApiError(error);
+      throw new Error(message);
+    }
+  }
+
+  async updateTag(id: number, data: Partial<TagInput>): Promise<Tag> {
+    try {
+      const response = await apiClient.put<BackendResponse<Tag>>(`/blog/tags/${id}/`, data);
+      return response.data.data;
+    } catch (error) {
+      const message = handleApiError(error);
+      throw new Error(message);
+    }
+  }
+
+  async deleteTag(id: number): Promise<void> {
+    try {
+      await apiClient.delete(`/blog/tags/${id}/`);
     } catch (error) {
       const message = handleApiError(error);
       throw new Error(message);
@@ -332,4 +583,4 @@ class BlogApiService {
 export const blogApi = new BlogApiService();
 
 // Re-export types for convenience
-export type { Article, Category, Tag, PaginatedResponse };
+export type { Article, Category, Tag, PaginatedResponse, ArticleApiResponse, CommentApiResponse, DictItem };

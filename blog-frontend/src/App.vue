@@ -1,5 +1,6 @@
 <template>
   <div id="app" class="app" :class="{ 'app--dark': isDarkMode }">
+    <ConnectionStatus />
     <Header />
 
     <main class="app-main">
@@ -38,6 +39,7 @@
 import { ref, onMounted } from 'vue'
 import Header from '@/components/Header.vue'
 import Footer from '@/components/Footer.vue'
+import ConnectionStatus from '@/components/ConnectionStatus.vue'
 
 interface Toast {
   id: number

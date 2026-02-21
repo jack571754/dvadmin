@@ -7,8 +7,16 @@
         <span class="logo-decoration"></span>
       </router-link>
 
-      <!-- Desktop Navigation -->
+<!-- Desktop Navigation -->
       <nav class="header-nav desktop-nav">
+        <!-- Search Button -->
+        <button @click="openSearch" class="nav-link search-trigger" title="搜索">
+          <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+            <circle cx="6.5" cy="6.5" r="5" stroke="currentColor" stroke-width="1.5"/>
+            <path d="M10 10L14 14" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+          </svg>
+        </button>
+
         <router-link
           v-for="item in navItems"
           :key="item.path"
@@ -44,7 +52,13 @@
                     <span class="user-display-name">用户 {{ authStore.user?.username || '' }}</span>
                   </div>
                 </div>
-                <div class="user-menu-divider"></div>
+<div class="user-menu-divider"></div>
+                <button v-if="authStore.isAdmin" @click="handleNewArticle" class="user-menu-item user-menu-item--primary">
+                  <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+                    <path d="M8 2v12M2 8h12" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+                  </svg>
+                  <span>新建文章</span>
+                </button>
                 <button @click="handlePasswordChange" class="user-menu-item">
                   <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
                     <path d="M8 1a2 2 0 0 1 2 2v4H6V3a2 2 0 0 1 2-2zm3 6V3a3 3 0 0 0-6 0v4a2 2 0 0 0-2 2v5a2 2 0 0 0 2 2h6a2 2 0 0 0 2-2V9a2 2 0 0 0-2-2z" stroke="currentColor" fill="none" stroke-width="1.5"/>
@@ -117,7 +131,7 @@
       </div>
     </transition>
 
-    <!-- Menu Overlay -->
+<!-- Menu Overlay -->
     <transition name="overlay">
       <div
         v-if="mobileMenuOpen"
@@ -125,13 +139,29 @@
         @click="closeMobileMenu"
       ></div>
     </transition>
+
+    <!-- Article Editor Modal (Admin Only) -->
+    <ArticleEditor
+      v-if="authStore.isAdmin"
+      v-model:visible="showEditor"
+      :article="null"
+      :categories="categories"
+      :tags="tags"
+      @saved="handleArticleSaved"
+    />
+
+    <!-- Search Overlay -->
+    <SearchOverlay v-model:visible="showSearch" />
   </header>
 </template>
 
 <script setup lang="ts">
 import { ref, onMounted, onUnmounted } from 'vue'
-import { useRoute } from 'vue-router'
+import { useRoute, useRouter } from 'vue-router'
 import { useAuthStore } from '@/stores/auth'
+import { blogApi, type Category, type Tag } from '@/api/blog'
+import ArticleEditor from '@/components/admin/ArticleEditor.vue'
+import SearchOverlay from '@/components/SearchOverlay.vue'
 
 interface NavItem {
   label: string
@@ -139,11 +169,20 @@ interface NavItem {
 }
 
 const route = useRoute()
+const router = useRouter()
 const authStore = useAuthStore()
 
 const isScrolled = ref(false)
 const mobileMenuOpen = ref(false)
 const userMenuOpen = ref(false)
+
+// Editor state
+const showEditor = ref(false)
+const categories = ref<Category[]>([])
+const tags = ref<Tag[]>([])
+
+// Search state
+const showSearch = ref(false)
 
 const navItems: NavItem[] = [
   { label: '首页', path: '/' },
@@ -196,6 +235,34 @@ const handlePasswordChange = () => {
   closeUserMenu()
 }
 
+const handleNewArticle = async () => {
+  closeUserMenu()
+  // Fetch categories and tags if not already loaded
+  if (categories.value.length === 0) {
+    try {
+      const [cats, tagsList] = await Promise.all([
+        blogApi.getCategories(),
+        blogApi.getTags(),
+      ])
+      categories.value = cats
+      tags.value = tagsList
+    } catch (err) {
+      console.error('Failed to fetch categories/tags:', err)
+    }
+  }
+  showEditor.value = true
+}
+
+const handleArticleSaved = (article: any) => {
+  showEditor.value = false
+  // Navigate to the new article
+  router.push(`/article/${article.id}`)
+}
+
+const openSearch = () => {
+  showSearch.value = true
+}
+
 const handleScroll = (): void => {
   isScrolled.value = window.scrollY > 20
 }
@@ -232,14 +299,12 @@ onUnmounted(() => {
   left: 0;
   right: 0;
   z-index: var(--z-sticky);
-  background: transparent;
-  transition: all var(--duration-normal) var(--ease-out-quart);
+  background: var(--paper-50);
+  transition: box-shadow var(--duration-normal) var(--ease-out-quart);
 }
 
 .site-header--scrolled {
-  background: rgba(255, 255, 255, 0.9);
-  backdrop-filter: blur(12px);
-  box-shadow: var(--shadow-sm);
+  /* 无额外样式 */
 }
 
 .header-container {
@@ -261,6 +326,7 @@ onUnmounted(() => {
   flex-direction: column;
   align-items: center;
   text-decoration: none;
+  padding: var(--space-2);
 }
 
 .logo-text {
@@ -286,7 +352,7 @@ onUnmounted(() => {
 }
 
 /* ========================================
-   Desktop Navigation
+   Desktop Navigation - 印章标记
    ======================================== */
 
 .header-nav {
@@ -313,12 +379,41 @@ onUnmounted(() => {
   color: var(--ink-900);
 }
 
+/* 激活状态 */
 .nav-link--active {
-  color: var(--ink-900);
+  color: var(--vermilion);
+  font-weight: var(--font-weight-semibold);
+}
+
+/* 下划线动画 */
+.nav-link::after {
+  content: '';
+  position: absolute;
+  bottom: 4px;
+  left: 50%;
+  transform: translateX(-50%) scaleX(0);
+  width: calc(100% - var(--space-6));
+  height: 2px;
+  background: var(--vermilion);
+  border-radius: var(--radius-full);
+  transition: transform var(--duration-normal) var(--ease-out-quart);
 }
 
 .nav-link--active::after {
-  transform: scaleX(1);
+  transform: translateX(-50%) scaleX(1);
+}
+
+.search-trigger {
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  padding: var(--space-2);
+  color: var(--stone-600);
+  transition: color var(--duration-fast) var(--ease-out-quart);
+}
+
+.search-trigger:hover {
+  color: var(--vermilion);
 }
 
 .nav-link--accent {
@@ -327,24 +422,6 @@ onUnmounted(() => {
 
 .nav-link--subtle {
   color: var(--stone-500);
-}
-
-.nav-link--user {
-  cursor: default;
-  padding: var(--space-2) var(--space-3);
-  font-size: var(--font-size-sm);
-  color: var(--stone-500);
-}
-
-.nav-link--button {
-  background: none;
-  border: none;
-  cursor: pointer;
-  color: var(--stone-600);
-}
-
-.nav-link--button:hover {
-  color: var(--vermilion);
 }
 
 /* User Dropdown */
@@ -357,15 +434,15 @@ onUnmounted(() => {
   align-items: center;
   gap: var(--space-2);
   padding: var(--space-2) var(--space-4);
-  background: var(--stone-100);
-  border: none;
+  background: transparent;
+  border: 1px solid var(--stone-200);
   border-radius: var(--radius-full);
   cursor: pointer;
   transition: all var(--duration-fast) var(--ease-out-quart);
 }
 
 .user-info-btn:hover {
-  background: var(--stone-200);
+  border-color: var(--vermilion);
 }
 
 .user-name {
@@ -430,12 +507,6 @@ onUnmounted(() => {
   color: var(--ink-900);
 }
 
-.user-role {
-  font-family: var(--font-sans);
-  font-size: var(--font-size-xs);
-  color: var(--stone-600);
-}
-
 .user-menu-divider {
   height: 1px;
   background: var(--stone-200);
@@ -458,7 +529,7 @@ onUnmounted(() => {
 }
 
 .user-menu-item:hover {
-  background: var(--stone-100);
+  background: var(--stone-50);
   color: var(--ink-900);
 }
 
@@ -469,6 +540,15 @@ onUnmounted(() => {
 .user-menu-item--danger:hover {
   background: var(--vermilion-dim);
   color: var(--vermilion);
+}
+
+.user-menu-item--primary {
+  color: var(--indigo);
+}
+
+.user-menu-item--primary:hover {
+  background: var(--indigo-light);
+  color: var(--indigo);
 }
 
 /* Dropdown transition */
@@ -483,33 +563,24 @@ onUnmounted(() => {
   transform: translateY(-8px);
 }
 
-.nav-link::after {
-  content: '';
-  position: absolute;
-  bottom: 6px;
-  left: 50%;
-  width: 100%;
-  height: 2px;
-  background: var(--vermilion);
-  border-radius: var(--radius-full);
-  transform: translateX(-50%) scaleX(0);
-  transform-origin: center;
-  transition: transform var(--duration-normal) var(--ease-out-quart);
-}
-
 /* ========================================
    Mobile Toggle
    ======================================== */
 
 .mobile-toggle {
   display: none;
-  width: 32px;
-  height: 32px;
+  width: 36px;
+  height: 36px;
   padding: var(--space-2);
   background: transparent;
   border: none;
   cursor: pointer;
   transition: all var(--duration-fast) var(--ease-out-quart);
+  border-radius: var(--radius-base);
+}
+
+.mobile-toggle:hover {
+  background: var(--stone-100);
 }
 
 .hamburger {
@@ -573,22 +644,19 @@ onUnmounted(() => {
 .mobile-nav {
   display: flex;
   flex-direction: column;
-  padding: var(--space-6);
+  padding: var(--space-4);
 }
 
 .mobile-nav-link {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: var(--space-4) var(--space-3);
+  padding: var(--space-3) var(--space-4);
   text-decoration: none;
   color: var(--stone-700);
-  border-bottom: 1px solid var(--stone-100);
+  border-radius: var(--radius-base);
+  margin-bottom: var(--space-1);
   transition: all var(--duration-fast) var(--ease-out-quart);
-}
-
-.mobile-nav-link:first-child {
-  border-top: 1px solid var(--stone-100);
 }
 
 .mobile-nav-link:hover,
@@ -601,19 +669,16 @@ onUnmounted(() => {
   color: var(--vermilion);
 }
 
-.mobile-nav-link--user {
-  cursor: default;
-  color: var(--stone-500);
-  font-size: var(--font-size-sm);
-}
-
 /* Mobile User Info */
 .mobile-user-info {
   display: flex;
   align-items: center;
   gap: var(--space-3);
-  padding: var(--space-4) var(--space-3);
+  padding: var(--space-4);
   width: 100%;
+  background: var(--vermilion-dim);
+  border-radius: var(--radius-base);
+  margin-bottom: var(--space-2);
 }
 
 .mobile-user-avatar {
@@ -622,35 +687,32 @@ onUnmounted(() => {
   display: flex;
   align-items: center;
   justify-content: center;
-  background: var(--vermilion-dim);
+  background: var(--vermilion-light);
   border-radius: var(--radius-full);
-  font-size: var(--font-size-xl);
+  font-size: var(--font-size-lg);
 }
 
 .mobile-user-name {
   font-family: var(--font-sans);
-  font-size: var(--font-size-lg);
-  font-weight: var(--font-weight-semibold);
+  font-size: var(--font-size-base);
+  font-weight: var(--font-weight-medium);
   color: var(--ink-900);
 }
 
 .mobile-nav-link--logout {
-  border-top: 1px solid var(--stone-100);
-}
-
-.mobile-nav-link:last-child {
-  border-bottom: none;
+  color: var(--vermilion);
+  margin-top: var(--space-2);
 }
 
 .mobile-nav-text {
   font-family: var(--font-sans);
-  font-size: var(--font-size-lg);
+  font-size: var(--font-size-base);
   font-weight: var(--font-weight-medium);
 }
 
 .mobile-nav-indicator {
-  width: 8px;
-  height: 8px;
+  width: 6px;
+  height: 6px;
   border-radius: 50%;
   background: var(--vermilion);
   opacity: 0;
@@ -664,7 +726,7 @@ onUnmounted(() => {
 .mobile-nav-divider {
   height: 1px;
   background: var(--stone-200);
-  margin: var(--space-4) 0;
+  margin: var(--space-3) 0;
 }
 
 /* ========================================
@@ -674,7 +736,7 @@ onUnmounted(() => {
 .menu-overlay {
   position: fixed;
   inset: 0;
-  background: rgba(0, 0, 0, 0.4);
+  background: rgba(0, 0, 0, 0.3);
   z-index: calc(var(--z-modal) - 1);
 }
 
@@ -697,11 +759,6 @@ onUnmounted(() => {
   transition: opacity var(--duration-normal) var(--ease-out-quart);
 }
 
-.overlay-enter-from,
-.overlay-leave-to {
-  opacity: 0;
-}
-
 /* ========================================
    Responsive
    ======================================== */
@@ -712,7 +769,9 @@ onUnmounted(() => {
   }
 
   .mobile-toggle {
-    display: block;
+    display: flex;
+    align-items: center;
+    justify-content: center;
   }
 
   .header-container {
@@ -721,6 +780,20 @@ onUnmounted(() => {
 
   .logo-text {
     font-size: var(--font-size-lg);
+  }
+}
+
+@media (max-width: 480px) {
+  .header-container {
+    padding: var(--space-2) var(--space-3);
+  }
+
+  .logo-text {
+    font-size: var(--font-size-base);
+  }
+
+  .mobile-menu {
+    top: 52px;
   }
 }
 </style>

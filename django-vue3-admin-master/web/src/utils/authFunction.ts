@@ -1,5 +1,5 @@
 import { judementSameArr } from '/@/utils/arrayOperation';
-import {BtnPermissionStore} from "/@/stores/btnPermission";
+import {BtnPermissionStore} from "/@/plugin/permission/store.permission";
 /**
  * 单个权限验证
  * @param value 权限值

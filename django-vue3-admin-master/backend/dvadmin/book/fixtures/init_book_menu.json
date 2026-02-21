@@ -1,0 +1,677 @@
+[
+    {
+        "name": "图书管理",
+        "icon": "ele-Reading",
+        "sort": 100,
+        "is_link": false,
+        "is_catalog": true,
+        "web_path": "/book",
+        "component": "Layout",
+        "component_name": "book",
+        "status": true,
+        "cache": false,
+        "visible": true,
+        "children": [
+            {
+                "name": "图书分类",
+                "icon": "ele-FolderOpened",
+                "sort": 1,
+                "is_link": false,
+                "is_catalog": false,
+                "web_path": "/book/category",
+                "component": "book/category/index",
+                "component_name": "book:category",
+                "status": true,
+                "cache": false,
+                "visible": true,
+                "children": [],
+                "menu_button": [
+                    {
+                        "name": "查询",
+                        "value": "book:category:Search",
+                        "api": "/api/book/category/",
+                        "method": 0
+                    },
+                    {
+                        "name": "详情",
+                        "value": "book:category:Retrieve",
+                        "api": "/api/book/category/{id}/",
+                        "method": 0
+                    },
+                    {
+                        "name": "新增",
+                        "value": "book:category:Create",
+                        "api": "/api/book/category/",
+                        "method": 1
+                    },
+                    {
+                        "name": "编辑",
+                        "value": "book:category:Update",
+                        "api": "/api/book/category/{id}/",
+                        "method": 2
+                    },
+                    {
+                        "name": "删除",
+                        "value": "book:category:Delete",
+                        "api": "/api/book/category/{id}/",
+                        "method": 3
+                    }
+                ],
+                "menu_field": [
+                    {
+                        "field_name": "name",
+                        "title": "分类名称",
+                        "model": "BookCategory"
+                    },
+                    {
+                        "field_name": "code",
+                        "title": "分类编码",
+                        "model": "BookCategory"
+                    },
+                    {
+                        "field_name": "sort",
+                        "title": "排序",
+                        "model": "BookCategory"
+                    },
+                    {
+                        "field_name": "parent",
+                        "title": "父分类",
+                        "model": "BookCategory"
+                    },
+                    {
+                        "field_name": "description",
+                        "title": "分类描述",
+                        "model": "BookCategory"
+                    },
+                    {
+                        "field_name": "status",
+                        "title": "状态",
+                        "model": "BookCategory"
+                    },
+                    {
+                        "field_name": "create_datetime",
+                        "title": "创建时间",
+                        "model": "BookCategory"
+                    },
+                    {
+                        "field_name": "update_datetime",
+                        "title": "更新时间",
+                        "model": "BookCategory"
+                    }
+                ]
+            },
+            {
+                "name": "出版社管理",
+                "icon": "ele-OfficeBuilding",
+                "sort": 2,
+                "is_link": false,
+                "is_catalog": false,
+                "web_path": "/book/publisher",
+                "component": "book/publisher/index",
+                "component_name": "book:publisher",
+                "status": true,
+                "cache": false,
+                "visible": true,
+                "children": [],
+                "menu_button": [
+                    {
+                        "name": "查询",
+                        "value": "book:publisher:Search",
+                        "api": "/api/book/publisher/",
+                        "method": 0
+                    },
+                    {
+                        "name": "详情",
+                        "value": "book:publisher:Retrieve",
+                        "api": "/api/book/publisher/{id}/",
+                        "method": 0
+                    },
+                    {
+                        "name": "新增",
+                        "value": "book:publisher:Create",
+                        "api": "/api/book/publisher/",
+                        "method": 1
+                    },
+                    {
+                        "name": "编辑",
+                        "value": "book:publisher:Update",
+                        "api": "/api/book/publisher/{id}/",
+                        "method": 2
+                    },
+                    {
+                        "name": "删除",
+                        "value": "book:publisher:Delete",
+                        "api": "/api/book/publisher/{id}/",
+                        "method": 3
+                    }
+                ],
+                "menu_field": [
+                    {
+                        "field_name": "name",
+                        "title": "出版社名称",
+                        "model": "BookPublisher"
+                    },
+                    {
+                        "field_name": "code",
+                        "title": "出版社编码",
+                        "model": "BookPublisher"
+                    },
+                    {
+                        "field_name": "address",
+                        "title": "出版社地址",
+                        "model": "BookPublisher"
+                    },
+                    {
+                        "field_name": "contact",
+                        "title": "联系人",
+                        "model": "BookPublisher"
+                    },
+                    {
+                        "field_name": "phone",
+                        "title": "联系电话",
+                        "model": "BookPublisher"
+                    },
+                    {
+                        "field_name": "email",
+                        "title": "邮箱",
+                        "model": "BookPublisher"
+                    },
+                    {
+                        "field_name": "website",
+                        "title": "官网地址",
+                        "model": "BookPublisher"
+                    },
+                    {
+                        "field_name": "create_datetime",
+                        "title": "创建时间",
+                        "model": "BookPublisher"
+                    },
+                    {
+                        "field_name": "update_datetime",
+                        "title": "更新时间",
+                        "model": "BookPublisher"
+                    }
+                ]
+            },
+            {
+                "name": "作者管理",
+                "icon": "ele-User",
+                "sort": 3,
+                "is_link": false,
+                "is_catalog": false,
+                "web_path": "/book/author",
+                "component": "book/author/index",
+                "component_name": "book:author",
+                "status": true,
+                "cache": false,
+                "visible": true,
+                "children": [],
+                "menu_button": [
+                    {
+                        "name": "查询",
+                        "value": "book:author:Search",
+                        "api": "/api/book/author/",
+                        "method": 0
+                    },
+                    {
+                        "name": "详情",
+                        "value": "book:author:Retrieve",
+                        "api": "/api/book/author/{id}/",
+                        "method": 0
+                    },
+                    {
+                        "name": "新增",
+                        "value": "book:author:Create",
+                        "api": "/api/book/author/",
+                        "method": 1
+                    },
+                    {
+                        "name": "编辑",
+                        "value": "book:author:Update",
+                        "api": "/api/book/author/{id}/",
+                        "method": 2
+                    },
+                    {
+                        "name": "删除",
+                        "value": "book:author:Delete",
+                        "api": "/api/book/author/{id}/",
+                        "method": 3
+                    }
+                ],
+                "menu_field": [
+                    {
+                        "field_name": "name",
+                        "title": "作者姓名",
+                        "model": "BookAuthor"
+                    },
+                    {
+                        "field_name": "pen_name",
+                        "title": "笔名",
+                        "model": "BookAuthor"
+                    },
+                    {
+                        "field_name": "gender",
+                        "title": "性别",
+                        "model": "BookAuthor"
+                    },
+                    {
+                        "field_name": "country",
+                        "title": "国籍",
+                        "model": "BookAuthor"
+                    },
+                    {
+                        "field_name": "birth_date",
+                        "title": "出生日期",
+                        "model": "BookAuthor"
+                    },
+                    {
+                        "field_name": "death_date",
+                        "title": "逝世日期",
+                        "model": "BookAuthor"
+                    },
+                    {
+                        "field_name": "biography",
+                        "title": "作者简介",
+                        "model": "BookAuthor"
+                    },
+                    {
+                        "field_name": "create_datetime",
+                        "title": "创建时间",
+                        "model": "BookAuthor"
+                    },
+                    {
+                        "field_name": "update_datetime",
+                        "title": "更新时间",
+                        "model": "BookAuthor"
+                    }
+                ]
+            },
+            {
+                "name": "图书信息",
+                "icon": "ele-Document",
+                "sort": 4,
+                "is_link": false,
+                "is_catalog": false,
+                "web_path": "/book/book",
+                "component": "book/book/index",
+                "component_name": "book:book",
+                "status": true,
+                "cache": false,
+                "visible": true,
+                "children": [],
+                "menu_button": [
+                    {
+                        "name": "查询",
+                        "value": "book:book:Search",
+                        "api": "/api/book/book/",
+                        "method": 0
+                    },
+                    {
+                        "name": "详情",
+                        "value": "book:book:Retrieve",
+                        "api": "/api/book/book/{id}/",
+                        "method": 0
+                    },
+                    {
+                        "name": "新增",
+                        "value": "book:book:Create",
+                        "api": "/api/book/book/",
+                        "method": 1
+                    },
+                    {
+                        "name": "编辑",
+                        "value": "book:book:Update",
+                        "api": "/api/book/book/{id}/",
+                        "method": 2
+                    },
+                    {
+                        "name": "删除",
+                        "value": "book:book:Delete",
+                        "api": "/api/book/book/{id}/",
+                        "method": 3
+                    },
+                    {
+                        "name": "导出",
+                        "value": "book:book:Export",
+                        "api": "/api/book/book/export/",
+                        "method": 0
+                    },
+                    {
+                        "name": "导入",
+                        "value": "book:book:Import",
+                        "api": "/api/book/book/import/",
+                        "method": 1
+                    }
+                ],
+                "menu_field": [
+                    {
+                        "field_name": "isbn",
+                        "title": "ISBN编号",
+                        "model": "Book"
+                    },
+                    {
+                        "field_name": "title",
+                        "title": "书名",
+                        "model": "Book"
+                    },
+                    {
+                        "field_name": "subtitle",
+                        "title": "副标题",
+                        "model": "Book"
+                    },
+                    {
+                        "field_name": "category",
+                        "title": "图书分类",
+                        "model": "Book"
+                    },
+                    {
+                        "field_name": "publisher",
+                        "title": "出版社",
+                        "model": "Book"
+                    },
+                    {
+                        "field_name": "authors",
+                        "title": "作者",
+                        "model": "Book"
+                    },
+                    {
+                        "field_name": "publish_date",
+                        "title": "出版日期",
+                        "model": "Book"
+                    },
+                    {
+                        "field_name": "edition",
+                        "title": "版次",
+                        "model": "Book"
+                    },
+                    {
+                        "field_name": "pages",
+                        "title": "页数",
+                        "model": "Book"
+                    },
+                    {
+                        "field_name": "price",
+                        "title": "定价",
+                        "model": "Book"
+                    },
+                    {
+                        "field_name": "total_quantity",
+                        "title": "总册数",
+                        "model": "Book"
+                    },
+                    {
+                        "field_name": "available_quantity",
+                        "title": "可借册数",
+                        "model": "Book"
+                    },
+                    {
+                        "field_name": "location",
+                        "title": "存放位置",
+                        "model": "Book"
+                    },
+                    {
+                        "field_name": "status",
+                        "title": "状态",
+                        "model": "Book"
+                    },
+                    {
+                        "field_name": "language",
+                        "title": "语言",
+                        "model": "Book"
+                    },
+                    {
+                        "field_name": "summary",
+                        "title": "内容简介",
+                        "model": "Book"
+                    },
+                    {
+                        "field_name": "cover",
+                        "title": "封面图片",
+                        "model": "Book"
+                    },
+                    {
+                        "field_name": "tags",
+                        "title": "标签",
+                        "model": "Book"
+                    },
+                    {
+                        "field_name": "create_datetime",
+                        "title": "创建时间",
+                        "model": "Book"
+                    },
+                    {
+                        "field_name": "update_datetime",
+                        "title": "更新时间",
+                        "model": "Book"
+                    }
+                ]
+            },
+            {
+                "name": "借阅管理",
+                "icon": "ele-DocumentChecked",
+                "sort": 5,
+                "is_link": false,
+                "is_catalog": false,
+                "web_path": "/book/borrow",
+                "component": "book/borrow/index",
+                "component_name": "book:borrow",
+                "status": true,
+                "cache": false,
+                "visible": true,
+                "children": [],
+                "menu_button": [
+                    {
+                        "name": "查询",
+                        "value": "book:borrow:Search",
+                        "api": "/api/book/borrow/",
+                        "method": 0
+                    },
+                    {
+                        "name": "详情",
+                        "value": "book:borrow:Retrieve",
+                        "api": "/api/book/borrow/{id}/",
+                        "method": 0
+                    },
+                    {
+                        "name": "新增",
+                        "value": "book:borrow:Create",
+                        "api": "/api/book/borrow/",
+                        "method": 1
+                    },
+                    {
+                        "name": "编辑",
+                        "value": "book:borrow:Update",
+                        "api": "/api/book/borrow/{id}/",
+                        "method": 2
+                    },
+                    {
+                        "name": "删除",
+                        "value": "book:borrow:Delete",
+                        "api": "/api/book/borrow/{id}/",
+                        "method": 3
+                    },
+                    {
+                        "name": "归还",
+                        "value": "book:borrow:Return",
+                        "api": "/api/book/borrow/{id}/return/",
+                        "method": 2
+                    },
+                    {
+                        "name": "续借",
+                        "value": "book:borrow:Renew",
+                        "api": "/api/book/borrow/{id}/renew/",
+                        "method": 2
+                    }
+                ],
+                "menu_field": [
+                    {
+                        "field_name": "book",
+                        "title": "图书",
+                        "model": "BookBorrow"
+                    },
+                    {
+                        "field_name": "user",
+                        "title": "借阅用户",
+                        "model": "BookBorrow"
+                    },
+                    {
+                        "field_name": "status",
+                        "title": "借阅状态",
+                        "model": "BookBorrow"
+                    },
+                    {
+                        "field_name": "borrow_date",
+                        "title": "借阅时间",
+                        "model": "BookBorrow"
+                    },
+                    {
+                        "field_name": "due_date",
+                        "title": "应还时间",
+                        "model": "BookBorrow"
+                    },
+                    {
+                        "field_name": "return_date",
+                        "title": "实际归还时间",
+                        "model": "BookBorrow"
+                    },
+                    {
+                        "field_name": "renew_count",
+                        "title": "续借次数",
+                        "model": "BookBorrow"
+                    },
+                    {
+                        "field_name": "max_renew_count",
+                        "title": "最大续借次数",
+                        "model": "BookBorrow"
+                    },
+                    {
+                        "field_name": "fine",
+                        "title": "罚金",
+                        "model": "BookBorrow"
+                    },
+                    {
+                        "field_name": "is_paid",
+                        "title": "罚金已支付",
+                        "model": "BookBorrow"
+                    },
+                    {
+                        "field_name": "remarks",
+                        "title": "备注",
+                        "model": "BookBorrow"
+                    },
+                    {
+                        "field_name": "create_datetime",
+                        "title": "创建时间",
+                        "model": "BookBorrow"
+                    },
+                    {
+                        "field_name": "update_datetime",
+                        "title": "更新时间",
+                        "model": "BookBorrow"
+                    }
+                ]
+            },
+            {
+                "name": "预约管理",
+                "icon": "ele-AlarmClock",
+                "sort": 6,
+                "is_link": false,
+                "is_catalog": false,
+                "web_path": "/book/reservation",
+                "component": "book/reservation/index",
+                "component_name": "book:reservation",
+                "status": true,
+                "cache": false,
+                "visible": true,
+                "children": [],
+                "menu_button": [
+                    {
+                        "name": "查询",
+                        "value": "book:reservation:Search",
+                        "api": "/api/book/reservation/",
+                        "method": 0
+                    },
+                    {
+                        "name": "详情",
+                        "value": "book:reservation:Retrieve",
+                        "api": "/api/book/reservation/{id}/",
+                        "method": 0
+                    },
+                    {
+                        "name": "新增",
+                        "value": "book:reservation:Create",
+                        "api": "/api/book/reservation/",
+                        "method": 1
+                    },
+                    {
+                        "name": "编辑",
+                        "value": "book:reservation:Update",
+                        "api": "/api/book/reservation/{id}/",
+                        "method": 2
+                    },
+                    {
+                        "name": "删除",
+                        "value": "book:reservation:Delete",
+                        "api": "/api/book/reservation/{id}/",
+                        "method": 3
+                    },
+                    {
+                        "name": "取消预约",
+                        "value": "book:reservation:Cancel",
+                        "api": "/api/book/reservation/{id}/cancel/",
+                        "method": 2
+                    }
+                ],
+                "menu_field": [
+                    {
+                        "field_name": "book",
+                        "title": "图书",
+                        "model": "BookReservation"
+                    },
+                    {
+                        "field_name": "status",
+                        "title": "预约状态",
+                        "model": "BookReservation"
+                    },
+                    {
+                        "field_name": "reservation_date",
+                        "title": "预约时间",
+                        "model": "BookReservation"
+                    },
+                    {
+                        "field_name": "expiry_date",
+                        "title": "过期时间",
+                        "model": "BookReservation"
+                    },
+                    {
+                        "field_name": "notified_date",
+                        "title": "通知时间",
+                        "model": "BookReservation"
+                    },
+                    {
+                        "field_name": "priority",
+                        "title": "优先级",
+                        "model": "BookReservation"
+                    },
+                    {
+                        "field_name": "remarks",
+                        "title": "备注",
+                        "model": "BookReservation"
+                    },
+                    {
+                        "field_name": "create_datetime",
+                        "title": "创建时间",
+                        "model": "BookReservation"
+                    },
+                    {
+                        "field_name": "update_datetime",
+                        "title": "更新时间",
+                        "model": "BookReservation"
+                    }
+                ]
+            }
+        ],
+        "menu_button": [],
+        "menu_field": []
+    }
+]

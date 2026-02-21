@@ -65,6 +65,8 @@ class ArticleDetailSerializer(CustomModelSerializer):
     category_detail = serializers.SerializerMethodField(read_only=True)
     tags_detail = serializers.SerializerMethodField(read_only=True)
     author_info = serializers.SerializerMethodField(read_only=True)
+    # 重写 modifier_name 以修复查询问题
+    modifier_name = serializers.CharField(source='modifier', read_only=True)
 
     class Meta:
         model = Article

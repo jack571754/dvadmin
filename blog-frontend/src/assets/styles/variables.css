@@ -500,3 +500,112 @@ button {
   pointer-events: none;
   opacity: 1;
 }
+
+/* ========================================
+   画卷·流觞 布局变量
+   ======================================== */
+
+:root {
+  /* 黄金比例非对称布局 */
+  --golden-ratio: 1.618;
+  --layout-content-ratio: 61.8%;
+  --layout-sidebar-ratio: 38.2%;
+
+  /* 卷轴动画变量 */
+  --scroll-reveal-duration: 0.8s;
+  --scroll-reveal-stagger: 100ms;
+
+  /* 册页翻阅效果 */
+  --page-shadow: 0 0 40px rgba(13, 13, 13, 0.08), inset -2px 0 8px rgba(13, 13, 13, 0.04);
+  --page-curl: linear-gradient(135deg, transparent 40%, rgba(0,0,0,0.02) 100%);
+
+  /* 印章效果 */
+  --seal-shadow: 0 2px 8px rgba(200, 64, 46, 0.3);
+  --seal-texture: url("data:image/svg+xml,%3Csvg viewBox='0 0 100 100' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.15'/%3E%3C/svg%3E");
+
+  /* 屏风悬浮面板 */
+  --screen-shadow: -4px 0 24px rgba(13, 13, 13, 0.06);
+  --screen-blur: blur(16px);
+
+  /* 流觞曲线 */
+  --flow-curve: cubic-bezier(0.4, 0, 0.2, 1);
+
+  /* 卷轴展开动画 */
+  --scroll-unfurl: scrollUnfurl 0.8s var(--ease-out-expo) forwards;
+
+  /* 印章盖下动画 */
+  --seal-stamp: sealStamp 0.4s var(--ease-spring) forwards;
+
+  /* 册页翻动效果 */
+  --page-flip: pageFlip 0.6s var(--ease-out-quart) forwards;
+
+  /* 流觞曲线入场 */
+  --flow-in: flowIn 0.5s var(--flow-curve) forwards;
+}
+
+/* 卷轴展开动画 */
+@keyframes scrollUnfurl {
+  0% {
+    clip-path: inset(0 50% 0 50%);
+    opacity: 0;
+  }
+  100% {
+    clip-path: inset(0 0 0 0);
+    opacity: 1;
+  }
+}
+
+/* 印章盖下动画 */
+@keyframes sealStamp {
+  0% {
+    transform: scale(1.5) rotate(-15deg);
+    opacity: 0;
+  }
+  60% {
+    transform: scale(0.95) rotate(0deg);
+    opacity: 1;
+  }
+  100% {
+    transform: scale(1) rotate(0deg);
+    opacity: 1;
+  }
+}
+
+/* 册页翻动效果 */
+@keyframes pageFlip {
+  0% {
+    transform: perspective(1000px) rotateY(-5deg);
+    opacity: 0;
+  }
+  100% {
+    transform: perspective(1000px) rotateY(0);
+    opacity: 1;
+  }
+}
+
+/* 水墨晕染效果 */
+@keyframes inkBloom {
+  0% {
+    transform: scale(0);
+    opacity: 0;
+  }
+  50% {
+    opacity: 0.3;
+  }
+  100% {
+    transform: scale(3);
+    opacity: 0;
+  }
+}
+
+/* 流觞曲线入场 */
+@keyframes flowIn {
+  0% {
+    transform: translateX(-30px) translateY(20px);
+    opacity: 0;
+  }
+  100% {
+    transform: translateX(0) translateY(0);
+    opacity: 1;
+  }
+}

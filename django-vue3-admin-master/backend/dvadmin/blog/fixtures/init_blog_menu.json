@@ -1,0 +1,349 @@
+[
+    {
+        "name": "博客管理",
+        "icon": "Document",
+        "sort": 100,
+        "is_link": false,
+        "is_catalog": true,
+        "web_path": "/blog",
+        "component": "Layout",
+        "component_name": "blog",
+        "status": true,
+        "cache": false,
+        "visible": true,
+        "children": [
+            {
+                "name": "分类管理",
+                "icon": "FolderOpened",
+                "sort": 1,
+                "is_link": false,
+                "is_catalog": false,
+                "web_path": "/blog/category",
+                "component": "blog/category/index",
+                "component_name": "blog:category",
+                "status": true,
+                "cache": false,
+                "visible": true,
+                "children": [],
+                "menu_button": [
+                    {
+                        "name": "查询",
+                        "value": "blog:category:Query",
+                        "api": "/api/blog/categories/",
+                        "method": 0
+                    },
+                    {
+                        "name": "新增",
+                        "value": "blog:category:Create",
+                        "api": "/api/blog/categories/",
+                        "method": 1
+                    },
+                    {
+                        "name": "编辑",
+                        "value": "blog:category:Update",
+                        "api": "/api/blog/categories/{id}/",
+                        "method": 2
+                    },
+                    {
+                        "name": "删除",
+                        "value": "blog:category:Delete",
+                        "api": "/api/blog/categories/{id}/",
+                        "method": 3
+                    }
+                ],
+                "menu_field": [
+                    {
+                        "field_name": "name",
+                        "title": "分类名称",
+                        "model": "Category"
+                    },
+                    {
+                        "field_name": "description",
+                        "title": "分类描述",
+                        "model": "Category"
+                    },
+                    {
+                        "field_name": "sort_order",
+                        "title": "排序",
+                        "model": "Category"
+                    },
+                    {
+                        "field_name": "is_active",
+                        "title": "是否启用",
+                        "model": "Category"
+                    },
+                    {
+                        "field_name": "create_datetime",
+                        "title": "创建时间",
+                        "model": "Category"
+                    },
+                    {
+                        "field_name": "update_datetime",
+                        "title": "更新时间",
+                        "model": "Category"
+                    }
+                ]
+            },
+            {
+                "name": "标签管理",
+                "icon": "PriceTag",
+                "sort": 2,
+                "is_link": false,
+                "is_catalog": false,
+                "web_path": "/blog/tag",
+                "component": "blog/tag/index",
+                "component_name": "blog:tag",
+                "status": true,
+                "cache": false,
+                "visible": true,
+                "children": [],
+                "menu_button": [
+                    {
+                        "name": "查询",
+                        "value": "blog:tag:Query",
+                        "api": "/api/blog/tags/",
+                        "method": 0
+                    },
+                    {
+                        "name": "新增",
+                        "value": "blog:tag:Create",
+                        "api": "/api/blog/tags/",
+                        "method": 1
+                    },
+                    {
+                        "name": "编辑",
+                        "value": "blog:tag:Update",
+                        "api": "/api/blog/tags/{id}/",
+                        "method": 2
+                    },
+                    {
+                        "name": "删除",
+                        "value": "blog:tag:Delete",
+                        "api": "/api/blog/tags/{id}/",
+                        "method": 3
+                    }
+                ],
+                "menu_field": [
+                    {
+                        "field_name": "name",
+                        "title": "标签名称",
+                        "model": "Tag"
+                    },
+                    {
+                        "field_name": "color",
+                        "title": "标签颜色",
+                        "model": "Tag"
+                    },
+                    {
+                        "field_name": "create_datetime",
+                        "title": "创建时间",
+                        "model": "Tag"
+                    },
+                    {
+                        "field_name": "update_datetime",
+                        "title": "更新时间",
+                        "model": "Tag"
+                    }
+                ]
+            },
+            {
+                "name": "文章管理",
+                "icon": "Document",
+                "sort": 3,
+                "is_link": false,
+                "is_catalog": false,
+                "web_path": "/blog/article",
+                "component": "blog/article/index",
+                "component_name": "blog:article",
+                "status": true,
+                "cache": false,
+                "visible": true,
+                "children": [],
+                "menu_button": [
+                    {
+                        "name": "查询",
+                        "value": "blog:article:Query",
+                        "api": "/api/blog/articles/",
+                        "method": 0
+                    },
+                    {
+                        "name": "新增",
+                        "value": "blog:article:Create",
+                        "api": "/api/blog/articles/",
+                        "method": 1
+                    },
+                    {
+                        "name": "编辑",
+                        "value": "blog:article:Update",
+                        "api": "/api/blog/articles/{id}/",
+                        "method": 2
+                    },
+                    {
+                        "name": "删除",
+                        "value": "blog:article:Delete",
+                        "api": "/api/blog/articles/{id}/",
+                        "method": 3
+                    },
+                    {
+                        "name": "发布",
+                        "value": "blog:article:Publish",
+                        "api": "/api/blog/articles/{id}/publish/",
+                        "method": 1
+                    },
+                    {
+                        "name": "导出",
+                        "value": "blog:article:Export",
+                        "api": "/api/blog/articles/export/",
+                        "method": 0
+                    }
+                ],
+                "menu_field": [
+                    {
+                        "field_name": "title",
+                        "title": "文章标题",
+                        "model": "Article"
+                    },
+                    {
+                        "field_name": "content",
+                        "title": "文章内容",
+                        "model": "Article"
+                    },
+                    {
+                        "field_name": "summary",
+                        "title": "文章摘要",
+                        "model": "Article"
+                    },
+                    {
+                        "field_name": "cover_image",
+                        "title": "封面图片",
+                        "model": "Article"
+                    },
+                    {
+                        "field_name": "category",
+                        "title": "所属分类",
+                        "model": "Article"
+                    },
+                    {
+                        "field_name": "tags",
+                        "title": "文章标签",
+                        "model": "Article"
+                    },
+                    {
+                        "field_name": "status",
+                        "title": "文章状态",
+                        "model": "Article"
+                    },
+                    {
+                        "field_name": "views_count",
+                        "title": "阅读量",
+                        "model": "Article"
+                    },
+                    {
+                        "field_name": "likes_count",
+                        "title": "点赞数",
+                        "model": "Article"
+                    },
+                    {
+                        "field_name": "is_top",
+                        "title": "是否置顶",
+                        "model": "Article"
+                    },
+                    {
+                        "field_name": "creator",
+                        "title": "创建人",
+                        "model": "Article"
+                    },
+                    {
+                        "field_name": "create_datetime",
+                        "title": "创建时间",
+                        "model": "Article"
+                    },
+                    {
+                        "field_name": "update_datetime",
+                        "title": "更新时间",
+                        "model": "Article"
+                    }
+                ]
+            },
+            {
+                "name": "评论管理",
+                "icon": "ChatDotRound",
+                "sort": 4,
+                "is_link": false,
+                "is_catalog": false,
+                "web_path": "/blog/comment",
+                "component": "blog/comment/index",
+                "component_name": "blog:comment",
+                "status": true,
+                "cache": false,
+                "visible": true,
+                "children": [],
+                "menu_button": [
+                    {
+                        "name": "查询",
+                        "value": "blog:comment:Query",
+                        "api": "/api/blog/comments/",
+                        "method": 0
+                    },
+                    {
+                        "name": "新增",
+                        "value": "blog:comment:Create",
+                        "api": "/api/blog/comments/",
+                        "method": 1
+                    },
+                    {
+                        "name": "编辑",
+                        "value": "blog:comment:Update",
+                        "api": "/api/blog/comments/{id}/",
+                        "method": 2
+                    },
+                    {
+                        "name": "删除",
+                        "value": "blog:comment:Delete",
+                        "api": "/api/blog/comments/{id}/",
+                        "method": 3
+                    }
+                ],
+                "menu_field": [
+                    {
+                        "field_name": "article",
+                        "title": "关联文章",
+                        "model": "Comment"
+                    },
+                    {
+                        "field_name": "content",
+                        "title": "评论内容",
+                        "model": "Comment"
+                    },
+                    {
+                        "field_name": "user",
+                        "title": "评论用户",
+                        "model": "Comment"
+                    },
+                    {
+                        "field_name": "parent",
+                        "title": "父评论",
+                        "model": "Comment"
+                    },
+                    {
+                        "field_name": "is_active",
+                        "title": "是否显示",
+                        "model": "Comment"
+                    },
+                    {
+                        "field_name": "create_datetime",
+                        "title": "创建时间",
+                        "model": "Comment"
+                    },
+                    {
+                        "field_name": "update_datetime",
+                        "title": "更新时间",
+                        "model": "Comment"
+                    }
+                ]
+            }
+        ],
+        "menu_button": [],
+        "menu_field": []
+    }
+]

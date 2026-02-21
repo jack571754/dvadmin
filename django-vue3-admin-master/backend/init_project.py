@@ -32,8 +32,8 @@ def main():
     if not run_command('python manage.py migrate', '[2/4] Migrate'):
         return
 
-    # 2. System init
-    if not run_command('python manage.py init', '[3/4] Init System'):
+    # 2. Init all modules (system, blog, book)
+    if not run_command('python manage.py init_all', '[3/4] Init All Modules'):
         return
 
     # 3. Create test data

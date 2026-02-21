@@ -1,6 +1,6 @@
 import type { App } from 'vue';
 import { judementSameArr } from '/@/utils/arrayOperation';
-import {BtnPermissionStore} from "/@/stores/btnPermission";
+import {BtnPermissionStore} from "/@/plugin/permission/store.permission";
 /**
  * 用户权限指令
  * @directive 单个权限验证（v-auth="xxx"）

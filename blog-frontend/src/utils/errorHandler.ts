@@ -2,7 +2,7 @@
  * Unified error handling utilities
  */
 
-import type { AxiosError } from 'axios'
+// import type { AxiosError } from 'axios'
 
 export interface ApiErrorResponse {
   code?: number

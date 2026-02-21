@@ -19,17 +19,39 @@ onMounted(() => {
 <style scoped lang="scss">
 // 文章表单弹窗样式优化
 :deep(.article-form-dialog) {
-	// 确保弹窗本身不滚动
+	// 弹窗整体布局
+	.el-dialog {
+		display: flex;
+		flex-direction: column;
+		max-height: 90vh;
+	}
+
+	.el-dialog__header {
+		flex-shrink: 0;
+	}
+
+	// 内容区域 - 可滚动
 	.el-dialog__body {
 		padding: 20px;
-		overflow: hidden;
+		overflow-y: auto;
+		flex: 1;
+		min-height: 0;
+	}
+
+	// Footer 固定在底部
+	.el-dialog__footer {
+		flex-shrink: 0;
+		position: sticky;
+		bottom: 0;
+		background: #fff;
+		border-top: 1px solid #ebeef5;
+		padding: 15px 20px;
+		margin-top: 0;
+		z-index: 10;
 	}
 
 	// 表单容器样式
 	.el-form {
-		// 设置最大高度并启用滚动
-		max-height: 75vh;
-		overflow-y: auto;
 		padding-right: 5px;
 
 		.el-row {
