@@ -198,7 +198,7 @@ const emit = defineEmits<Emits>()
 
 // Refs
 const editorRef = ref<HTMLElement | null>(null)
-const previewRef = ref<HTMLElement | null>(null)
+const previewRef = ref<HTMLDivElement | null>(null)
 const vditor = ref<Vditor | null>(null)
 
 // State

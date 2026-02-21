@@ -3,9 +3,9 @@
 </template>
 
 <script setup lang="ts">
-import { computed, onMounted, watch } from 'vue';
+import { computed } from 'vue';
 import MarkdownIt from 'markdown-it';
-import hljs from 'highlight.js';
+import hljs from 'highlight.js/lib/core';
 
 // Props
 interface Props {
@@ -21,35 +21,22 @@ const md = new MarkdownIt({
   html: true,
   linkify: true,
   typographer: true,
-  highlight: function (str: string, lang: string) {
+  highlight: function (str: string, lang: string): string {
     if (lang && hljs.getLanguage(lang)) {
       try {
         return hljs.highlight(str, { language: lang }).value;
-      } catch (__) {}
+      } catch {
+        return '';
+      }
     }
     return '';
   }
 });
 
-// Render markdown content
-const renderedHtml = computed(() => {
+// Render markdown content (computed is reactive)
+const renderedHtml = computed((): string => {
   if (!props.content) return '';
   return md.render(props.content);
-});
-
-// Load highlight.js styles dynamically
-onMounted(() => {
-  // Import a clean, minimal code highlighting theme
-  const link = document.createElement('link');
-  link.rel = 'stylesheet';
-  link.href = 'https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/github.min.css';
-  document.head.appendChild(link);
-});
-
-// Watch for content changes
-watch(() => props.content, () => {
-  // Re-render when content changes
-  renderedHtml.value = md.render(props.content);
 });
 </script>
 

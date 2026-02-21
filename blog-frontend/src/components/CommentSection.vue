@@ -91,12 +91,12 @@
               class="reply-item"
             >
               <div class="reply-avatar">
-                <span class="avatar-text avatar-text--sm">{{ getAvatarText(reply.user?.name || reply.user?.username || '用户') }}</span>
+                <span class="avatar-text avatar-text--sm">{{ getAvatarText(reply.user_info?.name || reply.user_info?.username || '用户') }}</span>
               </div>
               <div class="reply-body">
                 <div class="reply-header">
-                  <span class="reply-author">{{ reply.user?.name || reply.user?.username || '匿名用户' }}</span>
-                  <span class="reply-time">{{ formatTime(reply.created_time) }}</span>
+                  <span class="reply-author">{{ reply.user_info?.name || reply.user_info?.username || '匿名用户' }}</span>
+                  <span class="reply-time">{{ formatTime(reply.create_datetime) }}</span>
                 </div>
                 <p class="reply-content">{{ reply.content }}</p>
               </div>

@@ -221,6 +221,7 @@ import { ref, computed, onMounted, onUnmounted } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import MarkdownIt from 'markdown-it'
 import { blogApi, type Category, type Tag } from '@/api/blog'
+import type { Article } from '@/types/blog'
 import hljs from 'highlight.js/lib/core'
 import javascript from 'highlight.js/lib/languages/javascript'
 import typescript from 'highlight.js/lib/languages/typescript'
@@ -250,19 +251,6 @@ hljs.registerLanguage('bash', bash)
 hljs.registerLanguage('shell', bash)
 
 const LIKED_ARTICLES_KEY = 'blog_liked_articles'
-
-interface Article {
-  id: string
-  title: string
-  content: string
-  createdAt: string
-  category?: string
-  author?: string
-  tags?: string[]
-  excerpt?: string
-  viewsCount?: number
-  likesCount?: number
-}
 
 const route = useRoute()
 const router = useRouter()
@@ -312,7 +300,7 @@ const md = new MarkdownIt({
   html: true,
   linkify: true,
   typographer: true,
-  highlight: (str, lang) => {
+  highlight: (str: string, lang: string): string => {
     // Detect language
     let detectedLang = lang
     if (!detectedLang) {
@@ -324,7 +312,10 @@ const md = new MarkdownIt({
     }
 
     // Highlight code
-    let highlighted = md.utils.escapeHtml(str)
+    let highlighted: string = str
+      .replace(/&/g, '&amp;')
+      .replace(/</g, '&lt;')
+      .replace(/>/g, '&gt;')
     if (detectedLang && hljs.getLanguage(detectedLang)) {
       try {
         highlighted = hljs.highlight(str, { language: detectedLang }).value
@@ -359,11 +350,11 @@ const md = new MarkdownIt({
 })
 
 // Add heading IDs for TOC
-const originalHeadingOpen = md.renderer.rules.heading_open || function(tokens, idx, options, env, self) {
+const originalHeadingOpen = md.renderer.rules.heading_open || function(tokens: any[], idx: number, options: any, _env: any, self: any): string {
   return self.renderToken(tokens, idx, options)
 }
 
-md.renderer.rules.heading_open = function(tokens, idx, options, env, self) {
+md.renderer.rules.heading_open = function(tokens: any[], idx: number, options: any, _env: any, self: any): string {
   const token = tokens[idx]
   const contentToken = tokens[idx + 1]
   if (contentToken && contentToken.type === 'inline') {
@@ -371,7 +362,7 @@ md.renderer.rules.heading_open = function(tokens, idx, options, env, self) {
     const slug = text.toLowerCase().replace(/[^\w\u4e00-\u9fa5]+/g, '-').replace(/^-|-$/g, '')
     token.attrSet('id', slug)
   }
-  return originalHeadingOpen(tokens, idx, options, env, self)
+  return originalHeadingOpen(tokens, idx, options, _env, self)
 }
 
 // Computed

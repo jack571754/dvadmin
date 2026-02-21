@@ -583,4 +583,4 @@ async getUserInfo(): Promise<any> {
 export const blogApi = new BlogApiService();
 
 // Re-export types for convenience
-export type { Article, Category, Tag, PaginatedResponse, ArticleApiResponse, CommentApiResponse, DictItem };
+export type { Article, Category, Tag, PaginatedResponse };

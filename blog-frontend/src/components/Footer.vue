@@ -105,21 +105,15 @@ interface Props {
   extraLinks?: ExtraLink[]
 }
 
-const props = withDefaults(defineProps<Props>(), {
-  blogName: '思·录',
-  description: '关于技术、设计与思考的记录',
-  navLinks: () => [
-    { label: '首页', path: '/' },
-    { label: '归档', path: '/archive' },
-    { label: '关于', path: '/about' },
-  ],
-  socialLinks: () => [
-    { name: 'GitHub', url: 'https://github.com' },
-    { name: 'Twitter', url: 'https://twitter.com' },
-    { name: 'Email', url: 'mailto:hello@example.com' },
-  ],
-  extraLinks: () => [] as ExtraLink[],
-})
+const { blogName = '思·录', description = '关于技术、设计与思考的记录', navLinks = [
+  { label: '首页', path: '/' },
+  { label: '归档', path: '/archive' },
+  { label: '关于', path: '/about' },
+], socialLinks = [
+  { name: 'GitHub', url: 'https://github.com' },
+  { name: 'Twitter', url: 'https://twitter.com' },
+  { name: 'Email', url: 'mailto:hello@example.com' },
+], extraLinks = [] as ExtraLink[] } = defineProps<Props>()
 
 const currentYear = computed(() => new Date().getFullYear())
 

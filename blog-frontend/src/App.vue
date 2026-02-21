@@ -89,8 +89,8 @@ const removeToast = (id: number) => {
   toasts.value = toasts.value.filter(t => t.id !== id)
 }
 
-const getToastIcon = (type: string): string => {
-  const icons = {
+const getToastIcon = (type: 'success' | 'error' | 'info'): string => {
+  const icons: Record<'success' | 'error' | 'info', string> = {
     success: '✓',
     error: '×',
     info: '○',
