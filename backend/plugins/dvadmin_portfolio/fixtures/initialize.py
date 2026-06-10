@@ -34,11 +34,11 @@ class Initialize(CoreInitialize):
         PortfolioConfig.objects.create(
             name="H.",
             avatar="",
-            hero_title="Crafting digital experiences.",
-            hero_role="产品设计专家 & 全栈开发者",
-            hero_bio="我专注于复杂系统的体验设计与现代 Web 技术的融合。在这里，不仅是我的过往履历，也是我思考设计与工程边界的数字游乐场。",
+            hero_title="电商数字化建设与流程提效",
+            hero_role="电商业务流程数字化专家 & 数据中台建设者",
+            hero_bio="我专注于电商业务核心链路的数字化重构与多渠道数据整合。通过敏捷交付与规则引擎设计，用可量化的系统能力为业务降本增效。",
             email="hello@yourdomain.com",
-            social_proof="已交付 50+ 个项目 | 合作过金融、电商、SaaS 领域客户",
+            social_proof="主导 12 个大型电商系统交付 | 搭建 39 张报表数据中台 | 审批提速 300%+",
             is_active=True
         )
         print("初始化 PortfolioConfig 默认数据完成")
@@ -46,40 +46,40 @@ class Initialize(CoreInitialize):
         # 2. 初始化履历时间线
         ResumeTimeline.objects.bulk_create([
             ResumeTimeline(
-                role="高级体验设计专家 (UX/UI)",
-                company="Global Tech Innovations Inc.",
-                start_date="2021",
+                role="数据中台负责人 / 数据中台建设者",
+                company="某头部电商公司 - 数据服务部",
+                start_date="2023",
                 end_date="至今",
-                summary="主导企业级 SaaS 产品的核心体验架构与设计系统搭建。",
+                summary="负责全平台销售数据汇总与实时监控看板体系的建设，覆盖12个主流业务线。",
                 achievements=[
-                    "带领 5 人设计团队，从零构建并开源了公司的跨平台设计系统，提升了 40% 的研发交付效率。",
-                    "重构数据看板核心模块，通过复杂信息的降噪处理，使用户关键任务操作时间缩短 25%。",
-                    "主导与产品、工程团队的协同工作流标准化。"
+                    "整合京东、抖音、快手、拼多多、有赞等全渠道销售数据，成功打破数据孤岛。",
+                    "规划并交付 39 张核心业务报表，实现对日更销售简报、核心单品日报、订单时效和货品效期的全方位实时监控体系。",
+                    "为高管和各业务线运营团队提供敏捷决策支撑，显著缩短业务决策反馈链路。"
                 ],
                 sort=1
             ),
             ResumeTimeline(
-                role="产品交互设计师",
-                company="Creative Agency Studio",
-                start_date="2018",
-                end_date="2021",
-                summary="面向国际客户提供数字产品的从 0 到 1 体验设计。",
+                role="业务流程数字化专家 / 高级系统分析师",
+                company="某头部电商公司 - 流程技术部",
+                start_date="2021",
+                end_date="2023",
+                summary="主导电商业务核心高频人工环节的系统化审批与流程自动化升级。",
                 achievements=[
-                    "为 3 家头部金融科技初创公司设计移动端 App 界面与交互逻辑。",
-                    "引入高级动效原型工具，向高管与投资人进行具象化的方案提案。",
-                    "获得年度机构最佳跨界设计奖。"
+                    "将退款折算与价格测算等传统繁琐的人工审批与计算，转化为标准化系统审批与规则引擎计算，使整体审批效率提速 300%+。",
+                    "独立开发自动化寄样系统，将人工建单转换为流程自动化联动，成功释放 2 名全职员工的工作量。",
+                    "主导建设达人管理系统与分销发货系统，实现多端资源的统一协作及订单自动化流转。"
                 ],
                 sort=2
             ),
             ResumeTimeline(
-                role="独立开发者 & 自由撰稿人",
-                company="Indie Hacker",
-                start_date="2016",
-                end_date="2018",
-                summary="探索产品开发的全局链路，并建立个人影响力的初期阶段。",
+                role="敏捷项目经理 & 全栈工程师",
+                company="敏捷技术服务中心",
+                start_date="2018",
+                end_date="2021",
+                summary="以需求精准识别与 MVP 模式快速验证，实现电商辅助系统的高效极速交付。",
                 achievements=[
-                    "独立开发并上线了两款提效工具（App Store & macOS），累计获取 50,000+ 活跃用户。",
-                    "在各大技术/设计媒体持续输出高质量的深度分析长文。"
+                    "推行“精准需求识别 + MVP 快速验证 + 敏捷交付”模式，寄样系统 4 天完成交付，分销发货系统 6 天交付上线。",
+                    "在 19 天内完成价格测算 2.0 系统的迭代研发，并在 23 天内完成价格测算-运营套组的上线与平稳运行。"
                 ],
                 sort=3
             ),
@@ -89,42 +89,42 @@ class Initialize(CoreInitialize):
         # 3. 初始化作品与项目
         PortfolioItem.objects.bulk_create([
             PortfolioItem(
-                title="数据分析平台的体验重构",
+                title="自动化寄样系统",
                 category="case-study",
-                summary="如何在一个包含数万个数据节点的企业级看板中，平衡信息密度与视觉呼吸感？这是我主导这次改版的核心思考。",
-                result_tag="关键指标提升 25%",
+                summary="针对传统人工建单寄样繁琐且数据孤立的问题，进行全自动系统化链路设计。4天内极速交付上线，全面替代人工寄样管理。",
+                result_tag="释放 2 人全职工作量",
                 sort=1,
                 is_recommend=True
             ),
             PortfolioItem(
-                title="设计系统不再是组件库",
-                category="essay",
-                summary="探讨设计系统在 2024 年的演进：我们不只需要 UI Kit，更需要包含设计决策、无障碍标准与代码绑定的动态语言。",
-                result_tag="开发效能提升 40%",
+                title="多渠道电商数据中台",
+                category="case-study",
+                summary="整合拼多多、抖快、京东、有赞等多渠道大盘销售数据，搭建覆盖 12 个业务线的 39 张报表，支持日更销售简报与效期监控看板。",
+                result_tag="整合 12 个业务线数据",
                 sort=2,
                 is_recommend=True
             ),
             PortfolioItem(
-                title="WebGL 动态流体光影生成器",
-                category="experiment",
-                summary="基于 Three.js 和自定义着色器（Shaders）编写的网页互动实验，探讨非物理规律下的数字材质美学。",
-                result_tag="PV 增长 150%",
+                title="规则引擎驱动的价格测算系统",
+                category="case-study",
+                summary="将复杂的运营测算、退款折算等纯手工审批与 Excel 计算转换为自动化系统规则，内置风控规则防止算错损失。",
+                result_tag="审批效率提升 300%+",
                 sort=3,
                 is_recommend=True
             ),
             PortfolioItem(
-                title="为什么我坚持手工写 HTML",
-                category="essay",
-                summary="在这个被建站工具 and 无代码包围的时代，探讨掌握底层原生技术的控制感与性能优势。",
-                result_tag="首屏加载提速 80%",
+                title="分销发货极速交付实践",
+                category="experiment",
+                summary="使用 MVP（最小可行性产品）模式对分销协作链路进行极限开发，于 6 天内快速交付并上线分销发货系统，零故障承接高并发订单。",
+                result_tag="6 天内极速交付上线",
                 sort=4,
                 is_recommend=False
             ),
             PortfolioItem(
-                title="金融钱包 App: 从 0 到 1",
+                title="多端统一的达人管理系统 2.0",
                 category="case-study",
-                summary="展示了我是如何通过用户访谈、线框图验证，最终交付包含 120+ 屏幕的高保真原型与微交互规范。",
-                result_tag="客单价提升 15%",
+                summary="整合红人带货、分销资源、合同审批及佣金结算等全链路环节，打造多端信息互通的协作平台。",
+                result_tag="资源协作提效 35%",
                 sort=5,
                 is_recommend=False
             ),
