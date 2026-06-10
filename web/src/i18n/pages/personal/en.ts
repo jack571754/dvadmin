@@ -1,0 +1,65 @@
+// Define content
+export default {
+    message: {
+        pages: {
+            personal: {
+                      PersonalInfo1: ' Idleness is the root of all evil.',
+                      PersonalInfo2: 'DVAdmin is an efficient and user-friendly backend management system developed based on Django and Vue.js, primarily designed for rapidly building management backends for enterprise-level web applications. Utilizing a front-end and back-end separation architecture, it provides a comprehensive set of out-of-the-box functional modules, assisting developers and businesses in reducing development costs and enhancing management efficiency. (Note: The prompt text can be changed by modifying the personal.PersonalInfo2 file located in the src/i18n/pages/personal/ directory under the frontend directory.)',
+                info: {
+                    myInfoTitle: 'My Information',
+                    updateInfoTitle: 'Update Info',
+                    accountSecurity: 'Account Security',
+                    nickname: 'Nickname:',
+                    department: 'Department:',
+                    roles: 'Roles:',
+                    currentPasswordStrength: 'Current Password Strength: Strong',
+                    changePasswordNow: 'Change Now',
+                    boundMobile: 'Bound Mobile:',
+                    boundEmail: 'Bound Email:',
+                },
+                form: {
+                    nickname: 'Nickname:',
+                    nicknamePlaceholder: 'Please enter your nickname',
+                    email: 'Email:',
+                    emailPlaceholder: 'Please enter your email',
+                    mobile: 'Mobile:',
+                    mobilePlaceholder: 'Please enter your mobile number',
+                    gender: 'Gender:',
+                    genderPlaceholder: 'Please select gender',
+                    genderMale: 'Male',
+                    genderFemale: 'Female',
+                    genderSecret: 'Secret',
+                    passwd: 'Password:',
+                },
+                dialog: {
+                    passwordChange: 'Change Password',
+                    oldPassword: 'Current Password',
+                    newPassword: 'New Password',
+                    confirmPassword: 'Confirm Password',
+                    oldPasswordPlaceholder: 'Please enter your current password',
+                    newPasswordPlaceholder: 'Please enter a new password',
+                    confirmPasswordPlaceholder: 'Please confirm your new password',
+                    submit: 'Submit',
+                },
+                validation: {
+                    nicknameRequired: 'Please enter your nickname',
+                    mobileInvalid: 'Please enter a valid mobile number',
+                    oldPasswordRequired: 'Please enter your current password',
+                    sameAsOldPassword: 'New password cannot be the same as current password',
+                    passwordComplexity: 'Password complexity too low (must contain letters and numbers)',
+                    confirmPasswordRequired: 'Please confirm your password',
+                    passwordMismatch: 'Passwords do not match',
+                    formValidationFailed: 'Form validation failed, please check',
+                },
+                messages: {
+                    updateSuccess: 'Update successful',
+                    passwordChangeSuccess: 'Password changed successfully',
+                    formValidationFailed: 'Form validation failed, please check',
+                },
+                button: {
+                    submit: 'Submit',
+                },
+            },
+        },
+    },
+};

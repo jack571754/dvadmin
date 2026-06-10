@@ -1,0 +1,148 @@
+# DVAdmin Root .gitignore
+# 整合所有子项目的通用忽略规则
+
+# =========================
+# Python
+# =========================
+__pycache__/
+*.py[cod]
+*$py.class
+*.pyc
+*.so
+.Python
+*.egg-info/
+*.egg
+dist/
+build/
+*.manifest
+*.spec
+pip-log.txt
+pip-delete-this-directory.txt
+
+# =========================
+# 虚拟环境
+# =========================
+venv/
+ENV/
+env/
+.venv/
+/backend/venv
+
+# =========================
+# Django
+# =========================
+*.log
+local_settings.py
+db.sqlite3
+/backend/db.sqlite3-wal
+/backend/db.sqlite3-shm
+*.db
+media/
+staticfiles/
+celerybeat-schedule
+
+# 迁移文件（保留 __init__.py）
+**/migrations/*.py
+!**/migrations/__init__.py
+
+# 配置文件（保留示例）
+**/conf/env.py
+!**/conf/env.example.py
+
+# =========================
+# Node.js / 前端
+# =========================
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+.pnpm-debug.log*
+web/package-lock.json
+web/test-results/
+
+# =========================
+# 构建产物
+# =========================
+dist/
+build/
+.cache/
+.parcel-cache/
+.vite/
+
+# 静态文件压缩（由 whitenoise 等工具生成）
+**/*.gz
+
+# =========================
+# IDE 和编辑器
+# =========================
+.idea/
+/backend/.idea
+.vscode/
+*.swp
+*.swo
+*~
+.DS_Store
+.history/
+*.sublime-workspace
+*.sublime-project
+
+# =========================
+# 操作系统
+# =========================
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+Desktop.ini
+
+# =========================
+# 测试和覆盖率
+# =========================
+htmlcov/
+.tox/
+.coverage
+.coverage.*
+.cache
+nosetests.xml
+coverage.xml
+*,cover
+.hypothesis/
+.pytest_cache/
+
+# =========================
+# 临时和备份文件
+# =========================
+*.bak
+*.tmp
+*.temp
+*.old
+*.backup
+*.orig
+*~
+
+# =========================
+# 环境变量
+# =========================
+.env
+.env.local
+.env.*.local
+
+# =========================
+# 其他
+# =========================
+.python-version
+gunicorn.pid
+.ipynb_checkpoints/
+.scrapy/
+*.mo
+*.pot
+
+# Docker 数据（MySQL 临时文件不应提交）
+docker_env/mysql/data/#innodb_redo/
+docker_env/mysql/data/ibtmp1
+
+.playwright-mcp/
+docs/superpowers/

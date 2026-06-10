@@ -1,0 +1,51 @@
+/****覆盖element默认样式******/
+.w-drawer .el-drawer__header {
+    padding: 10px 15px !important;
+    margin-bottom: 0 !important;
+}
+
+.w-drawer .el-drawer__body {
+    padding: 0 15px 10px 15px;
+}
+/******************************/
+
+/*去除表单项的label名称*/
+.w-form-cp-nlb > .el-form-item__label {
+    display: none;
+}
+
+/*表单组件选中的样式*/
+.w-form-cp-active {
+    border: 1px dashed var(--el-color-primary) !important;
+}
+
+.w-form-cp-active > .w-form-component:first-of-type {
+    display: flex !important;
+}
+
+.w-form-d-item {
+    position: relative;
+    margin: 2px;
+    /*padding: 5px;*/
+    border: 1px dashed white;
+}
+
+.w-form-d-item:hover {
+    border: 1px dashed #8d8d8d;
+}
+
+* :focus {
+    outline: none;
+}
+
+.w-process-icon {
+    padding: 8px;
+    font-size: 20px;
+    border-radius: 10px;
+}
+
+.w-row-text{
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}

@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+      <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, minimum-scale=1, user-scalable=no,viewport-fit=cover" />
+      <title>审批列表</title>
+      <script src="//cdn.kungfumars.com/kfm-code-qr-jump/vue.global.prod.js"></script>
+      <script src="//cdn.kungfumars.com/kfm-code-qr-jump/axios-1.3.6.min.js"></script>
+      <script src="/static/js/xe-utils.js"></script>
+      <script  src="/static/js/vant4.min.js"></script>
+      <link rel="stylesheet" href="/static/css/vant4.css">
+      <script  src="/static/js/iconify-icon.min.js"></script>
+    <link rel="stylesheet" href="/static/css/public.css">
+    <style>
+        .menu{
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background-color: #FFFFFF;
+            padding: 10px;
+            margin: 10px;
+            border-radius: 10px;
+            height: 8vh;
+        }
+        .form-list{
+           height: 82vh;overflow-y: scroll;
+        }
+        :root{
+            --van-cell-background:#f8f8f8;
+        }
+    </style>
+</head>
+<body>
+    <div id="app">
+        <div v-if="is_authentication">
+            <div class="menu">
+                <div v-for="(item,index) in tabGrid" @click="goToTab(item,index)">
+                    <div style="text-align: center">
+                        <van-icon :name="item.icon" size="36" :color="item.color" />
+                    </div>
+                    <div style="color:#888;font-size: 14px;">${ item.name }</div>
+                </div>
+            </div>
+            <div class="form-list">
+                <div v-if="formList.length===0">
+                    <van-empty description="暂无数据" />
+                </div>
+                <div v-for="item in formList" style="margin-top: 20px">
+                    <van-cell-group inset @click="goToPage(item)">
+                        <van-cell :title="item.name"  :label="item.description" :value="item.creator_name" >
+                            <template #icon>
+                             <iconify-icon
+                               :icon="item.icon.name"
+                               style="font-size:36px;border-radius: 10px;margin-right: 5px;height: 36px;width: 36px"
+                               :style="{'background': item.icon.bgc, color: item.icon.color}"
+                            ></iconify-icon>
+                          </template>
+                        </van-cell>
+                    </van-cell-group>
+                </div>
+            </div>
+        </div>
+        <div v-else>
+           <div>
+                ${errMsg}
+           </div>
+        </div>
+    </div>
+    <script>
+         const app = Vue.createApp({
+             delimiters: ['${', '}'],
+             data(){
+                 return {
+                     is_authentication:true,
+                     errMsg:'',
+                     tabGrid:[
+                         {name:"待处理",icon:'todo-list-o',color:'#E6A23C'},
+                         {name:"已处理",icon:'completed-o',color:'#67C23A'},
+                         {name:"已发起",icon:'records-o',color:'#409EFF'},
+                         {name:"我收到的",icon:'bookmark-o',color: '#ED6A0C'}
+                     ],
+                     formList:[]
+                 }
+             },
+             methods:{
+                 // 获取列表
+                getPageList(){
+                    const locat = XEUtils.locat()
+                    const searchQuery = locat.searchQuery
+                    const token = searchQuery.token || null
+                    const domain = `${location.protocol}//${location.hostname}${location.port ? ':' : '/api'}${location.port}`;
+                    axios({
+                    url: `${domain}/api/dvadmin3_flow/app_flow_info/get_form_list/`,
+                    method: 'get',
+                    headers: {
+                      'Content-Type': 'application/json',
+                        'Authorization': `JWT ${token}`
+                    }
+                  }).then(res => {
+                      const {data} = res
+                       if(data.code===2000){
+                           this.formList = data.data
+                       }else if(data.code===401){
+                           this.is_authentication = false
+                           this.errMsg = "未登录,请登录授权~"
+                       }else{
+                           this.is_authentication = false
+                           this.errMsg = data.msg
+                       }
+                  }).catch(err => {
+                      this.is_authentication =false
+                         this.errMsg = "网站错误,请联系网站管理员~"
+                  })
+                },
+                 // 跳转到form页面
+                 goToPage(item){
+                     const locat = XEUtils.locat()
+                     const searchQuery = locat.searchQuery
+                     const token = searchQuery.token || null
+                     const domain = `${location.protocol}//${location.hostname}${location.port ? ':' : '/api'}${location.port}`;
+                     const flow_info_id = item.id
+                     window.location.href = `${domain}/api/dvadmin3_flow/flow_form_page/?token=${token}&flow_info_id=${flow_info_id}`
+                 },
+                 // 跳转到tab页面
+                 goToTab(item,index){
+                     const locat = XEUtils.locat()
+                     const searchQuery = locat.searchQuery
+                     const token = searchQuery.token || null
+                     const domain = `${location.protocol}//${location.hostname}${location.port ? ':' : '/api'}${location.port}`;
+                     window.location.href = `${domain}/api/dvadmin3_flow/flow_data_page/?token=${token}&tab_index=${index}`
+                 }
+             },
+             mounted(){
+                this.getPageList()
+             },
+         })
+         app.use(vant);
+         app.mount("#app");
+    </script>
+</body>
+</html>
+
+
