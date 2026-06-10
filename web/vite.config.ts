@@ -3,7 +3,12 @@ import { resolve } from 'path';
 import { defineConfig, loadEnv, ConfigEnv } from 'vite';
 import vueSetupExtend from 'vite-plugin-vue-setup-extend';
 // import vueJsx from '@vitejs/plugin-vue-jsx'
-import { generateVersionFile } from "/@/utils/upgrade";
+import fs from 'fs';
+
+function generateVersionFile() {
+	const version = `${process.env.npm_package_version || '1.0.0'}.${new Date().getTime()}`;
+	fs.writeFileSync(`public/version-build`, version);
+}
 
 const pathResolve = (dir: string) => {
 	return resolve(__dirname, '.', dir);

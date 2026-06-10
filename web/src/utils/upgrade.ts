@@ -1,8 +1,6 @@
 import axios from 'axios';
-import * as process from 'process';
 import { Local, Session } from '/@/utils/storage';
 import { ElNotification } from 'element-plus';
-import fs from 'fs';
 
 // 是否显示升级提示信息框
 const IS_SHOW_UPGRADE_SESSION_KEY = 'isShowUpgrade';
@@ -47,12 +45,4 @@ export async function checkVersion() {
 			}
 		}
 	});
-}
-
-export function generateVersionFile() {
-	// 生成版本文件到public目录下version文件中
-	const package_version = META_ENV?.npm_package_version ?? process.env?.npm_package_version;
-
-	const version = `${package_version}.${new Date().getTime()}`;
-	fs.writeFileSync(`public/${VERSION_FILE_NAME}`, version);
 }

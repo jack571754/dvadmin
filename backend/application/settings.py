@@ -440,6 +440,7 @@ SHARED_APPS = []
 # from dvadmin_upgrade_center.settings import *    # 升级中心
 from dvadmin3_celery.settings import *            # celery 异步任务
 from dvadmin3_flow.settings import *              # 工作流审批
+from dvadmin_portfolio.settings import *          # 个人履历与作品集展示系统
 # from dvadmin_third.settings import *            # 第三方用户管理
 # from dvadmin_ak_sk.settings import *            # 秘钥管理管理
 # from dvadmin_tenants.settings import *            # 租户管理

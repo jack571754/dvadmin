@@ -1,0 +1,153 @@
+[
+  {
+    "name": "履历作品集",
+    "icon": "iconfont icon-xitongshezhi",
+    "sort": 10,
+    "is_link": false,
+    "is_catalog": true,
+    "web_path": "/portfolio_cms",
+    "component": "",
+    "component_name": "",
+    "status": true,
+    "cache": false,
+    "visible": true,
+    "parent": null,
+    "children": [
+      {
+        "name": "个人设置",
+        "icon": "iconfont icon-caidan",
+        "sort": 1,
+        "is_link": false,
+        "is_catalog": false,
+        "web_path": "/portfolio_cms/config",
+        "component": "plugins/dvadmin_portfolio/config/index",
+        "component_name": "portfolioConfig",
+        "status": true,
+        "cache": false,
+        "visible": true,
+        "menu_button": [
+          {
+            "name": "查询",
+            "value": "portfolioConfig:Search",
+            "api": "/api/portfolio/config/",
+            "method": 0
+          },
+          {
+            "name": "详情",
+            "value": "portfolioConfig:Retrieve",
+            "api": "/api/portfolio/config/{id}/",
+            "method": 0
+          },
+          {
+            "name": "新增",
+            "value": "portfolioConfig:Create",
+            "api": "/api/portfolio/config/",
+            "method": 1
+          },
+          {
+            "name": "编辑",
+            "value": "portfolioConfig:Update",
+            "api": "/api/portfolio/config/{id}/",
+            "method": 2
+          },
+          {
+            "name": "删除",
+            "value": "portfolioConfig:Delete",
+            "api": "/api/portfolio/config/{id}/",
+            "method": 3
+          }
+        ]
+      },
+      {
+        "name": "履历管理",
+        "icon": "iconfont icon-caidan",
+        "sort": 2,
+        "is_link": false,
+        "is_catalog": false,
+        "web_path": "/portfolio_cms/resume",
+        "component": "plugins/dvadmin_portfolio/resume/index",
+        "component_name": "portfolioResume",
+        "status": true,
+        "cache": false,
+        "visible": true,
+        "menu_button": [
+          {
+            "name": "查询",
+            "value": "portfolioResume:Search",
+            "api": "/api/portfolio/resume/",
+            "method": 0
+          },
+          {
+            "name": "详情",
+            "value": "portfolioResume:Retrieve",
+            "api": "/api/portfolio/resume/{id}/",
+            "method": 0
+          },
+          {
+            "name": "新增",
+            "value": "portfolioResume:Create",
+            "api": "/api/portfolio/resume/",
+            "method": 1
+          },
+          {
+            "name": "编辑",
+            "value": "portfolioResume:Update",
+            "api": "/api/portfolio/resume/{id}/",
+            "method": 2
+          },
+          {
+            "name": "删除",
+            "value": "portfolioResume:Delete",
+            "api": "/api/portfolio/resume/{id}/",
+            "method": 3
+          }
+        ]
+      },
+      {
+        "name": "作品管理",
+        "icon": "iconfont icon-caidan",
+        "sort": 3,
+        "is_link": false,
+        "is_catalog": false,
+        "web_path": "/portfolio_cms/item",
+        "component": "plugins/dvadmin_portfolio/item/index",
+        "component_name": "portfolioItem",
+        "status": true,
+        "cache": false,
+        "visible": true,
+        "menu_button": [
+          {
+            "name": "查询",
+            "value": "portfolioItem:Search",
+            "api": "/api/portfolio/item/",
+            "method": 0
+          },
+          {
+            "name": "详情",
+            "value": "portfolioItem:Retrieve",
+            "api": "/api/portfolio/item/{id}/",
+            "method": 0
+          },
+          {
+            "name": "新增",
+            "value": "portfolioItem:Create",
+            "api": "/api/portfolio/item/",
+            "method": 1
+          },
+          {
+            "name": "编辑",
+            "value": "portfolioItem:Update",
+            "api": "/api/portfolio/item/{id}/",
+            "method": 2
+          },
+          {
+            "name": "删除",
+            "value": "portfolioItem:Delete",
+            "api": "/api/portfolio/item/{id}/",
+            "method": 3
+          }
+        ]
+      }
+    ]
+  }
+]

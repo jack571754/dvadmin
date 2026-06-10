@@ -95,5 +95,13 @@ export const staticRoutes: Array<RouteRecordRaw> = [
 		meta: {
 			title: 'message.router.personal'
 		},
+	},
+	{
+		path: '/portfolio',
+		name: 'portfolio',
+		component: () => import('/@/views/portfolio/index.vue'),
+		meta: {
+			title: '个人履历与作品集',
+		},
 	}
 ];
