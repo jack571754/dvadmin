@@ -61,6 +61,7 @@ INSTALLED_APPS = [
     "channels",
     "dvadmin.system",
     "dvadmin.test_app",
+    "dvadmin.design_order",
 ]
 
 MIDDLEWARE = [
