@@ -63,10 +63,6 @@ class ProductArchive(CoreModel):
         max_length=100, blank=True, default='',
         verbose_name="昵称", help_text="产品市场昵称"
     )
-    gifts = models.CharField(
-        max_length=500, blank=True, default='',
-        verbose_name="标配赠品配置", help_text="标配赠品配置内容"
-    )
     series = models.CharField(
         max_length=100, blank=True, default='',
         verbose_name="系列", help_text="产品系列"
@@ -99,6 +95,10 @@ class ProductArchive(CoreModel):
         default=False,
         verbose_name="是否需要维护", help_text="标记该产品档案是否需要维护更新"
     )
+    keywords = models.CharField(
+        max_length=200, blank=True, default='',
+        verbose_name="关键词", help_text="英文逗号分隔的关键词列表"
+    )
 
     class Meta:
         db_table = "dvadmin_design_order_product_archive"
@@ -121,8 +121,9 @@ class ProductSpecSubmission(CoreModel):
     name = models.CharField(max_length=200, verbose_name="提报名称")
     shop = models.CharField(max_length=100, blank=True, default='', verbose_name="提报店铺")
     status = models.CharField(max_length=20, choices=STATUS_CHOICES, default='draft', verbose_name="状态")
-    product_count = models.IntegerField(default=0, verbose_name="产品数量")
+    product_count = models.IntegerField(default=0, blank=True, null=True, verbose_name="产品数量")
     snapshot_data = models.JSONField(verbose_name="快照JSON数据", null=True, blank=True)
+    template_type = models.CharField(max_length=50, default='main_image', blank=True, null=True, verbose_name="模板类型")
 
     class Meta:
         db_table = "dvadmin_design_order_product_spec_submission"

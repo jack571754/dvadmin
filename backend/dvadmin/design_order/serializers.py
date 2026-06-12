@@ -30,4 +30,5 @@ class ProductSpecSubmissionSerializer(CustomModelSerializer):
     class Meta:
         model = ProductSpecSubmission
         fields = "__all__"
+        read_only_fields = ["product_count"]
 

@@ -137,6 +137,27 @@ export const createCrudOptions = function ({ crudExpose }: CreateCrudOptionsProp
 						component: { props: { clearable: true, placeholder: '请输入提报关联的店铺' } },
 					},
 				},
+				template_type: {
+					title: '模板类型',
+					type: 'dict-select',
+					search: { show: true },
+					column: {
+						minWidth: 120,
+						align: 'center',
+					},
+					dict: dict({
+						data: [
+							{ value: 'main_image', label: '主图模板', color: 'primary' },
+							{ value: 'live_stream', label: '直播间模板', color: 'success' },
+							{ value: 'detail_page', label: '详情页模板', color: 'warning' },
+						]
+					}),
+					form: {
+						value: 'main_image',
+						rules: [{ required: true, message: '请选择模板类型' }],
+						component: { props: { clearable: false, placeholder: '请选择模板类型' } }
+					}
+				},
 				status: {
 					title: '状态',
 					type: 'dict-select',

@@ -1,9 +1,17 @@
+import { ref } from 'vue';
+import { ElMessage, ElMessageBox } from 'element-plus';
 import * as api from '/@/api/design_order/product_archive';
 import { dict, UserPageQuery, AddReq, DelReq, EditReq, CreateCrudOptionsProps, CreateCrudOptionsRet } from '@fast-crud/fast-crud';
 import { auth } from '/@/utils/authFunction';
 import { request } from '/@/utils/service';
 
 export const createCrudOptions = function ({ crudExpose }: CreateCrudOptionsProps): CreateCrudOptionsRet {
+	const selectedRowKeys = ref<any[]>([]);
+
+	const onSelectionChange = (changed: any) => {
+		selectedRowKeys.value = changed.map((item: any) => item.id);
+	};
+
 	const pageRequest = async (query: UserPageQuery) => {
 		return await api.GetList(query);
 	};
@@ -19,12 +27,47 @@ export const createCrudOptions = function ({ crudExpose }: CreateCrudOptionsProp
 	};
 
 	return {
+		selectedRowKeys,
 		crudOptions: {
 			request: {
 				pageRequest,
 				addRequest,
 				editRequest,
 				delRequest,
+			},
+			actionbar: {
+				buttons: {
+					batchDelete: {
+						type: 'danger',
+						text: '批量删除',
+						icon: 'Delete',
+						show: auth('design_order:product_archive:Delete'),
+						click: async () => {
+							if (selectedRowKeys.value.length === 0) {
+								ElMessage.warning('请选择要删除的数据！');
+								return;
+							}
+							ElMessageBox.confirm(
+								`确定要批量删除已选中的 ${selectedRowKeys.value.length} 条数据吗？`,
+								'警告',
+								{
+									confirmButtonText: '确定',
+									cancelButtonText: '取消',
+									type: 'warning',
+								}
+							).then(async () => {
+								const res = await api.BatchDelete(selectedRowKeys.value);
+								if (res.code === 2000) {
+									ElMessage.success('批量删除成功！');
+									selectedRowKeys.value = [];
+									crudExpose.doRefresh();
+								} else {
+									ElMessage.error(res.msg || '批量删除失败');
+								}
+							}).catch(() => {});
+						},
+					},
+				},
 			},
 			rowHandle: {
 				fixed: 'right',
@@ -47,7 +90,21 @@ export const createCrudOptions = function ({ crudExpose }: CreateCrudOptionsProp
 					},
 				},
 			},
+			table: {
+				rowKey: 'id',
+				onSelectionChange,
+			},
 			columns: {
+				$checked: {
+					title: '选择',
+					form: { show: false },
+					column: {
+						type: 'selection',
+						align: 'center',
+						width: '50px',
+						columnSetDisabled: true,
+					},
+				},
 				_index: {
 					title: '序号',
 					form: { show: false },
@@ -175,14 +232,6 @@ export const createCrudOptions = function ({ crudExpose }: CreateCrudOptionsProp
 								placeholder: '请输入或选择产品市场昵称',
 							}
 						},
-					},
-				},
-				gifts: {
-					title: '标配赠品配置',
-					type: 'input',
-					column: { minWidth: 200 },
-					form: {
-						component: { props: { clearable: true, placeholder: '格式: 🎁 赠品A x 1片 | 🎁 赠品B x 2盒' } },
 					},
 				},
 				series: {

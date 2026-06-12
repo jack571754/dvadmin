@@ -20,7 +20,7 @@ export const getCleanNickname = (nicknameVal: any, uniqueNicknames: string[]): s
 export const getProductCoords = (idx: number) => {
 	const blockIndex = Math.floor(idx / 6);
 	const blockCol = (idx % 6) + 1;
-	const blockStartRow = blockIndex * 16;
+	const blockStartRow = blockIndex * 15;
 	return { blockIndex, blockCol, blockStartRow };
 };
 

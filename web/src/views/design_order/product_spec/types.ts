@@ -28,19 +28,6 @@ export interface DBProductItem {
 	brand: string;
 	fullName: string;
 	spec: string;
-	gifts: GiftInfo[];
-	efficacy: string;
-	thresholdA: string;
-	valueA: string;
-	thresholdB: string;
-	valueB: string;
-	memberGift: string;
-	memberValue: string;
-	sellingPoint: string;
-	price: string;
-	startDate: string;
-	endDate: string;
-	remarks: string;
 }
 
 export interface SelectableProduct {
@@ -50,4 +37,19 @@ export interface SelectableProduct {
 	desc: string;
 	brand: string;
 	fullName: string;
+}
+
+export interface ValidationError {
+	productIndex: number;
+	productLabel: string;
+	field: string;
+	fieldLabel: string;
+	rule: 'required' | 'format' | 'range';
+	message: string;
+}
+
+export interface ValidationResult {
+	valid: boolean;
+	errors: ValidationError[];
+	warnings: ValidationError[];
 }

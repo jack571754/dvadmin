@@ -2,6 +2,7 @@
 设计工单管理视图集
 """
 import json
+from django.db import transaction
 from rest_framework import permissions
 from rest_framework.decorators import action, api_view
 from rest_framework.filters import SearchFilter, OrderingFilter
@@ -38,7 +39,9 @@ class ProductArchiveViewSet(FieldPermissionMixin, CustomModelViewSet):
     @action(detail=False, methods=['get'])
     def dict(self, request):
         """获取产品档案字典数据（用于前端下拉选择）"""
-        products = self.queryset.values('id', 'product_code', 'product_name', 'nickname', 'brand', 'specification', 'gifts')
+        products = self.queryset.values(
+            'id', 'product_code', 'product_name', 'nickname', 'brand', 'specification', 'keywords'
+        )
         
         user = request.user
         if not user.is_superuser:
@@ -93,6 +96,7 @@ class ProductSpecSubmissionViewSet(FieldPermissionMixin, CustomModelViewSet):
             status='draft',
             product_count=original.product_count,
             snapshot_data=original.snapshot_data,
+            template_type=original.template_type,
             creator=request.user
         )
         
@@ -178,6 +182,92 @@ class SaveProductSpecView(APIView):
     """
     permission_classes = [permissions.IsAuthenticated]
 
+    def validate_submission(self, data):
+        """校验提交数据的完整性"""
+        errors = []
+
+        # 1. 提报级校验
+        name = (data.get('name') or '').strip()
+        if not name:
+            errors.append({
+                'productIndex': -1, 'productLabel': '提报信息',
+                'field': 'name', 'fieldLabel': '提报名称',
+                'rule': 'required', 'message': '提报名称不能为空'
+            })
+
+        shop = (data.get('shop') or '').strip()
+        if not shop:
+            errors.append({
+                'productIndex': -1, 'productLabel': '提报信息',
+                'field': 'shop', 'fieldLabel': '提报店铺',
+                'rule': 'required', 'message': '提报店铺不能为空'
+            })
+
+        # 2. 产品级校验
+        products = data.get('products', [])
+        if not products:
+            errors.append({
+                'productIndex': -1, 'productLabel': '提报信息',
+                'field': 'products', 'fieldLabel': '产品数据',
+                'rule': 'required', 'message': '至少需要1个有效产品'
+            })
+
+        for idx, prod in enumerate(products):
+            label = f"商品提报 {idx + 1}"
+            nickname = (prod.get('nickname') or '').strip()
+            if not nickname:
+                continue  # 空 nickname 的产品跳过
+
+            # 必填字段
+            for field_key, field_label in [
+                ('brand', '品牌'),
+                ('fullName', '官方全称'),
+                ('spec', '规格'),
+            ]:
+                val = (prod.get(field_key) or '').strip()
+                if not val or val == '***':
+                    errors.append({
+                        'productIndex': idx, 'productLabel': label,
+                        'field': field_key, 'fieldLabel': field_label,
+                        'rule': 'required',
+                        'message': f'{label} 的「{field_label}」不能为空'
+                    })
+
+            # 价格校验
+            price = (prod.get('price') or '').strip()
+            if not price or price == '***':
+                errors.append({
+                    'productIndex': idx, 'productLabel': label,
+                    'field': 'price', 'fieldLabel': '提报价格',
+                    'rule': 'required',
+                    'message': f'{label} 的「提报价格」不能为空'
+                })
+            else:
+                try:
+                    price_num = float(str(price).replace(',', ''))
+                    if price_num <= 0:
+                        raise ValueError()
+                except (ValueError, TypeError):
+                    errors.append({
+                        'productIndex': idx, 'productLabel': label,
+                        'field': 'price', 'fieldLabel': '提报价格',
+                        'rule': 'format',
+                        'message': f'{label} 的「提报价格」必须为大于0的数值'
+                    })
+
+            # 日期校验
+            start_date = (prod.get('startDate') or '').strip()
+            end_date = (prod.get('endDate') or '').strip()
+            if not start_date or not end_date or start_date == '***' or end_date == '***':
+                errors.append({
+                    'productIndex': idx, 'productLabel': label,
+                    'field': 'dateRange', 'fieldLabel': '活动时间',
+                    'rule': 'required',
+                    'message': f'{label} 的「活动时间」不能为空'
+                })
+
+        return errors
+
     def post(self, request):
         """
         保存Univer表格提交的结构化产品规格数据到指定的提报历史中
@@ -190,19 +280,39 @@ class SaveProductSpecView(APIView):
         name = request.data.get('name', '')
         shop = request.data.get('shop', '')
         status = request.data.get('status', 'draft')
+        template_type = request.data.get('templateType', 'main_image')
+
+        # 提交时执行校验
+        if status == 'submitted':
+            validation_errors = self.validate_submission(request.data)
+            if validation_errors:
+                return ErrorResponse(
+                    data={'errors': validation_errors},
+                    msg='提交校验未通过，请修正以下问题后重新提交',
+                    status=400
+                )
 
         user = request.user
+        submission = None
+
+        with transaction.atomic():
+            return self._do_save(request, user, products, snapshot, form_count,
+                                 submission_id, name, shop, status, template_type)
+
+    def _do_save(self, request, user, products, snapshot, form_count,
+                 submission_id, name, shop, status, template_type):
+        """事务内执行实际保存逻辑"""
         submission = None
 
         # 1. 查找或创建提报历史维度记录
         if submission_id:
             submission = ProductSpecSubmission.objects.filter(id=submission_id).first()
             if not submission:
-                return ErrorResponse(msg="未找到对应的提报历史记录")
+                return ErrorResponse(msg="未找到对应的提报历史记录", status=400)
             
             # 如果是已提交状态，非超级管理员不可修改
             if submission.status == 'submitted' and not user.is_superuser:
-                return ErrorResponse(msg="该提报已提交正式归档，无法修改")
+                return ErrorResponse(msg="该提报已提交正式归档，无法修改", status=400)
 
             if not user.is_superuser and snapshot and submission.snapshot_data:
                 snapshot = merge_snapshots(submission.snapshot_data, snapshot)
@@ -214,6 +324,8 @@ class SaveProductSpecView(APIView):
             submission.product_count = len(products)
             if snapshot:
                 submission.snapshot_data = snapshot
+            if template_type:
+                submission.template_type = template_type
             submission.save()
         else:
             import datetime
@@ -224,6 +336,7 @@ class SaveProductSpecView(APIView):
                 status=status or 'draft',
                 product_count=len(products),
                 snapshot_data=snapshot,
+                template_type=template_type,
                 creator=user
             )
 
@@ -349,42 +462,12 @@ class SaveProductSpecView(APIView):
                 remarks=remarks
             )
 
-            # 同步更新产品档案
-            product_code = f"SP{card_index + 1:04d}"
-            try:
-                if matched_product:
-                    matched_product.brand = brand or matched_product.brand
-                    matched_product.specification = spec or matched_product.specification
-                    matched_product.nickname = nickname or matched_product.nickname
-                    matched_product.retail_price = price if price and price != '***' else matched_product.retail_price
-                    matched_product.gifts = gifts_str or matched_product.gifts
-                    matched_product.save()
-                    updated_count += 1
-                else:
-                    if nickname != '***' and full_name != '***':
-                        ProductArchive.objects.create(
-                            product_code=product_code,
-                            product_name=full_name or nickname,
-                            specification=spec,
-                            brand=brand,
-                            nickname=nickname,
-                            retail_price=price if price and price != '***' else None,
-                            gifts=gifts_str,
-                        )
-                        created_count += 1
-            except Exception as e:
-                import logging
-                logging.getLogger(__name__).error(f"同步更新产品档案失败: {e}")
-                continue
-
         return DetailResponse(
             data={
                 'id': submission.id,
-                'created': created_count,
-                'updated': updated_count,
                 'total': len(products),
             },
-            msg=f"规格书“{submission.name}”保存成功！已同步产品档案：新建 {created_count}，更新 {updated_count}"
+            msg=f"规格书“{submission.name}”保存成功！"
         )
 
 
@@ -450,7 +533,8 @@ class LoadProductSpecView(APIView):
                     'shop': snapshot_obj.shop,
                     'status': snapshot_obj.status,
                     'snapshot': snapshot,
-                    'formCount': snapshot_obj.product_count or 1
+                    'formCount': snapshot_obj.product_count or 1,
+                    'templateType': snapshot_obj.template_type
                 },
                 msg="获取规格书快照成功"
             )
