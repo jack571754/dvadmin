@@ -639,7 +639,12 @@ const PRODUCT_KEYWORDS = ref<Record<string, string[]>>({});
 const uniqueNicknames = computed(() => {
 	const set = new Set<string>();
 	rawProductList.value.forEach(item => {
-		if (item.nickname) set.add(item.nickname);
+		if (item.nickname) {
+			const trimmed = item.nickname.trim();
+			// 过滤掉纯数字的无效昵称，防止干扰脚注逻辑
+			if (/^\d+$/.test(trimmed)) return;
+			set.add(trimmed);
+		}
 	});
 	return Array.from(set);
 });
@@ -806,26 +811,51 @@ const recalculateSuffixesAndFootnotes = (activeSheet: any) => {
 		const nickEntries = Object.entries(nicknameIndexMap)
 			.sort(([a], [b]) => b.length - a.length);
 
-		let result = text;
-		for (const [nick, num] of nickEntries) {
-			// 先清除已有的 [编号] 后缀，再重新插入
-			const cleaned = result.replace(new RegExp(escapeRegExp(nick) + '\\[\\d+\\]', 'g'), nick);
-			result = cleaned.replace(
-				new RegExp(escapeRegExp(nick), 'g'),
-				`${nick}[${num}]`
-			);
-		}
-		// 同时通过关键词匹配补充
-		for (const [nick, num] of nickEntries) {
-			const keywords = getProductKeywords(nick);
-			for (const kw of keywords) {
-				if (kw === nick) continue; // 已处理
-				if (!result.includes(kw)) continue;
-				// 避免在已有 [编号] 的上下文中重复插入
-				const regex = new RegExp(escapeRegExp(kw) + '(?!\\[\\d+\\])', 'g');
-				result = result.replace(regex, `${kw}[${num}]`);
+		// 1. 先彻底清除所有已有的 [编号] 后缀（包括可能被重复/嵌套生成的）
+		let result = text.replace(/\[[\d\s,\[\]]+\]/g, '');
+
+		// 2. 使用占位符依次替换，避免短模式匹配已替换的长模式内部
+		const placeholders: { placeholder: string; replacement: string }[] = [];
+		
+		// 替换昵称
+		nickEntries.forEach(([nick, num], idx) => {
+			const placeholder = `___PROD_PLACEHOLDER_${idx}___`;
+			const escapedNick = escapeRegExp(nick);
+			const regex = new RegExp(escapedNick, 'g');
+			if (regex.test(result)) {
+				result = result.replace(regex, placeholder);
+				placeholders.push({
+					placeholder,
+					replacement: `${nick}[${num}]`
+				});
 			}
-		}
+		});
+
+		// 替换关键词
+		let kwIdx = nickEntries.length;
+		nickEntries.forEach(([nick, num]) => {
+			const keywords = getProductKeywords(nick);
+			keywords.forEach(kw => {
+				if (kw === nick) return;
+				const escapedKw = escapeRegExp(kw);
+				const regex = new RegExp(escapedKw, 'g');
+				if (regex.test(result)) {
+					const placeholder = `___PROD_PLACEHOLDER_${kwIdx++}___`;
+					result = result.replace(regex, placeholder);
+					placeholders.push({
+						placeholder,
+						replacement: `${kw}[${num}]`
+					});
+				}
+			});
+		});
+
+		// 3. 将占位符还原为带编号的目标文本
+		// 按占位符索引倒序替换，保证安全性
+		placeholders.reverse().forEach(({ placeholder, replacement }) => {
+			result = result.replace(new RegExp(placeholder, 'g'), replacement);
+		});
+
 		return result;
 	};
 
@@ -2154,7 +2184,7 @@ const initUniver = (savedSnapshot?: any) => {
 	if (!univerContainerRef.value) return;
 
 	const stylesDict = buildStylesDict();
-	const initialProduct = getProductByNickAndSpec('可丽金胶卷精华水', '150ml') || {
+	const initialProduct = (getProductByNickAndSpec('可丽金胶卷精华水', '150ml') || {
 		nickname: '可丽金胶卷精华水',
 		brand: '',
 		fullName: '',
@@ -2172,7 +2202,7 @@ const initUniver = (savedSnapshot?: any) => {
 		startDate: '',
 		endDate: '',
 		remarks: '',
-	};
+	}) as any;
 
 	const initialCellData: Record<number, Record<number, any>> = {};
 	initialCellData[0] = {
@@ -2180,19 +2210,19 @@ const initUniver = (savedSnapshot?: any) => {
 		1: { v: '商品提报 1', s: 'headerStyle_proya' },
 	};
 	const rowStyleMap: Record<number, { v: string; s: string }> = {
-		1: { v: getPermittedVal(1, initialProduct.brand), s: 'contentCenterStyle_proya' },
-		2: { v: getPermittedVal(2, initialProduct.nickname), s: 'editableCenterStyle_proya' },
-		3: { v: getPermittedVal(3, initialProduct.fullName), s: 'contentLeftStyle_proya' },
-		4: { v: getPermittedVal(4, initialProduct.spec), s: 'contentCenterStyle_proya' },
-		5: { v: getPermittedVal(5, initialProduct.efficacy), s: 'contentLeftStyle_proya' },
-		6: { v: getPermittedVal(6, initialProduct.gifts.map((g) => `🎁 ${g.name} x ${g.qty}`).join(' | ') || '🎁 双击配置赠品'), s: 'editableCenterStyle_proya' },
-		7: { v: getPermittedVal(7, (initialProduct.thresholdA || initialProduct.thresholdB) ? `A档: ${initialProduct.thresholdA} (${initialProduct.valueA})；B档: ${initialProduct.thresholdB} (${initialProduct.valueB})` : ''), s: 'editableCenterStyle_proya' },
-		8: { v: getPermittedVal(8, initialProduct.memberGift), s: 'editableCenterStyle_proya' },
-		9: { v: getPermittedVal(9, initialProduct.memberValue), s: 'editableCenterStyle_proya' },
-		10: { v: getPermittedVal(10, initialProduct.sellingPoint), s: 'contentLeftStyle_shaded_proya' },
-		11: { v: getPermittedVal(11, initialProduct.price), s: 'editableCenterStyle_proya' },
+		1: { v: getPermittedVal(1, initialProduct.brand || ''), s: 'contentCenterStyle_proya' },
+		2: { v: getPermittedVal(2, initialProduct.nickname || ''), s: 'editableCenterStyle_proya' },
+		3: { v: getPermittedVal(3, initialProduct.fullName || ''), s: 'contentLeftStyle_proya' },
+		4: { v: getPermittedVal(4, initialProduct.spec || ''), s: 'contentCenterStyle_proya' },
+		5: { v: getPermittedVal(5, initialProduct.efficacy || ''), s: 'contentLeftStyle_proya' },
+		6: { v: getPermittedVal(6, (initialProduct.gifts || []).map((g: any) => `🎁 ${g.name} x ${g.qty}`).join(' | ') || '🎁 双击配置赠品'), s: 'editableCenterStyle_proya' },
+		7: { v: getPermittedVal(7, (initialProduct.thresholdA || initialProduct.thresholdB) ? `A档: ${initialProduct.thresholdA || ''} (${initialProduct.valueA || ''})；B档: ${initialProduct.thresholdB || ''} (${initialProduct.valueB || ''})` : ''), s: 'editableCenterStyle_proya' },
+		8: { v: getPermittedVal(8, initialProduct.memberGift || ''), s: 'editableCenterStyle_proya' },
+		9: { v: getPermittedVal(9, initialProduct.memberValue || ''), s: 'editableCenterStyle_proya' },
+		10: { v: getPermittedVal(10, initialProduct.sellingPoint || ''), s: 'contentLeftStyle_shaded_proya' },
+		11: { v: getPermittedVal(11, initialProduct.price || ''), s: 'editableCenterStyle_proya' },
 		12: { v: getPermittedVal(12, initialProduct.startDate && initialProduct.endDate ? `${initialProduct.startDate} 00:00 ~ ${initialProduct.endDate} 00:00` : ''), s: 'editableCenterStyle_proya' },
-		13: { v: getPermittedVal(13, initialProduct.remarks), s: 'editableCenterStyle_proya' },
+		13: { v: getPermittedVal(13, initialProduct.remarks || ''), s: 'editableCenterStyle_proya' },
 	};
 	for (const [row, data] of Object.entries(rowStyleMap)) {
 		initialCellData[Number(row)] = {
