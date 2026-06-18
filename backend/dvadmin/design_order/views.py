@@ -643,7 +643,7 @@ class ProductSpecTemplateViewSet(CustomModelViewSet):
         if not obj:
             return ErrorResponse(msg="模板不存在", status=404)
         schema = obj.value or {}
-        menu = Menu.objects.filter(web_path='/product_spec').first()
+        menu = Menu.objects.filter(web_path__in=['product_spec', '/product_spec']).first()
         created = []
         for f in schema.get('fields', []):
             mk = f.get('maskKey')

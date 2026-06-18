@@ -2335,12 +2335,12 @@ const saveWorkbookData = async (statusVal: string = 'draft') => {
 			hasAnyProduct = true;
 			const label = `商品提报 ${idx + 1}`;
 
-			// 必填字段
-			const requiredFields = [
-				{ key: 'brand', label: '品牌' },
-				{ key: 'fullName', label: '官方全称' },
-				{ key: 'spec', label: '规格' },
-			];
+			// 必填字段：从模板 Schema 的 validation.requiredProductFields 读取
+			const schema = getSchema(currentTemplateType.value);
+			const requiredFields = (schema.validation.requiredProductFields || []).map((key) => {
+				const fdef = getFields(currentTemplateType.value).find((f) => f.key === key);
+				return { key, label: fdef?.label || key };
+			});
 			for (const f of requiredFields) {
 				const val = getValue(blockStartRow + rowOf(f.key), blockCol);
 				if (!val || (typeof val === 'string' && !val.trim()) || val === '***') {
@@ -2377,12 +2377,10 @@ const saveWorkbookData = async (statusVal: string = 'draft') => {
 				}
 			}
 
-			// 警告级字段
-			const warningFields = [
-				{ row: 5, field: 'efficacy', label: '功效' },
-				{ row: 6, field: 'gifts', label: '赠品' },
-				{ row: 10, field: 'sellingPoint', label: '卖点' },
-			];
+			// 警告级字段：按 kind 推导（longtext 类如功效/卖点 + gifts 赠品）
+			const warningFields = getFields(currentTemplateType.value)
+				.filter((f) => ['longtext', 'gifts'].includes(f.kind))
+				.map((f) => ({ row: f.row, field: f.key, label: f.label }));
 			for (const f of warningFields) {
 				const val = getValue(blockStartRow + f.row, blockCol);
 				if (!val || (typeof val === 'string' && !val.trim()) || val === '***') {
@@ -2446,8 +2444,8 @@ const exportToCSV = () => {
 	
 	// 添加表头行：一维表格，列代表字段，行代表商品
 	const headers = ['商品ID'];
-	for (let r = 1; r <= 13; r++) {
-		headers.push(getLabelData(r));
+	for (const f of getFields(currentTemplateType.value)) {
+		headers.push(f.label);
 	}
 	rows.push(headers);
 
