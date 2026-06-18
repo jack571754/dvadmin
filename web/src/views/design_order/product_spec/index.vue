@@ -1851,22 +1851,22 @@ const parseGiftsFromText = (text: any): GiftInfo[] => {
 };
 
 const getLabelData = (rowNum: number) => {
-	const labels = TEMPLATE_LABELS[currentTemplateType.value] || TEMPLATE_LABELS['main_image'];
-	return labels[rowNum] || '';
+	return getLabelByRow(currentTemplateType.value, rowNum);
 };
 
 const updateSheetLabels = () => {
 	if (!sheet) return;
 	const theme = currentTheme.value;
+	const rpb = rowsPerBlock();
+	const fieldRows = getFields(currentTemplateType.value).map((f) => f.row);
 	isHandlingEvent = true;
 	try {
-		const totalBlocks = Math.ceil(formCount.value / 6);
+		const totalBlocks = Math.ceil(formCount.value / colsPerBlock());
 		for (let blockIdx = 0; blockIdx < totalBlocks; blockIdx++) {
-			const blockStartRow = blockIdx * 15;
+			const blockStartRow = blockIdx * rpb;
 			sheet.getRange(blockStartRow, 0, 1, 1).setValue({ v: '配置字段', s: `headerStyle_${theme}` });
-			for (let r = 1; r <= 13; r++) {
-				const labelText = getLabelData(r);
-				sheet.getRange(blockStartRow + r, 0, 1, 1).setValue({ v: labelText, s: `labelStyle_${theme}` });
+			for (const r of fieldRows) {
+				sheet.getRange(blockStartRow + r, 0, 1, 1).setValue({ v: getLabelData(r), s: `labelStyle_${theme}` });
 			}
 		}
 	} finally {
@@ -1912,21 +1912,32 @@ const initUniver = (savedSnapshot?: any) => {
 		0: { v: '配置字段', s: 'headerStyle_proya' },
 		1: { v: '商品提报 1', s: 'headerStyle_proya' },
 	};
-	const rowStyleMap: Record<number, { v: string; s: string }> = {
-		1: { v: getPermittedVal(1, initialProduct.brand || ''), s: 'contentCenterStyle_proya' },
-		2: { v: getPermittedVal(2, initialProduct.nickname || ''), s: 'editableCenterStyle_proya' },
-		3: { v: getPermittedVal(3, initialProduct.fullName || ''), s: 'contentLeftStyle_proya' },
-		4: { v: getPermittedVal(4, initialProduct.spec || ''), s: 'contentCenterStyle_proya' },
-		5: { v: getPermittedVal(5, initialProduct.efficacy || ''), s: 'contentLeftStyle_proya' },
-		6: { v: getPermittedVal(6, (initialProduct.gifts || []).map((g: any) => `🎁 ${g.name} x ${g.qty}`).join(' | ') || '🎁 双击配置赠品'), s: 'editableCenterStyle_proya' },
-		7: { v: getPermittedVal(7, (initialProduct.thresholdA || initialProduct.thresholdB) ? `A档: ${initialProduct.thresholdA || ''} (${initialProduct.valueA || ''})；B档: ${initialProduct.thresholdB || ''} (${initialProduct.valueB || ''})` : ''), s: 'editableCenterStyle_proya' },
-		8: { v: getPermittedVal(8, initialProduct.memberGift || ''), s: 'editableCenterStyle_proya' },
-		9: { v: getPermittedVal(9, initialProduct.memberValue || ''), s: 'editableCenterStyle_proya' },
-		10: { v: getPermittedVal(10, initialProduct.sellingPoint || ''), s: 'contentLeftStyle_shaded_proya' },
-		11: { v: getPermittedVal(11, initialProduct.price || ''), s: 'editableCenterStyle_proya' },
-		12: { v: getPermittedVal(12, initialProduct.startDate && initialProduct.endDate ? `${initialProduct.startDate} 00:00 ~ ${initialProduct.endDate} 00:00` : ''), s: 'editableCenterStyle_proya' },
-		13: { v: getPermittedVal(13, initialProduct.remarks || ''), s: 'editableCenterStyle_proya' },
+	// 按模板 Schema 字段逐行初始化：值取自 initialProduct 对应字段键
+	const fieldInitValue = (f: FieldDef): string => {
+		const v = (initialProduct as any)[f.key];
+		if (v === undefined || v === null) return '';
+		if (f.kind === 'gifts') {
+			return (initialProduct.gifts || []).map((g: any) => `🎁 ${g.name} x ${g.qty}`).join(' | ') || '🎁 双击配置赠品';
+		}
+		if (f.kind === 'tier') {
+			return (initialProduct.thresholdA || initialProduct.thresholdB)
+				? `A档: ${initialProduct.thresholdA || ''} (${initialProduct.valueA || ''})；B档: ${initialProduct.thresholdB || ''} (${initialProduct.valueB || ''})`
+				: '';
+		}
+		if (f.kind === 'dateRange') {
+			return initialProduct.startDate && initialProduct.endDate
+				? `${initialProduct.startDate} 00:00 ~ ${initialProduct.endDate} 00:00`
+				: '';
+		}
+		return String(v);
 	};
+	const rowStyleMap: Record<number, { v: string; s: string }> = {};
+	for (const f of getFields(currentTemplateType.value)) {
+		rowStyleMap[f.row] = {
+			v: getPermittedVal(f.row, fieldInitValue(f)),
+			s: styleToUniverStyleName(f.style, 'proya'),
+		};
+	}
 	for (const [row, data] of Object.entries(rowStyleMap)) {
 		initialCellData[Number(row)] = {
 			0: { v: getLabelData(Number(row)), s: 'labelStyle_proya' },
@@ -1982,8 +1993,9 @@ const initUniver = (savedSnapshot?: any) => {
 						7: { w: 420 },
 					},
 					rowData: Object.fromEntries(Array.from({ length: 200 }, (_, i) => {
-						const relRow = i % 15;
-						if (relRow === 14) {
+						const rpb = rowsPerBlock();
+						const relRow = i % rpb;
+						if (relRow === rpb - 1) {
 							return [i, { h: 16 }];
 						}
 						return [i, { h: relRow === 0 ? 42 : 36, ia: 1, ah: relRow === 0 ? 42 : 36 }];
@@ -2010,8 +2022,8 @@ const initUniver = (savedSnapshot?: any) => {
 
 	const runAutoResize = () => {
 		try {
-			const totalBlocks = Math.ceil(formCount.value / 6);
-			sheet.autoResizeRows(0, totalBlocks * 15);
+			const totalBlocks = Math.ceil(formCount.value / colsPerBlock());
+			sheet.autoResizeRows(0, totalBlocks * rowsPerBlock());
 			window.dispatchEvent(new Event('resize'));
 		} catch (err) {
 			console.warn('初始化自动行高计算失败:', err);
@@ -2038,11 +2050,13 @@ const initUniver = (savedSnapshot?: any) => {
 		
 		const row = params.row;
 		const col = params.column;
-		const blockIndex = Math.floor(row / 15);
-		const relativeRow = row % 15;
-		const productIndex = blockIndex * 6 + (col - 1);
+		const rpb = rowsPerBlock();
+		const cpb = colsPerBlock();
+		const blockIndex = Math.floor(row / rpb);
+		const relativeRow = row % rpb;
+		const productIndex = blockIndex * cpb + (col - 1);
 
-		if (col >= 1 && col <= 6 && relativeRow !== 14 && productIndex >= 0 && productIndex < formCount.value) {
+		if (col >= 1 && col <= cpb && relativeRow !== rpb - 1 && productIndex >= 0 && productIndex < formCount.value) {
 			currentEditingCell.value = { row, col };
 			currentColIndex.value = productIndex;
 			prevColIndex.value = productIndex;
@@ -2087,7 +2101,9 @@ const initUniver = (savedSnapshot?: any) => {
 const appendNewProductColumn = () => {
 	const activeSheet = workbook.getActiveSheet();
 	const idx = formCount.value;
-	const { blockCol, blockStartRow } = getProductCoords(idx);
+	const rpb = rowsPerBlock();
+	const cpb = colsPerBlock();
+	const { blockCol, blockStartRow } = getProductCoords(idx, rpb, cpb);
 	const theme = currentTheme.value;
 
 	try {
@@ -2098,29 +2114,25 @@ const appendNewProductColumn = () => {
 
 	if (blockCol === 1) {
 		activeSheet.getRange(blockStartRow, 0, 1, 1).setValue({ v: '配置字段', s: `headerStyle_${theme}` });
-		for (let r = 1; r <= 13; r++) {
-			activeSheet.getRange(blockStartRow + r, 0, 1, 1).setValue({ v: getLabelData(r), s: `labelStyle_${theme}` });
+		for (const f of getFields(currentTemplateType.value)) {
+			activeSheet.getRange(blockStartRow + f.row, 0, 1, 1).setValue({
+				v: f.label,
+				s: `labelStyle_${theme}`,
+			});
 		}
 	}
 
 	activeSheet.getRange(blockStartRow, blockCol, 1, 1).setValue({ v: `商品提报 ${idx + 1}`, s: `headerStyle_${theme}` });
-	activeSheet.getRange(blockStartRow + 1, blockCol, 1, 1).setValue({ v: '', s: `contentCenterStyle_${theme}` });
-	activeSheet.getRange(blockStartRow + 2, blockCol, 1, 1).setValue({ v: '', s: `editableCenterStyle_${theme}` });
-	activeSheet.getRange(blockStartRow + 3, blockCol, 1, 1).setValue({ v: '', s: `contentLeftStyle_${theme}` });
-	activeSheet.getRange(blockStartRow + 4, blockCol, 1, 1).setValue({ v: '', s: `contentCenterStyle_${theme}` });
-	activeSheet.getRange(blockStartRow + 5, blockCol, 1, 1).setValue({ v: '', s: `contentLeftStyle_${theme}` });
-	activeSheet.getRange(blockStartRow + 6, blockCol, 1, 1).setValue({ v: '', s: `editableCenterStyle_${theme}` });
-	activeSheet.getRange(blockStartRow + 7, blockCol, 1, 1).setValue({ v: '', s: `editableCenterStyle_${theme}` });
-	activeSheet.getRange(blockStartRow + 8, blockCol, 1, 1).setValue({ v: '', s: `editableCenterStyle_${theme}` });
-	activeSheet.getRange(blockStartRow + 9, blockCol, 1, 1).setValue({ v: '', s: `editableCenterStyle_${theme}` });
-	activeSheet.getRange(blockStartRow + 10, blockCol, 1, 1).setValue({ v: '', s: `contentLeftStyle_shaded_${theme}` });
-	activeSheet.getRange(blockStartRow + 11, blockCol, 1, 1).setValue({ v: '', s: `editableCenterStyle_${theme}` });
-	activeSheet.getRange(blockStartRow + 12, blockCol, 1, 1).setValue({ v: '', s: `editableCenterStyle_${theme}` });
-	activeSheet.getRange(blockStartRow + 13, blockCol, 1, 1).setValue({ v: '', s: `editableCenterStyle_${theme}` });
+	for (const f of getFields(currentTemplateType.value)) {
+		activeSheet.getRange(blockStartRow + f.row, blockCol, 1, 1).setValue({
+			v: '',
+			s: styleToUniverStyleName(f.style, theme),
+		});
+	}
 
 	formCount.value++;
 	activeSheet.showColumns(blockCol, 1);
-	try { activeSheet.autoResizeRows(blockStartRow, 15); } catch (e) { /* ignore */ }
+	try { activeSheet.autoResizeRows(blockStartRow, rpb); } catch (e) { /* ignore */ }
 	window.dispatchEvent(new Event('resize'));
 	ElMessage.success(`已追加第 ${formCount.value} 列商品配置项`);
 	markDirty();
