@@ -26,6 +26,7 @@ export interface FieldDef {
 
 export interface TemplateValidation {
 	requiredSubmissionFields: string[];
+	requiredProductFields?: string[];
 	priceFieldKey?: string;
 	dateRangeFieldKey?: string;
 }

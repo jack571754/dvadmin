@@ -1,12 +1,28 @@
 import { FieldDef, FieldStyle } from './types';
 import { ALL_TEMPLATES } from './templates';
+import { useProductSpecTemplateStore } from '/@/stores/productSpecTemplate';
 
 export type { TemplateSchema, FieldDef, FieldStyle, FieldKind } from './types';
 
 const DEFAULT_TYPE = 'main_image';
 
+// 优先从 Pinia store 读取（含后端自定义模板），未加载或不可用时降级到内置常量。
+// try/catch 处理 store 在 Pinia 未初始化场景（模块顶层/crud.tsx）的调用。
+function activeTemplates(): Record<string, any> {
+	try {
+		const store = useProductSpecTemplateStore();
+		if (store.loaded && Object.keys(store.templates).length > 0) {
+			return store.templates;
+		}
+	} catch {
+		/* pinia 未初始化或 store 不可用，降级 */
+	}
+	return ALL_TEMPLATES;
+}
+
 export function getSchema(templateType?: string) {
-	return ALL_TEMPLATES[templateType || DEFAULT_TYPE] || ALL_TEMPLATES[DEFAULT_TYPE];
+	const tpls = activeTemplates();
+	return tpls[templateType || DEFAULT_TYPE] || tpls[DEFAULT_TYPE] || ALL_TEMPLATES[DEFAULT_TYPE];
 }
 
 export function getRowsPerBlock(templateType?: string): number {

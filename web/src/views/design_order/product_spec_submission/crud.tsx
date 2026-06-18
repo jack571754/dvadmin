@@ -3,8 +3,12 @@ import { dict, UserPageQuery, AddReq, DelReq, EditReq, CreateCrudOptionsProps, C
 import { auth } from '/@/utils/authFunction';
 import router from '/@/router/index';
 import { ElMessageBox, ElMessage } from 'element-plus';
+import { useProductSpecTemplateStore } from '/@/stores/productSpecTemplate';
 
-export const createCrudOptions = function ({ crudExpose }: CreateCrudOptionsProps): CreateCrudOptionsRet {
+export const createCrudOptions = async function ({ crudExpose }: CreateCrudOptionsProps): Promise<CreateCrudOptionsRet> {
+	// 先加载模板表（内置 + 自定义），供 template_type 下拉使用
+	const templateStore = useProductSpecTemplateStore();
+	await templateStore.load();
 	const pageRequest = async (query: UserPageQuery) => {
 		return await api.GetList(query);
 	};
@@ -146,11 +150,11 @@ export const createCrudOptions = function ({ crudExpose }: CreateCrudOptionsProp
 						align: 'center',
 					},
 					dict: dict({
-						data: [
-							{ value: 'main_image', label: '主图模板', color: 'primary' },
-							{ value: 'live_stream', label: '直播间模板', color: 'success' },
-							{ value: 'detail_page', label: '详情页模板', color: 'warning' },
-						]
+						data: templateStore.listTypes().map((t) => ({
+							value: t.value,
+							label: t.label,
+							color: t.builtin ? 'primary' : 'success',
+						})),
 					}),
 					form: {
 						value: 'main_image',

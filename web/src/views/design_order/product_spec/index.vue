@@ -423,6 +423,7 @@
 
 <script lang="ts" setup name="productSpec">
 import { ref, computed, watch, onMounted, onBeforeUnmount, nextTick } from 'vue';
+import { useProductSpecTemplateStore } from '/@/stores/productSpecTemplate';
 import { useRoute, useRouter } from 'vue-router';
 import { request } from '/@/utils/service';
 import { ElMessage, ElMessageBox } from 'element-plus';
@@ -2560,6 +2561,10 @@ onMounted(async () => {
 	// 监听编辑器输入
 	document.addEventListener('input', handleEditorInput, true);
 		window.addEventListener('beforeunload', handleBeforeUnload);
+
+	// 先加载模板表（内置 + 自定义），确保后续 Schema 查询命中 store
+	const templateStore = useProductSpecTemplateStore();
+	await templateStore.load();
 
 	// 获取字段权限
 	try {
