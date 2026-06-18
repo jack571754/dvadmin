@@ -5,10 +5,24 @@ import router from '/@/router/index';
 import { ElMessageBox, ElMessage } from 'element-plus';
 import { useProductSpecTemplateStore } from '/@/stores/productSpecTemplate';
 
-export const createCrudOptions = async function ({ crudExpose }: CreateCrudOptionsProps): Promise<CreateCrudOptionsRet> {
-	// 先加载模板表（内置 + 自定义），供 template_type 下拉使用
-	const templateStore = useProductSpecTemplateStore();
-	await templateStore.load();
+// 同步读取模板类型列表（store 未加载时返回内置默认，加载后由 index.vue 触发 resetCrudOptions 刷新）
+function getTemplateTypeDict() {
+	let list: { value: string; label: string; builtin: boolean }[] = [];
+	try {
+		const store = useProductSpecTemplateStore();
+		list = store.listTypes();
+	} catch { /* pinia 未初始化 */ }
+	if (!list.length) {
+		list = [
+			{ value: 'main_image', label: '主图模板', builtin: true },
+			{ value: 'live_stream', label: '直播间模板', builtin: true },
+			{ value: 'detail_page', label: '详情页模板', builtin: true },
+		];
+	}
+	return list.map((t) => ({ value: t.value, label: t.label, color: t.builtin ? 'primary' : 'success' }));
+}
+
+export const createCrudOptions = function ({ crudExpose }: CreateCrudOptionsProps): CreateCrudOptionsRet {
 	const pageRequest = async (query: UserPageQuery) => {
 		return await api.GetList(query);
 	};
@@ -150,11 +164,7 @@ export const createCrudOptions = async function ({ crudExpose }: CreateCrudOptio
 						align: 'center',
 					},
 					dict: dict({
-						data: templateStore.listTypes().map((t) => ({
-							value: t.value,
-							label: t.label,
-							color: t.builtin ? 'primary' : 'success',
-						})),
+						data: getTemplateTypeDict(),
 					}),
 					form: {
 						value: 'main_image',
