@@ -3,12 +3,13 @@
 """
 from django.urls import path, include
 from rest_framework.routers import DefaultRouter
-from .views import ProductArchiveViewSet, SaveProductSpecView, LoadProductSpecView, ProductSpecViewSet, ProductSpecSubmissionViewSet
+from .views import ProductArchiveViewSet, SaveProductSpecView, LoadProductSpecView, ProductSpecViewSet, ProductSpecSubmissionViewSet, ProductSpecTemplateViewSet
 
 router = DefaultRouter()
 router.register(r'product_archives', ProductArchiveViewSet, basename='product_archive')
 router.register(r'product_specs', ProductSpecViewSet, basename='product_spec')
 router.register(r'product_spec_submissions', ProductSpecSubmissionViewSet, basename='product_spec_submission')
+router.register(r'product_spec_templates', ProductSpecTemplateViewSet, basename='product_spec_template')
 
 
 urlpatterns = [

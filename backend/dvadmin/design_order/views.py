@@ -14,10 +14,13 @@ from dvadmin.utils.json_response import DetailResponse, SuccessResponse, ErrorRe
 from dvadmin.utils.permission import CustomPermission
 from dvadmin.utils.filters import CustomDjangoFilterBackend
 from dvadmin.utils.field_permission import FieldPermissionMixin
-from dvadmin.system.models import FieldPermission, MenuField
+from dvadmin.system.models import FieldPermission, MenuField, SystemConfig, Menu
 from .models import ProductArchive, ProductSpec, ProductSpecSnapshot, ProductSpecSubmission
 from .serializers import ProductArchiveSerializer, ProductSpecSerializer, ProductSpecSubmissionSerializer
-from .templates_schemas import get_schema, get_rows_per_block, get_maskkey_to_row
+from .templates_schemas import (
+    get_schema, get_rows_per_block, get_maskkey_to_row,
+    list_all_templates, list_template_types, BUILTIN_TEMPLATE_KEYS,
+)
 
 
 class ProductArchiveViewSet(FieldPermissionMixin, CustomModelViewSet):
@@ -492,3 +495,155 @@ class LoadProductSpecView(APIView):
                 data=None,
                 msg="没有找到已保存的规格数据，请初始化新表"
             )
+
+
+# ========== 产品规格书模板管理（自定义模板 CRUD，内置只读）==========
+_TEMPLATE_PARENT_KEY = "design_order_template"
+ALLOWED_KINDS = {'text', 'longtext', 'mention', 'gifts', 'tier', 'dateRange', 'price'}
+ALLOWED_STYLES = {'contentCenter', 'contentLeft', 'contentLeftShaded', 'editableCenter', 'editableDate'}
+
+
+def _validate_template_schema(schema, is_create=True, instance_key=None):
+    """校验自定义模板 Schema，返回错误消息列表（空表示通过）。"""
+    errors = []
+    if not isinstance(schema, dict):
+        return ["请求体必须是 JSON 对象"]
+    tt = schema.get('templateType')
+    if not tt or not isinstance(tt, str):
+        return ["templateType 必填且为字符串"]
+    if not tt.replace('_', '').isalnum():
+        errors.append("templateType 仅允许字母/数字/下划线")
+    if tt in BUILTIN_TEMPLATE_KEYS:
+        errors.append(f"内置模板 {tt} 不可创建/修改/删除")
+    if is_create and tt in list_all_templates():
+        errors.append(f"模板 {tt} 已存在")
+    if instance_key and schema.get('templateType') != instance_key:
+        errors.append("templateType 不可修改")
+
+    rpb = schema.get('rowsPerBlock')
+    if not isinstance(rpb, int) or rpb < 5:
+        errors.append("rowsPerBlock 必须为 >=5 的整数")
+        return errors
+    if schema.get('columnsPerBlock') != 6:
+        errors.append("columnsPerBlock 当前必须为 6")
+
+    fields = schema.get('fields')
+    if not isinstance(fields, list):
+        errors.append("fields 必须为数组")
+        return errors
+    if len(fields) != rpb - 2:
+        errors.append(f"fields 数量必须 = rowsPerBlock-2 = {rpb - 2}")
+    rows = [f.get('row') for f in fields if isinstance(f, dict)]
+    if sorted(rows) != list(range(1, rpb - 1)):
+        errors.append(f"row 必须为 1..{rpb - 2} 连续唯一")
+
+    price_field = next((f for f in fields if isinstance(f, dict) and f.get('kind') == 'price'), None)
+    date_field = next((f for f in fields if isinstance(f, dict) and f.get('kind') == 'dateRange'), None)
+    if not price_field or price_field.get('row') != rpb - 2 or price_field.get('key') != 'price':
+        errors.append(f"倒数第二行(row={rpb - 2})必须为 key='price', kind='price'")
+    if not date_field or date_field.get('row') != rpb - 3 or date_field.get('key') != 'dateRange':
+        errors.append(f"倒数第三行(row={rpb - 3})必须为 key='dateRange', kind='dateRange'")
+
+    for i, f in enumerate(fields):
+        if not isinstance(f, dict):
+            errors.append(f"fields[{i}] 必须为对象"); continue
+        if not f.get('key'):
+            errors.append(f"fields[{i}].key 必填")
+        if not f.get('label'):
+            errors.append(f"fields[{i}].label 必填")
+        if f.get('kind') not in ALLOWED_KINDS:
+            errors.append(f"fields[{i}].kind 非法: {f.get('kind')}")
+        if f.get('style') not in ALLOWED_STYLES:
+            errors.append(f"fields[{i}].style 非法: {f.get('style')}")
+
+    if not isinstance(schema.get('validation', {}), dict):
+        errors.append("validation 必须为对象")
+    return errors
+
+
+class ProductSpecTemplateViewSet(CustomModelViewSet):
+    """产品规格书模板管理（自定义模板 CRUD，内置只读）。"""
+    queryset = SystemConfig.objects.filter(parent__key=_TEMPLATE_PARENT_KEY).order_by('sort')
+    permission_classes = [CustomPermission]
+    http_method_names = ['get', 'post', 'put', 'delete']
+
+    def list(self, request, *args, **kwargs):
+        data = []
+        for obj in self.get_queryset():
+            schema = obj.value or {}
+            if isinstance(schema, dict):
+                data.append({**schema, 'id': obj.id, 'builtin': False})
+        for tt, schema in list_all_templates().items():
+            if tt in BUILTIN_TEMPLATE_KEYS:
+                data.append({**schema, 'id': tt, 'builtin': True})
+        return DetailResponse(data=data, msg="查询成功")
+
+    def retrieve(self, request, pk=None):
+        from .templates_schemas import BUILTIN_TEMPLATES
+        if pk in BUILTIN_TEMPLATE_KEYS:
+            return DetailResponse(data={**BUILTIN_TEMPLATES[pk], 'id': pk, 'builtin': True})
+        obj = self.get_queryset().filter(id=pk).first()
+        if not obj:
+            return ErrorResponse(msg="模板不存在", status=404)
+        return DetailResponse(data={**(obj.value or {}), 'id': obj.id, 'builtin': False})
+
+    def create(self, request, *args, **kwargs):
+        schema = request.data
+        errs = _validate_template_schema(schema, is_create=True)
+        if errs:
+            return ErrorResponse(data={'errors': errs}, msg="模板校验未通过", status=400)
+        parent = SystemConfig.objects.filter(key=_TEMPLATE_PARENT_KEY, parent__isnull=True).first()
+        if not parent:
+            return ErrorResponse(msg="模板父配置缺失，请先运行迁移", status=500)
+        obj = SystemConfig.objects.create(
+            key=schema['templateType'], parent=parent, title=schema.get('label', ''),
+            value=schema, form_item_type=0, sort=0, status=True,
+        )  # save() 自动 refresh_system_config
+        return DetailResponse(data={'id': obj.id, 'templateType': obj.key}, msg="模板创建成功")
+
+    def update(self, request, pk=None, *args, **kwargs):
+        obj = self.get_queryset().filter(id=pk).first()
+        if not obj:
+            return ErrorResponse(msg="模板不存在", status=404)
+        if obj.key in BUILTIN_TEMPLATE_KEYS:
+            return ErrorResponse(msg="内置模板不可修改", status=400)
+        schema = request.data
+        errs = _validate_template_schema(schema, is_create=False, instance_key=obj.key)
+        if errs:
+            return ErrorResponse(data={'errors': errs}, msg="模板校验未通过", status=400)
+        obj.value = schema
+        obj.title = schema.get('label', obj.title)
+        obj.save()  # 自动刷新缓存
+        return DetailResponse(msg="模板更新成功")
+
+    def destroy(self, request, pk=None, *args, **kwargs):
+        obj = self.get_queryset().filter(id=pk).first()
+        if not obj:
+            return ErrorResponse(msg="模板不存在", status=404)
+        if obj.key in BUILTIN_TEMPLATE_KEYS:
+            return ErrorResponse(msg="内置模板不可删除", status=400)
+        obj.delete()  # 自动刷新缓存
+        return DetailResponse(msg="模板删除成功")
+
+    @action(detail=False, methods=['get'], permission_classes=[permissions.IsAuthenticated])
+    def template_types(self, request):
+        """供前端 dict-select 拉取可用模板列表（含内置）。"""
+        return DetailResponse(data=list_template_types(), msg="查询成功")
+
+    @action(detail=True, methods=['post'], permission_classes=[CustomPermission])
+    def register_field_permissions(self, request, pk=None):
+        """将模板的 maskKey 登记到 MenuField(model='ProductSpec')，仅登记未存在的。"""
+        obj = self.get_queryset().filter(id=pk).first()
+        if not obj:
+            return ErrorResponse(msg="模板不存在", status=404)
+        schema = obj.value or {}
+        menu = Menu.objects.filter(web_path='/product_spec').first()
+        created = []
+        for f in schema.get('fields', []):
+            mk = f.get('maskKey')
+            if mk and not MenuField.objects.filter(model='ProductSpec', field_name=mk).exists():
+                MenuField.objects.create(
+                    model='ProductSpec', menu=menu, field_name=mk, title=f.get('label', mk)
+                )
+                created.append(mk)
+        return DetailResponse(data={'created': created}, msg=f"已登记 {len(created)} 个字段")
