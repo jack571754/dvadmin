@@ -438,7 +438,7 @@ import '@univerjs/preset-sheets-core/lib/index.css';
 
 // 导入外部定义
 import { GiftInfo, DBProductItem, SelectableProduct, ValidationError, ValidationResult } from './types';
-import { TEMPLATE_LABELS, buildStylesDict } from './constants';
+import { buildStylesDict } from './constants';
 import { getCleanNickname, getProductCoords, getCursorOffsetInContainer, setCaretPosition, escapeRegExp } from './utils';
 import {
 	getSchema, getRowsPerBlock, getColumnsPerBlock, getFields, getFieldByRow,
@@ -585,13 +585,13 @@ const recalculateSuffixesAndFootnotes = (activeSheet: any) => {
 
 	const cols: ColConfig[] = [];
 	for (let idx = 0; idx < formCount.value; idx++) {
-		const { blockCol, blockStartRow } = getProductCoords(idx);
+		const { blockCol, blockStartRow } = getProductCoords(idx, rowsPerBlock(), colsPerBlock());
 
-		const nicknameVal = getValue(blockStartRow + 2, blockCol);
+		const nicknameVal = getValue(blockStartRow + rowOf('nickname'), blockCol);
 		const cleanNick = getCleanNickname(nicknameVal, uniqueNicknames.value);
 		if (!cleanNick) continue;
 
-		const specVal = getValue(blockStartRow + 4, blockCol);
+		const specVal = getValue(blockStartRow + rowOf('spec'), blockCol);
 		const spec = specVal && typeof specVal === 'object' ? specVal.v : specVal || '';
 
 		cols.push({
@@ -624,9 +624,9 @@ const recalculateSuffixesAndFootnotes = (activeSheet: any) => {
 
 	// 2. 扫描所有提报列中的赠品、满赠、会员礼单元格，收集其中提及的、尚未分配编号的其他产品昵称并分配编号
 	for (const config of cols) {
-		const giftsText = getValue(config.blockStartRow + 6, config.blockCol);
-		const thresholdText = getValue(config.blockStartRow + 7, config.blockCol);
-		const memberGiftText = getValue(config.blockStartRow + 8, config.blockCol);
+		const giftsText = getValue(config.blockStartRow + rowOf('gifts'), config.blockCol);
+		const thresholdText = getValue(config.blockStartRow + rowOf('thresholdA'), config.blockCol);
+		const memberGiftText = getValue(config.blockStartRow + rowOf('memberGift'), config.blockCol);
 
 		const checkAndRegisterMention = (text: string) => {
 			if (!text) return;
@@ -674,7 +674,7 @@ const recalculateSuffixesAndFootnotes = (activeSheet: any) => {
 		const suffix = nicknameIndexMap[config.cleanNick];
 		const formattedNickname = config.spec ? `${config.cleanNick}[${suffix}]${config.spec}` : `${config.cleanNick}[${suffix}]`;
 
-		activeSheet.getRange(config.blockStartRow + 2, config.blockCol, 1, 1).setValue({
+		activeSheet.getRange(config.blockStartRow + rowOf('nickname'), config.blockCol, 1, 1).setValue({
 			v: formattedNickname,
 			s: `editableCenterStyle_${theme}`
 		});
@@ -757,31 +757,31 @@ const recalculateSuffixesAndFootnotes = (activeSheet: any) => {
 	for (const config of cols) {
 		const prod = getProductByNickAndSpec(config.cleanNick, config.spec);
 
-		// 更新赠品行 (Row 6)
-		const giftsText = getValue(config.blockStartRow + 6, config.blockCol);
+		// 更新赠品行 (Row gifts)
+		const giftsText = getValue(config.blockStartRow + rowOf('gifts'), config.blockCol);
 		if (giftsText && giftsText !== '***') {
 			const updatedGifts = insertSuffixesInText(String(giftsText));
-			activeSheet.getRange(config.blockStartRow + 6, config.blockCol, 1, 1).setValue({
+			activeSheet.getRange(config.blockStartRow + rowOf('gifts'), config.blockCol, 1, 1).setValue({
 				v: updatedGifts,
 				s: `editableCenterStyle_${theme}`
 			});
 		}
 
-		// 更新满赠行 (Row 7)
-		const thresholdText = getValue(config.blockStartRow + 7, config.blockCol);
+		// 更新满赠行 (Row thresholdA)
+		const thresholdText = getValue(config.blockStartRow + rowOf('thresholdA'), config.blockCol);
 		if (thresholdText && thresholdText !== '***') {
 			const updatedThreshold = insertSuffixesInText(String(thresholdText));
-			activeSheet.getRange(config.blockStartRow + 7, config.blockCol, 1, 1).setValue({
+			activeSheet.getRange(config.blockStartRow + rowOf('thresholdA'), config.blockCol, 1, 1).setValue({
 				v: updatedThreshold,
 				s: `editableCenterStyle_${theme}`
 			});
 		}
 
-		// 更新会员礼行 (Row 8)
-		const memberGiftText = getValue(config.blockStartRow + 8, config.blockCol);
+		// 更新会员礼行 (Row memberGift)
+		const memberGiftText = getValue(config.blockStartRow + rowOf('memberGift'), config.blockCol);
 		if (memberGiftText && memberGiftText !== '***') {
 			const updatedMemberGift = insertSuffixesInText(String(memberGiftText));
-			activeSheet.getRange(config.blockStartRow + 8, config.blockCol, 1, 1).setValue({
+			activeSheet.getRange(config.blockStartRow + rowOf('memberGift'), config.blockCol, 1, 1).setValue({
 				v: updatedMemberGift,
 				s: `editableCenterStyle_${theme}`
 			});
@@ -816,7 +816,7 @@ const recalculateSuffixesAndFootnotes = (activeSheet: any) => {
 		checkAndAddMentions(String(memberGiftText));
 
 		// 生成备注脚注
-		let cellRemarksVal = getValue(config.blockStartRow + 13, config.blockCol) || '';
+		let cellRemarksVal = getValue(config.blockStartRow + rowOf('remarks'), config.blockCol) || '';
 		let baseRemarks = cleanFootnotesAndDetails(String(cellRemarksVal));
 		if (!baseRemarks) {
 			baseRemarks = cleanFootnotesAndDetails(prod ? (prod.remarks || '') : '');
@@ -848,12 +848,12 @@ const recalculateSuffixesAndFootnotes = (activeSheet: any) => {
 			}
 		}
 
-		activeSheet.getRange(config.blockStartRow + 13, config.blockCol, 1, 1).setValue({
+		activeSheet.getRange(config.blockStartRow + rowOf('remarks'), config.blockCol, 1, 1).setValue({
 			v: baseRemarks,
 			s: `editableCenterStyle_${theme}`
 		});
 
-		try { activeSheet.autoResizeRows(config.blockStartRow, 15); } catch (e) { /* ignore */ }
+		try { activeSheet.autoResizeRows(config.blockStartRow, rowsPerBlock()); } catch (e) { /* ignore */ }
 	}
 };
 
@@ -883,19 +883,19 @@ const getSelectableProducts = (): SelectableProduct[] => {
 	
 	const colsConfig: { cleanNick: string; suffix: number; giftsText: string; brand: string; fullName: string }[] = [];
 	for (let idx = 0; idx < formCount.value; idx++) {
-		const { blockCol, blockStartRow } = getProductCoords(idx);
-		const nicknameVal = activeSheet.getRange(blockStartRow + 2, blockCol, 1, 1).getValue() as any;
+		const { blockCol, blockStartRow } = getProductCoords(idx, rowsPerBlock(), colsPerBlock());
+		const nicknameVal = activeSheet.getRange(blockStartRow + rowOf('nickname'), blockCol, 1, 1).getValue() as any;
 		const nickname = nicknameVal && typeof nicknameVal === 'object' ? nicknameVal.v : nicknameVal;
 		const cleanNick = getCleanNickname(nickname, uniqueNicknames.value);
 		if (!cleanNick) continue;
 
-		const brandVal = activeSheet.getRange(blockStartRow + 1, blockCol, 1, 1).getValue() as any;
+		const brandVal = activeSheet.getRange(blockStartRow + rowOf('brand'), blockCol, 1, 1).getValue() as any;
 		const brand = brandVal && typeof brandVal === 'object' ? brandVal.v : brandVal || '';
 
-		const fullNameVal = activeSheet.getRange(blockStartRow + 3, blockCol, 1, 1).getValue() as any;
+		const fullNameVal = activeSheet.getRange(blockStartRow + rowOf('fullName'), blockCol, 1, 1).getValue() as any;
 		const fullName = fullNameVal && typeof fullNameVal === 'object' ? fullNameVal.v : fullNameVal || '';
 
-		const giftsVal = activeSheet.getRange(blockStartRow + 6, blockCol, 1, 1).getValue() as any;
+		const giftsVal = activeSheet.getRange(blockStartRow + rowOf('gifts'), blockCol, 1, 1).getValue() as any;
 		const giftsText = giftsVal && typeof giftsVal === 'object' ? giftsVal.v : giftsVal || '';
 		
 		const suffix = colSuffixMap.value[blockCol] || 1;
@@ -1208,8 +1208,8 @@ const findFirstBlankColumnIndex = (): number => {
 	};
 
 	for (let i = 0; i < formCount.value; i++) {
-		const { blockCol, blockStartRow } = getProductCoords(i);
-		const nicknameRaw = getValue(blockStartRow + 2, blockCol);
+		const { blockCol, blockStartRow } = getProductCoords(i, rowsPerBlock(), colsPerBlock());
+		const nicknameRaw = getValue(blockStartRow + rowOf('nickname'), blockCol);
 		const cleanNick = getCleanNickname(nicknameRaw, uniqueNicknames.value);
 		if (!cleanNick) {
 			return i;
@@ -2155,47 +2155,60 @@ const saveWorkbookData = async (statusVal: string = 'draft') => {
 	};
 
 	for (let idx = 0; idx < formCount.value; idx++) {
-		const { blockCol, blockStartRow } = getProductCoords(idx);
-		const nickname = getValue(blockStartRow + 2, blockCol);
+		const { blockCol, blockStartRow } = getProductCoords(idx, rowsPerBlock(), colsPerBlock());
+		const nickname = getValue(blockStartRow + rowOf('nickname'), blockCol);
 		if (!nickname) continue;
 		const cleanNickname = getCleanNickname(nickname, uniqueNicknames.value);
-		const rawGifts = getValue(blockStartRow + 6, blockCol) || '';
-		const gifts = parseGiftsFromText(rawGifts);
 
-		const dateRangeStr = getValue(blockStartRow + 12, blockCol) || '';
-		let startDate = '';
-		let endDate = '';
-		if (dateRangeStr === '***') {
-			startDate = '***';
-			endDate = '***';
-		} else if (dateRangeStr.includes('~')) {
-			const dates = dateRangeStr.split('~');
-			startDate = dates[0].trim();
-			endDate = dates[1].trim();
-		} else {
-			startDate = dateRangeStr.trim();
-			endDate = dateRangeStr.trim();
+		// 按当前模板 Schema 收集所有字段值到 specData
+		const specData: Record<string, any> = {};
+		for (const f of getFields(currentTemplateType.value)) {
+			const raw = getValue(blockStartRow + f.row, blockCol);
+			if (f.kind === 'gifts') {
+				specData[f.key] = parseGiftsFromText(raw || '');
+			} else if (f.kind === 'dateRange') {
+				const dateRangeStr = String(raw || '');
+				let startDate = '';
+				let endDate = '';
+				if (dateRangeStr === '***') {
+					startDate = '***'; endDate = '***';
+				} else if (dateRangeStr.includes('~')) {
+					const dates = dateRangeStr.split('~');
+					startDate = dates[0].trim();
+					endDate = dates[1].trim();
+				} else {
+					startDate = dateRangeStr.trim();
+					endDate = dateRangeStr.trim();
+				}
+				specData[f.key] = { startDate, endDate };
+			} else {
+				specData[f.key] = raw;
+			}
 		}
 
+		// 兼容旧提交结构：main_image 标准键平铺到顶层（后端 _do_save 仍读这些键）
+		// 对 live_stream/detail_page，顶层只放通用键，其余在 specData
+		const dateRangeObj = specData['dateRange'] as { startDate: string; endDate: string } | undefined;
 		productsList.push({
 			cardIndex: idx,
 			nickname: cleanNickname,
-			brand: getValue(blockStartRow + 1, blockCol),
-			fullName: getValue(blockStartRow + 3, blockCol),
-			spec: getValue(blockStartRow + 4, blockCol),
-			efficacy: getValue(blockStartRow + 5, blockCol),
-			gifts,
-			thresholdA: getValue(blockStartRow + 7, blockCol),
+			brand: specData['brand'] ?? '',
+			fullName: specData['fullName'] ?? '',
+			spec: specData['spec'] ?? '',
+			efficacy: specData['efficacy'] ?? '',
+			gifts: specData['gifts'] ?? [],
+			thresholdA: specData['thresholdA'] ?? '',
 			valueA: '',
 			thresholdB: '',
 			valueB: '',
-			memberGift: getValue(blockStartRow + 8, blockCol),
-			memberValue: getValue(blockStartRow + 9, blockCol),
-			sellingPoint: getValue(blockStartRow + 10, blockCol),
-			price: getValue(blockStartRow + 11, blockCol),
-			startDate,
-			endDate,
-			remarks: getValue(blockStartRow + 13, blockCol),
+			memberGift: specData['memberGift'] ?? '',
+			memberValue: specData['memberValue'] ?? '',
+			sellingPoint: specData['sellingPoint'] ?? '',
+			price: specData['price'] ?? '',
+			startDate: dateRangeObj?.startDate ?? '',
+			endDate: dateRangeObj?.endDate ?? '',
+			remarks: specData['remarks'] ?? '',
+			specData,
 		});
 	}
 
@@ -2315,27 +2328,27 @@ const saveWorkbookData = async (statusVal: string = 'draft') => {
 		let hasAnyProduct = false;
 
 		for (let idx = 0; idx < formCount.value; idx++) {
-			const { blockCol, blockStartRow } = getProductCoords(idx);
-			const nickname = getCleanNickname(getValue(blockStartRow + 2, blockCol), uniqueNicknames.value);
+			const { blockCol, blockStartRow } = getProductCoords(idx, rowsPerBlock(), colsPerBlock());
+			const nickname = getCleanNickname(getValue(blockStartRow + rowOf('nickname'), blockCol), uniqueNicknames.value);
 			if (!nickname) continue;
 			hasAnyProduct = true;
 			const label = `商品提报 ${idx + 1}`;
 
 			// 必填字段
 			const requiredFields = [
-				{ row: 1, field: 'brand', label: '品牌' },
-				{ row: 3, field: 'fullName', label: '官方全称' },
-				{ row: 4, field: 'spec', label: '规格' },
+				{ key: 'brand', label: '品牌' },
+				{ key: 'fullName', label: '官方全称' },
+				{ key: 'spec', label: '规格' },
 			];
 			for (const f of requiredFields) {
-				const val = getValue(blockStartRow + f.row, blockCol);
+				const val = getValue(blockStartRow + rowOf(f.key), blockCol);
 				if (!val || (typeof val === 'string' && !val.trim()) || val === '***') {
-					errors.push({ productIndex: idx, productLabel: label, field: f.field, fieldLabel: f.label, rule: 'required', message: `${label} 的「${f.label}」不能为空` });
+					errors.push({ productIndex: idx, productLabel: label, field: f.key, fieldLabel: f.label, rule: 'required', message: `${label} 的「${f.label}」不能为空` });
 				}
 			}
 
 			// 价格校验
-			const priceVal = getValue(blockStartRow + 11, blockCol);
+			const priceVal = getValue(blockStartRow + rowOf('price'), blockCol);
 			if (!priceVal || (typeof priceVal === 'string' && !priceVal.trim()) || priceVal === '***') {
 				errors.push({ productIndex: idx, productLabel: label, field: 'price', fieldLabel: '提报价格', rule: 'required', message: `${label} 的「提报价格」不能为空` });
 			} else {
@@ -2346,7 +2359,7 @@ const saveWorkbookData = async (statusVal: string = 'draft') => {
 			}
 
 			// 日期校验
-			const dateRangeStr = getValue(blockStartRow + 12, blockCol) || '';
+			const dateRangeStr = getValue(blockStartRow + rowOf('dateRange'), blockCol) || '';
 			if (!dateRangeStr.trim() || dateRangeStr === '***') {
 				errors.push({ productIndex: idx, productLabel: label, field: 'dateRange', fieldLabel: '活动时间', rule: 'required', message: `${label} 的「活动时间」不能为空` });
 			} else if (dateRangeStr.includes('~')) {
@@ -2444,14 +2457,14 @@ const exportToCSV = () => {
 
 	// 获取每个商品列并整理为行数据
 	for (let idx = 0; idx < formCount.value; idx++) {
-		const { blockCol, blockStartRow } = getProductCoords(idx);
-		const nickname = getValue(blockStartRow + 2, blockCol);
+		const { blockCol, blockStartRow } = getProductCoords(idx, rowsPerBlock(), colsPerBlock());
+		const nickname = getValue(blockStartRow + rowOf('nickname'), blockCol);
 		if (!nickname) continue; // 仅导出有效填写的商品
 
 		const rowData = [`商品提报 ${idx + 1}`];
-		for (let r = 1; r <= 13; r++) {
-			let val = getValue(blockStartRow + r, blockCol);
-			if (r === 6) {
+		for (const f of getFields(currentTemplateType.value)) {
+			let val = getValue(blockStartRow + f.row, blockCol);
+			if (f.kind === 'gifts') {
 				val = String(val).replace('🎁 ', '');
 			}
 			rowData.push(val);
@@ -2500,13 +2513,13 @@ const handleSearchColumn = () => {
 		let firstMatchedRange = null;
 		
 		for (let idx = 0; idx < formCount.value; idx++) {
-			const { blockCol, blockStartRow } = getProductCoords(idx);
-			
-			const nickname = String(getValue(blockStartRow + 2, blockCol)).toLowerCase();
-			const brand = String(getValue(blockStartRow + 1, blockCol)).toLowerCase();
-			const fullName = String(getValue(blockStartRow + 3, blockCol)).toLowerCase();
-			const spec = String(getValue(blockStartRow + 4, blockCol)).toLowerCase();
-			const sellingPoint = String(getValue(blockStartRow + 10, blockCol)).toLowerCase();
+			const { blockCol, blockStartRow } = getProductCoords(idx, rowsPerBlock(), colsPerBlock());
+
+			const nickname = String(getValue(blockStartRow + rowOf('nickname'), blockCol)).toLowerCase();
+			const brand = String(getValue(blockStartRow + rowOf('brand'), blockCol)).toLowerCase();
+			const fullName = String(getValue(blockStartRow + rowOf('fullName'), blockCol)).toLowerCase();
+			const spec = String(getValue(blockStartRow + rowOf('spec'), blockCol)).toLowerCase();
+			const sellingPoint = String(getValue(blockStartRow + rowOf('sellingPoint'), blockCol)).toLowerCase();
 			
 			const isMatch = query !== '' && (
 				nickname.includes(query) ||
