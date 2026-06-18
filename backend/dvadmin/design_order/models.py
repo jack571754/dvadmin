@@ -165,6 +165,11 @@ class ProductSpec(CoreModel):
     start_date = models.CharField(max_length=50, blank=True, default='', verbose_name="开始日期")
     end_date = models.CharField(max_length=50, blank=True, default='', verbose_name="结束日期")
     remarks = models.TextField(blank=True, default='', verbose_name="运营备注")
+    spec_data = models.JSONField(
+        default=dict, blank=True,
+        verbose_name="动态字段数据",
+        help_text="按模板 Schema 字段键存储的动态字段值，与 template_type 配合使用"
+    )
 
     class Meta:
         db_table = "dvadmin_design_order_product_spec"
