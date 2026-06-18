@@ -37,9 +37,10 @@ function validateForm(form: any): string[] {
 
 export const createCrudOptions = function ({ crudExpose }: CreateCrudOptionsProps): CreateCrudOptionsRet {
 	const pageRequest = async (query: UserPageQuery) => {
-		const res = await api.GetList(query);
-		// 后端 list 返回平铺数组，fast-crud 需分页结构
-		return { records: res.data || [], total: (res.data || []).length, currentPage: 1, pageSize: 100 };
+		const res: any = await api.GetList(query);
+		// 后端 list 返回 {code, data:[...]} 或平铺数组；统一包装为 fast-crud 分页结构
+		const list = Array.isArray(res) ? res : (res.data || []);
+		return { records: list, total: list.length, currentPage: 1, pageSize: 100 };
 	};
 	const editRequest = async ({ form, row }: EditReq) => {
 		const errs = validateForm(form);
@@ -92,7 +93,7 @@ export const createCrudOptions = function ({ crudExpose }: CreateCrudOptionsProp
 				templateType: {
 					title: '模板标识', type: 'text', search: { show: true },
 					column: { minWidth: 140 },
-					form: { rules: [{ required: true, message: '请输入模板标识' }], component: { props: { disabled: ({ row }: any) => !!row?.builtin } } },
+					form: { rules: [{ required: true, message: '请输入模板标识' }], component: { props: { disabled: false } } },
 				},
 				label: {
 					title: '模板名称', type: 'text',
