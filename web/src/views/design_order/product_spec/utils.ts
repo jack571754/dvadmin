@@ -17,39 +17,11 @@ export const getCleanNickname = (nicknameVal: any, uniqueNicknames: string[]): s
 	return str;
 };
 
-export const getProductCoords = (idx: number) => {
-	const blockIndex = Math.floor(idx / 6);
-	const blockCol = (idx % 6) + 1;
-	const blockStartRow = blockIndex * 15;
+export const getProductCoords = (idx: number, rowsPerBlock = 15, columnsPerBlock = 6) => {
+	const blockIndex = Math.floor(idx / columnsPerBlock);
+	const blockCol = (idx % columnsPerBlock) + 1;
+	const blockStartRow = blockIndex * rowsPerBlock;
 	return { blockIndex, blockCol, blockStartRow };
-};
-
-export const getProductEmoji = (name: string): string => {
-	if (name.includes('水')) return '💧';
-	if (name.includes('面膜')) return '🎭';
-	if (name.includes('大膜王')) return '🏆';
-	if (name.includes('次抛')) return '🧪';
-	if (name.includes('霜')) return '🧴';
-	return '📦';
-};
-
-export const getAvatarStyle = (name: string) => {
-	const colors = [
-		'linear-gradient(135deg, #eff6ff, #dbeafe)', // Blue
-		'linear-gradient(135deg, #f0fdf4, #dcfce7)', // Green
-		'linear-gradient(135deg, #faf5ff, #f3e8ff)', // Purple
-		'linear-gradient(135deg, #fff7ed, #ffedd5)', // Orange
-		'linear-gradient(135deg, #ecfeff, #cffafe)', // Cyan
-	];
-	let hash = 0;
-	for (let i = 0; i < name.length; i++) {
-		hash = name.charCodeAt(i) + ((hash << 5) - hash);
-	}
-	const index = Math.abs(hash) % colors.length;
-	return {
-		background: colors[index],
-		border: '1px solid rgba(0,0,0,0.03)'
-	};
 };
 
 export const highlightText = (text: string, query: string): string => {

@@ -21,6 +21,7 @@ export interface ProductInfo {
 	startDate: string;
 	endDate: string;
 	remarks: string;
+	specData?: Record<string, any>;
 }
 
 export interface DBProductItem {

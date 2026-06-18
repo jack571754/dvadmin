@@ -24,9 +24,6 @@
 						<el-tag :type="submissionStatus === 'submitted' ? 'success' : 'info'" size="small" effect="dark">
 							{{ submissionStatus === 'submitted' ? '已提交' : '草稿' }}
 						</el-tag>
-						<el-tag type="warning" size="small" effect="plain" style="margin-left: 6px;">
-							{{ TEMPLATE_TYPES.find(t => t.value === currentTemplateType)?.label || '主图模板' }}
-						</el-tag>
 					</div>
 				</div>
 				<div class="actions-area">
@@ -46,20 +43,6 @@
 							style="width: 130px"
 							clearable
 						/>
-						<el-select
-							v-model="currentTemplateType"
-							placeholder="请选择模板"
-							size="small"
-							style="width: 130px"
-							:disabled="submissionStatus === 'submitted'"
-						>
-							<el-option
-								v-for="item in TEMPLATE_TYPES"
-								:key="item.value"
-								:label="item.label"
-								:value="item.value"
-							/>
-						</el-select>
 					</div>
 					<div class="search-area">
 						<el-input
@@ -158,7 +141,22 @@
 									</div>
 									<div style="display:flex;gap:8px;margin-top:6px;align-items:center;">
 										<span style="font-size:12px;color:var(--color-text-secondary);">规格</span>
-										<input type="text" v-model="mainSpec" placeholder="如 150ml" style="width:120px;font-size:12px;">
+										<el-select
+											v-model="mainSpec"
+											filterable
+											allow-create
+											default-first-option
+											placeholder="请选择或输入规格"
+											style="width: 180px;"
+											size="small"
+										>
+											<el-option
+												v-for="spec in availableSpecs"
+												:key="spec"
+												:label="spec"
+												:value="spec"
+											/>
+										</el-select>
 									</div>
 								</div>
 							</div>
@@ -189,10 +187,17 @@
 
 							<div class="field-row">
 								<div class="field-label">{{ getLabelData(12) }}</div>
-								<div class="field-value" style="display:flex;align-items:center;gap:6px;">
-									<input type="text" v-model="startDateVal" style="width:150px;font-size:12px;">
-									<span style="font-size:12px;color:var(--color-text-secondary);">~</span>
-									<input type="text" v-model="endDateVal" style="width:150px;font-size:12px;">
+								<div class="field-value">
+									<el-date-picker
+										v-model="dateRangeVal"
+										type="datetimerange"
+										range-separator="~"
+										start-placeholder="开始时间"
+										end-placeholder="结束时间"
+										format="YYYY-MM-DD HH:mm"
+										value-format="YYYY-MM-DD HH:mm"
+										style="width: 100%;"
+									/>
 								</div>
 							</div>
 						</div>
@@ -417,11 +422,11 @@
 </template>
 
 <script lang="ts" setup name="productSpec">
-import { ref, reactive, computed, watch, onMounted, onBeforeUnmount, nextTick } from 'vue';
+import { ref, computed, watch, onMounted, onBeforeUnmount, nextTick } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
 import { request } from '/@/utils/service';
 import { ElMessage, ElMessageBox } from 'element-plus';
-import { Plus, FolderChecked, Download, Brush, Search, ArrowLeft, Checked, Edit, DocumentCopy, CircleCloseFilled, WarningFilled } from '@element-plus/icons-vue';
+import { Plus, FolderChecked, Download, Search, ArrowLeft, Checked, Edit, CircleCloseFilled, WarningFilled } from '@element-plus/icons-vue';
 import { createUniver, LocaleType } from '@univerjs/presets';
 import { UniverSheetsCorePreset } from '@univerjs/preset-sheets-core';
 import UniverPresetSheetsCoreZhCN from '@univerjs/preset-sheets-core/locales/zh-CN';
@@ -433,8 +438,13 @@ import '@univerjs/preset-sheets-core/lib/index.css';
 
 // 导入外部定义
 import { GiftInfo, DBProductItem, SelectableProduct, ValidationError, ValidationResult } from './types';
-import { LABEL_DATA, TEMPLATE_TYPES, TEMPLATE_LABELS, buildStylesDict } from './constants';
+import { TEMPLATE_LABELS, buildStylesDict } from './constants';
 import { getCleanNickname, getProductCoords, getCursorOffsetInContainer, setCaretPosition, escapeRegExp } from './utils';
+import {
+	getSchema, getRowsPerBlock, getColumnsPerBlock, getFields, getFieldByRow,
+	getLabelByRow, styleToUniverStyleName,
+} from './schema';
+import type { FieldDef } from './schema';
 
 // 导入子组件
 import ProductSelectDialog from './components/ProductSelectDialog.vue';
@@ -442,24 +452,19 @@ import { GetPermission } from '/@/api/design_order/product_spec';
 
 const permissionData = ref<Record<string, { is_query: boolean; is_create: boolean; is_update: boolean }>>({});
 
-const ROW_TO_FIELD_MAP: Record<number, string> = {
-	1: 'brand',
-	2: 'nickname',
-	3: 'full_name',
-	4: 'specification',
-	5: 'efficacy',
-	6: 'gifts',
-	7: 'threshold_a',
-	8: 'member_gift',
-	9: 'member_value',
-	10: 'selling_point',
-	11: 'price',
-	12: 'start_date',
-	13: 'remarks'
-};
+// 行偏移只能通过 Schema 查询，禁止再写 blockStartRow + N 字面量
+const fieldByKey = (key: string): FieldDef | undefined =>
+	getFields(currentTemplateType.value).find((f) => f.key === key);
+const rowOf = (key: string): number => fieldByKey(key)?.row ?? 0;
+const rowsPerBlock = () => getRowsPerBlock(currentTemplateType.value);
+const colsPerBlock = () => getColumnsPerBlock(currentTemplateType.value);
+
+// 块内行偏移 -> 该行的遮罩键（替代旧 ROW_TO_FIELD_MAP 的逆向：行->maskKey）
+const maskKeyByRow = (rowInBlock: number): string | undefined =>
+	getFieldByRow(currentTemplateType.value, rowInBlock)?.maskKey;
 
 const getPermittedVal = (rowNum: number, defaultVal: string) => {
-	const fieldName = ROW_TO_FIELD_MAP[rowNum];
+	const fieldName = maskKeyByRow(rowNum);
 	if (fieldName) {
 		const perm = permissionData.value[fieldName];
 		if (perm && !perm.is_query) {
@@ -469,134 +474,21 @@ const getPermittedVal = (rowNum: number, defaultVal: string) => {
 	return defaultVal;
 };
 
-const migrateSnapshotTo15Rows = (snapshot: any) => {
-	if (!snapshot || !snapshot.sheets) return snapshot;
-	for (const sheetId of Object.keys(snapshot.sheets)) {
-		const sheetData = snapshot.sheets[sheetId];
-		if (!sheetData.cellData) continue;
-		const cellData = sheetData.cellData;
-		const rowKeys = Object.keys(cellData).map(Number);
-		if (rowKeys.length === 0) continue;
 
-		// Check format: in old 16-row layout, row 13 is "活动结束日期". In 15-row layout, it is "运营备注说明".
-		const row13Col0 = cellData[13]?.[0];
-		const is16RowFormat = row13Col0 && (row13Col0.v === '活动结束日期' || row13Col0.v === '活动结束时间');
-
-		if (!is16RowFormat) {
-			continue;
-		}
-
-		console.log('Detecting old 16-row snapshot format. Migrating to 15-row format...');
-		const newCellData: Record<number, Record<number, any>> = {};
-		const maxRow = Math.max(...rowKeys);
-		const totalBlocks = Math.ceil((maxRow + 1) / 16);
-
-		for (let b = 0; b < totalBlocks; b++) {
-			const oldBlockStart = b * 16;
-			const newBlockStart = b * 15;
-
-			// Row 0: Header
-			if (cellData[oldBlockStart]) {
-				newCellData[newBlockStart] = cellData[oldBlockStart];
-			}
-
-			// Rows 1..11: Copy directly
-			for (let r = 1; r <= 11; r++) {
-				const oldR = oldBlockStart + r;
-				const newR = newBlockStart + r;
-				if (cellData[oldR]) {
-					newCellData[newR] = cellData[oldR];
-				}
-			}
-
-			// Row 12: Combine old row 12 (startDate) and row 13 (endDate)
-			const oldRow12 = cellData[oldBlockStart + 12];
-			const oldRow13 = cellData[oldBlockStart + 13];
-			const newRow12: Record<number, any> = {};
-
-			const labelCell = oldRow12?.[0];
-			if (labelCell) {
-				newRow12[0] = { ...labelCell, v: '活动时间范围' };
-			}
-
-			const colKeys = new Set([
-				...Object.keys(oldRow12 || {}).map(Number),
-				...Object.keys(oldRow13 || {}).map(Number)
-			]);
-
-			for (const col of colKeys) {
-				if (col === 0) continue;
-				const val12Obj = oldRow12?.[col];
-				const val13Obj = oldRow13?.[col];
-
-				const v12 = val12Obj && typeof val12Obj === 'object' ? val12Obj.v : val12Obj;
-				const v13 = val13Obj && typeof val13Obj === 'object' ? val13Obj.v : val13Obj;
-
-				let combinedValue = '';
-				if (v12 && v13) {
-					let d1 = String(v12).trim();
-					let d2 = String(v13).trim();
-					if (d1 && !d1.includes(':') && d1.length === 10) d1 += ' 00:00';
-					if (d2 && !d2.includes(':') && d2.length === 10) d2 += ' 00:00';
-					combinedValue = `${d1} ~ ${d2}`;
-				} else if (v12) {
-					let d1 = String(v12).trim();
-					if (d1 && !d1.includes(':') && d1.length === 10) d1 += ' 00:00';
-					combinedValue = d1;
-				} else if (v13) {
-					let d2 = String(v13).trim();
-					if (d2 && !d2.includes(':') && d2.length === 10) d2 += ' 00:00';
-					combinedValue = d2;
-				}
-
-				const style = val12Obj?.s || val13Obj?.s;
-				newRow12[col] = { v: combinedValue, s: style };
-			}
-			newCellData[newBlockStart + 12] = newRow12;
-
-			// Row 13: Remarks (copy from old row 14)
-			const oldRow14 = cellData[oldBlockStart + 14];
-			if (oldRow14) {
-				newCellData[newBlockStart + 13] = oldRow14;
-			}
-
-			// Row 14: Divider (copy from old row 15)
-			const oldRow15 = cellData[oldBlockStart + 15];
-			if (oldRow15) {
-				newCellData[newBlockStart + 14] = oldRow15;
-			}
-		}
-
-		sheetData.cellData = newCellData;
-
-		if (sheetData.rowData) {
-			const newRowData: Record<number, any> = {};
-			for (let i = 0; i < totalBlocks * 15; i++) {
-				const relRow = i % 15;
-				if (relRow === 14) {
-					newRowData[i] = { h: 16 };
-				} else {
-					newRowData[i] = { h: relRow === 0 ? 42 : 36, ia: 1, ah: relRow === 0 ? 42 : 36 };
-				}
-			}
-			sheetData.rowData = newRowData;
-		}
-	}
-	return snapshot;
-};
 
 const filterSnapshotData = (snapshot: any) => {
 	if (!snapshot || !snapshot.sheets) return snapshot;
+	const rpb = rowsPerBlock();
 	for (const sheetId of Object.keys(snapshot.sheets)) {
 		const sheetData = snapshot.sheets[sheetId];
 		if (!sheetData.cellData) continue;
 		const cellData = sheetData.cellData;
 		for (const rowStr of Object.keys(cellData)) {
 			const row = Number(rowStr);
-			const relativeRow = row % 15;
-			const fieldName = ROW_TO_FIELD_MAP[relativeRow];
-			if (fieldName) {
-				const perm = permissionData.value[fieldName];
+			const relativeRow = row % rpb;
+			const maskKey = maskKeyByRow(relativeRow);
+			if (maskKey) {
+				const perm = permissionData.value[maskKey];
 				if (perm && !perm.is_query) {
 					for (const colStr of Object.keys(cellData[row])) {
 						const col = Number(colStr);
@@ -1214,8 +1106,6 @@ let isHandlingEvent = false;
 	const isDirty = ref(false);
 	const lastSavedAt = ref<Date | null>(null);
 	const autoSaveTimer = ref<ReturnType<typeof setTimeout> | null>(null);
-	const retryCount = ref(0);
-	const MAX_RETRY = 3;
 	const AUTO_SAVE_INTERVAL = 30_000;  // 30秒
 
 let univerAPI: any = null;
@@ -1226,12 +1116,6 @@ const searchQuery = ref('');
 
 // @ 产品选择器弹窗状态
 const productDialogVisible = ref(false);
-
-// 赠品弹窗状态
-const giftEditRow = ref(0);
-const giftEditCol = ref(0);
-const giftList = ref<{ name: string; qty: string }[]>([]);
-const giftModalVisible = ref(false);
 
 const atSymbolIndex = ref(0);
 const cursorIndexBeforeDialog = ref(0);
@@ -1245,7 +1129,6 @@ const logDebug = (msg: string) => {
 };
 
 // ========== Tabbed Navigation state & Popup State ==========
-const currentTab = ref('grid'); // Default to grid view
 const currentColIndex = ref(0);
 const formDialogVisible = ref(false);
 const prevColIndex = ref(0);
@@ -1422,6 +1305,43 @@ const endDateVal = ref('2026-05-31 00:00');
 const sellingPointVal = ref('');
 const remarksVal = ref('');
 
+const availableSpecs = computed(() => {
+	const specs = new Set<string>();
+	if (selectedMainProduct.value) {
+		const nickname = selectedMainProduct.value.nickname;
+		const fullName = selectedMainProduct.value.fullName;
+		rawProductList.value.forEach(p => {
+			if ((p.nickname === nickname || p.fullName === fullName) && p.spec) {
+				specs.add(p.spec);
+			}
+		});
+	}
+	if (specs.size === 0) {
+		rawProductList.value.forEach(p => {
+			if (p.spec) specs.add(p.spec);
+		});
+	}
+	return Array.from(specs);
+});
+
+const dateRangeVal = computed({
+	get() {
+		if (startDateVal.value && endDateVal.value) {
+			return [startDateVal.value, endDateVal.value];
+		}
+		return [];
+	},
+	set(val) {
+		if (Array.isArray(val) && val.length === 2) {
+			startDateVal.value = val[0] || '';
+			endDateVal.value = val[1] || '';
+		} else {
+			startDateVal.value = '';
+			endDateVal.value = '';
+		}
+	}
+});
+
 // Lists
 interface FormGiftItem {
 	id: number;
@@ -1465,10 +1385,6 @@ const tierSearchQueries = ref<Record<number, string>>({});
 const showTierDropdowns = ref<Record<number, boolean>>({});
 const showTierInputs = ref<Record<number, boolean>>({});
 const matchingTierProducts = ref<Record<number, DBProductItem[]>>({});
-
-// Preview tab data
-const previewRows = ref<any[]>([]);
-const previewFootnotes = ref<any[]>([]);
 
 const isAddingNewProduct = ref(false);
 
@@ -1897,219 +1813,6 @@ const syncFormToUniver = () => {
 
 // Legacy switchTab and handlers removed
 
-// ========== Preview Generation ==========
-const buildFootnotesList = () => {
-	const list: { num: number; nick: string; full: string }[] = [];
-	const activeSheet = workbook?.getActiveSheet() || sheet;
-	if (!activeSheet) return [];
-	
-	const getValue = (r: number, c: number) => {
-		const cell = activeSheet.getRange(r, c, 1, 1).getValue() as any;
-		return cell && typeof cell === 'object' ? cell.v : cell || '';
-	};
-
-	const cols: { cleanNick: string; spec: string; blockCol: number; blockStartRow: number }[] = [];
-	for (let idx = 0; idx < formCount.value; idx++) {
-		const { blockCol, blockStartRow } = getProductCoords(idx);
-		const nicknameVal = getValue(blockStartRow + 2, blockCol);
-		const cleanNick = getCleanNickname(nicknameVal, uniqueNicknames.value);
-		if (!cleanNick) continue;
-		const specVal = getValue(blockStartRow + 4, blockCol);
-		const spec = specVal && typeof specVal === 'object' ? specVal.v : specVal || '';
-		cols.push({ cleanNick, spec, blockCol, blockStartRow });
-	}
-
-	const nicknameIndexMap: Record<string, number> = {};
-	const fullNameIndexMap: Record<string, number> = {};
-	let globalIndex = 1;
-
-	for (const config of cols) {
-		const prod = getProductByNickAndSpec(config.cleanNick, config.spec);
-		const fullName = prod ? prod.fullName : config.cleanNick;
-		if (fullName) {
-			if (!fullNameIndexMap[fullName]) {
-				fullNameIndexMap[fullName] = globalIndex++;
-			}
-			nicknameIndexMap[config.cleanNick] = fullNameIndexMap[fullName];
-		} else {
-			if (!nicknameIndexMap[config.cleanNick]) {
-				nicknameIndexMap[config.cleanNick] = globalIndex++;
-			}
-		}
-	}
-
-	for (const config of cols) {
-		const giftsText = getValue(config.blockStartRow + 6, config.blockCol);
-		const thresholdText = getValue(config.blockStartRow + 7, config.blockCol);
-		const memberGiftText = getValue(config.blockStartRow + 8, config.blockCol);
-
-		const checkAndRegisterMention = (text: string) => {
-			if (!text) return;
-			uniqueNicknames.value.forEach(nick => {
-				let isMentioned = false;
-				if (text.includes(nick)) {
-					isMentioned = true;
-				} else {
-					const keywords = getProductKeywords(nick);
-					if (keywords.some(kw => text.includes(kw))) {
-						isMentioned = true;
-					}
-				}
-
-				if (isMentioned) {
-					const prod = rawProductList.value.find(p => p.nickname === nick);
-					const fullName = prod ? prod.fullName : nick;
-					if (fullName) {
-						if (!fullNameIndexMap[fullName]) {
-							fullNameIndexMap[fullName] = globalIndex++;
-						}
-						if (!nicknameIndexMap[nick]) {
-							nicknameIndexMap[nick] = fullNameIndexMap[fullName];
-						}
-					}
-				}
-			});
-		};
-
-		checkAndRegisterMention(String(giftsText));
-		checkAndRegisterMention(String(thresholdText));
-		checkAndRegisterMention(String(memberGiftText));
-	}
-
-	const footnotesMap: Record<number, { nick: string; full: string }> = {};
-	for (const [nick, num] of Object.entries(nicknameIndexMap)) {
-		const prod = rawProductList.value.find(p => p.nickname === nick);
-		const fullName = prod ? prod.fullName : nick;
-		if (fullName && fullName !== nick) {
-			if (!footnotesMap[num]) {
-				footnotesMap[num] = { nick, full: fullName };
-			}
-		}
-	}
-
-	const sortedNums = Object.keys(footnotesMap).map(Number).sort((a, b) => a - b);
-	for (const num of sortedNums) {
-		list.push({
-			num,
-			nick: footnotesMap[num].nick,
-			full: footnotesMap[num].full
-		});
-	}
-
-	return list;
-};
-
-const generatePreviewData = () => {
-	const activeSheet = workbook?.getActiveSheet() || sheet;
-	if (!activeSheet) return;
-	
-	const getValue = (r: number, c: number) => {
-		const cell = activeSheet.getRange(r, c, 1, 1).getValue() as any;
-		return cell && typeof cell === 'object' ? cell.v : cell || '';
-	};
-
-	const columnsData: any[] = [];
-	for (let idx = 0; idx < formCount.value; idx++) {
-		const { blockCol, blockStartRow } = getProductCoords(idx);
-		columnsData.push({
-			brand: getValue(blockStartRow + 1, blockCol) || '—',
-			nickname: getValue(blockStartRow + 2, blockCol) || '—',
-			fullName: getValue(blockStartRow + 3, blockCol) || '—',
-			spec: getValue(blockStartRow + 4, blockCol) || '—',
-			efficacy: getValue(blockStartRow + 5, blockCol) || '—',
-			gifts: getValue(blockStartRow + 6, blockCol) || '—',
-			tiers: getValue(blockStartRow + 7, blockCol) || '—',
-			vipGift: getValue(blockStartRow + 8, blockCol) || '—',
-			vipValue: getValue(blockStartRow + 9, blockCol) || '—',
-			sellingPoint: getValue(blockStartRow + 10, blockCol) || '—',
-			price: getValue(blockStartRow + 11, blockCol) || '—',
-			campaignDate: getValue(blockStartRow + 12, blockCol) || '—',
-			remarks: getValue(blockStartRow + 13, blockCol) || '—',
-		});
-	}
-
-	previewRows.value = [
-		{ label: getLabelData(1), cols: columnsData.map(c => c.brand) },
-		{ label: getLabelData(2), cols: columnsData.map(c => c.nickname) },
-		{ label: getLabelData(3), cols: columnsData.map(c => c.fullName) },
-		{ label: getLabelData(4), cols: columnsData.map(c => c.spec) },
-		{ label: getLabelData(5), cols: columnsData.map(c => c.efficacy) },
-		{ label: getLabelData(6), cols: columnsData.map(c => c.gifts) },
-		{ label: getLabelData(7), cols: columnsData.map(c => c.tiers) },
-		{ label: getLabelData(8), cols: columnsData.map(c => c.vipGift) },
-		{ label: getLabelData(9), cols: columnsData.map(c => c.vipValue) },
-		{ label: getLabelData(10), cols: columnsData.map(c => c.sellingPoint) },
-		{ label: getLabelData(11), cols: columnsData.map(c => c.price !== '—' ? `${c.price} 元` : '—') },
-		{ label: getLabelData(12), cols: columnsData.map(c => c.campaignDate) },
-		{ label: getLabelData(13), cols: columnsData.map(c => c.remarks) },
-	];
-
-	previewFootnotes.value = buildFootnotesList();
-};
-
-const copyPreviewText = () => {
-	const activeSheet = workbook?.getActiveSheet() || sheet;
-	if (!activeSheet) return;
-	
-	const getValue = (r: number, c: number) => {
-		const cell = activeSheet.getRange(r, c, 1, 1).getValue() as any;
-		return cell && typeof cell === 'object' ? cell.v : cell || '';
-	};
-
-	const columnsData: any[] = [];
-	for (let idx = 0; idx < formCount.value; idx++) {
-		const { blockCol, blockStartRow } = getProductCoords(idx);
-		columnsData.push({
-			brand: getValue(blockStartRow + 1, blockCol) || '—',
-			nickname: getValue(blockStartRow + 2, blockCol) || '—',
-			fullName: getValue(blockStartRow + 3, blockCol) || '—',
-			spec: getValue(blockStartRow + 4, blockCol) || '—',
-			efficacy: getValue(blockStartRow + 5, blockCol) || '—',
-			gifts: getValue(blockStartRow + 6, blockCol) || '—',
-			tiers: getValue(blockStartRow + 7, blockCol) || '—',
-			vipGift: getValue(blockStartRow + 8, blockCol) || '—',
-			vipValue: getValue(blockStartRow + 9, blockCol) || '—',
-			sellingPoint: getValue(blockStartRow + 10, blockCol) || '—',
-			price: getValue(blockStartRow + 11, blockCol) || '—',
-			campaignDate: getValue(blockStartRow + 12, blockCol) || '—',
-			remarks: getValue(blockStartRow + 13, blockCol) || '—',
-		});
-	}
-
-	const headers = ['配置字段', ...Array.from({ length: formCount.value }, (_, i) => `商品提报 ${i + 1}`)].join('\t');
-	
-	const rows = [
-		[getLabelData(1), ...columnsData.map(c => c.brand)],
-		[getLabelData(2), ...columnsData.map(c => c.nickname)],
-		[getLabelData(3), ...columnsData.map(c => c.fullName)],
-		[getLabelData(4), ...columnsData.map(c => c.spec)],
-		[getLabelData(5), ...columnsData.map(c => c.efficacy)],
-		[getLabelData(6), ...columnsData.map(c => c.gifts)],
-		[getLabelData(7), ...columnsData.map(c => c.tiers)],
-		[getLabelData(8), ...columnsData.map(c => c.vipGift)],
-		[getLabelData(9), ...columnsData.map(c => c.vipValue)],
-		[getLabelData(10), ...columnsData.map(c => c.sellingPoint)],
-		[getLabelData(11), ...columnsData.map(c => c.price !== '—' ? `${c.price} 元` : '—')],
-		[getLabelData(12), ...columnsData.map(c => c.campaignDate)],
-		[getLabelData(13), ...columnsData.map(c => c.remarks)],
-	];
-
-	const footnotes = buildFootnotesList();
-
-	const lines = [
-		headers,
-		...rows.map(r => r.join('\t')),
-		'',
-		...footnotes.map(n => `[${n.num}] ${n.nick} 为产品昵称，产品备案全称为 ${n.full}`)
-	];
-
-	navigator.clipboard.writeText(lines.join('\n')).then(() => {
-		ElMessage.success('已复制对比文本数据到剪贴板！');
-	}).catch(() => {
-		ElMessage.error('复制失败，请手动选择文本进行复制');
-	});
-};
-
 // ========== 赠品解析 ==========
 const parseGiftsFromText = (text: any): GiftInfo[] => {
 	if (!text) return [];
@@ -2378,77 +2081,7 @@ const initUniver = (savedSnapshot?: any) => {
 	});
 };
 
-// ========== 校验规则 ==========
-const applyNicknameDropdown = (row: number, col: number, extraValue?: string) => {
-	const nicknames = [...uniqueNicknames.value];
-	if (extraValue && !nicknames.includes(extraValue)) {
-		nicknames.push(extraValue);
-	}
-	const rule = univerAPI
-		.newDataValidation()
-		.requireValueInList(nicknames, false, true)
-		.setOptions({
-			allowBlank: true,
-			showErrorMessage: true,
-			error: '请选择正确的规格产品',
-			errorStyle: univerAPI.Enum.DataValidationErrorStyle.STOP,
-		} as any)
-		.build();
-	sheet.getRange(row, col, 1, 1).setDataValidation(rule);
-};
 
-const applySpecDropdown = (row: number, col: number, specs: string[]) => {
-	if (specs.length === 0) {
-		sheet.getRange(row, col, 1, 1).setDataValidation(null as any);
-		return;
-	}
-	const rule = univerAPI
-		.newDataValidation()
-		.requireValueInList(specs, false, true)
-		.setOptions({
-			allowBlank: true,
-			showErrorMessage: true,
-			error: '请选择正确的规格',
-			errorStyle: univerAPI.Enum.DataValidationErrorStyle.STOP,
-		} as any)
-		.build();
-	sheet.getRange(row, col, 1, 1).setDataValidation(rule);
-};
-
-const applyDateValidation = (row: number, col: number) => {
-	const rule = univerAPI
-		.newDataValidation()
-		.requireDateOnOrAfter(new Date('1970-01-01'))
-		.setOptions({
-			allowBlank: true,
-			showErrorMessage: true,
-			error: '请输入合法有效的日期时间值 (YYYY-MM-DD HH:MM:SS)',
-			errorStyle: univerAPI.Enum.DataValidationErrorStyle.STOP,
-		} as any)
-		.build();
-	sheet.getRange(row, col, 1, 1).setDataValidation(rule);
-};
-
-// ========== 赠品弹窗 ==========
-const openGiftModal = (rowIndex: number, colIndex: number, currentJSON: any) => {
-	giftEditRow.value = rowIndex;
-	giftEditCol.value = colIndex;
-	const gifts = parseGiftsFromText(currentJSON);
-	giftList.value = gifts;
-	giftModalVisible.value = true;
-};
-
-const confirmGiftModal = (gifts: GiftInfo[]) => {
-	const activeGifts = gifts.filter((g) => g.name);
-	const displayStr = activeGifts.map((g) => `${g.name} x ${g.qty}`).join(' | ') || '双击配置赠品';
-	const theme = currentTheme.value;
-	const activeSheet = workbook.getActiveSheet();
-	activeSheet.getRange(giftEditRow.value, giftEditCol.value, 1, 1).setValue({ v: displayStr, s: `editableCenterStyle_${theme}` });
-	giftModalVisible.value = false;
-	
-	recalculateSuffixesAndFootnotes(activeSheet);
-	window.dispatchEvent(new Event('resize'));
-};
 
 // ========== 追加商品列 ==========
 const appendNewProductColumn = () => {
@@ -2955,8 +2588,7 @@ onMounted(async () => {
 			submissionStatus.value = result.data.status || 'draft';
 			formCount.value = result.data.formCount || 1;
 			currentTemplateType.value = result.data.templateType || 'main_image';
-			const migratedSnapshot = migrateSnapshotTo15Rows(result.data.snapshot);
-			const filteredSnapshot = filterSnapshotData(migratedSnapshot);
+			const filteredSnapshot = filterSnapshotData(result.data.snapshot);
 			initUniver(filteredSnapshot);
 			ElMessage.success(`成功加载提报“${submissionName.value}”的数据！`);
 		} else {
@@ -3495,105 +3127,7 @@ onBeforeUnmount(() => {
 	background: #f5f3ff;
 }
 
-/* Preview Styles */
-.preview-area {
-	flex: 1;
-	overflow-y: auto;
-	padding: 24px;
-	background: #f8fafc;
-}
 
-.preview-container {
-	max-width: 1000px;
-	margin: 0 auto;
-}
-
-.preview-scroll-wrapper {
-	width: 100%;
-	overflow-x: auto;
-	border-radius: 6px;
-	border: 1px solid #e2e8f0;
-	margin-bottom: 16px;
-}
-
-.preview-table {
-	width: 100%;
-	border-collapse: collapse;
-	font-size: 13px;
-	background: #ffffff;
-	text-align: left;
-}
-
-.preview-table th,
-.preview-table td {
-	padding: 10px 14px;
-	border-bottom: 1px solid #e2e8f0;
-}
-
-.preview-table th {
-	background: #f1f5f9;
-	font-weight: 700;
-	color: #334155;
-	white-space: nowrap;
-}
-
-.preview-table td:first-child {
-	font-weight: 600;
-	color: #475569;
-	background: #f8fafc;
-	width: 160px;
-	min-width: 160px;
-	border-right: 1px solid #e2e8f0;
-}
-
-.preview-table tr:last-child td {
-	border-bottom: none;
-}
-
-.footnote-block {
-	background: #f1f5f9;
-	border-radius: 6px;
-	padding: 14px 16px;
-	margin-top: 16px;
-	font-size: 12px;
-	color: #475569;
-	line-height: 1.6;
-	border: 1px solid #e2e8f0;
-}
-
-.footnote-title {
-	font-size: 11px;
-	font-weight: 700;
-	color: #64748b;
-	margin-bottom: 8px;
-	text-transform: uppercase;
-	letter-spacing: 0.05em;
-}
-
-.footnote-item {
-	margin-bottom: 4px;
-}
-
-.footnote-item:last-child {
-	margin-bottom: 0;
-}
-
-.footnote-item strong {
-	color: #0f172a;
-	font-weight: 600;
-}
-
-.text-gray {
-	color: #94a3b8;
-	font-style: italic;
-}
-
-.preview-actions {
-	display: flex;
-	gap: 12px;
-	justify-content: flex-end;
-	margin-top: 16px;
-}
 
 .amt-input {
 	font-size: 13px;
