@@ -1067,7 +1067,10 @@ const handleEditorInput = (e: Event) => {
 			                       target.closest('#univer-container') !== null ||
 			                       target.closest('.univer-cell-editor-container') !== null;
 			                       
-			const isPromoRow = currentEditingCell.value && (currentEditingCell.value.row % 15 === 7 || currentEditingCell.value.row % 15 === 8);
+			const isPromoRow = currentEditingCell.value && (
+				currentEditingCell.value.row % rowsPerBlock() === rowOf('thresholdA') ||
+				currentEditingCell.value.row % rowsPerBlock() === rowOf('memberGift')
+			);
 			
 			logDebug(`isUniverEditor=${isUniverEditor}, isPromoRow=${isPromoRow}, currentEditingCell=${JSON.stringify(currentEditingCell.value)}`);
 			
@@ -1156,9 +1159,9 @@ const handleEditProduct = () => {
 
 	if (currentEditingCell.value) {
 		const { row, col } = currentEditingCell.value;
-		const blockIndex = Math.floor(row / 15);
-		const productIndex = blockIndex * 6 + (col - 1);
-		if (col >= 1 && col <= 6 && productIndex >= 0 && productIndex < formCount.value) {
+		const blockIndex = Math.floor(row / rowsPerBlock());
+		const productIndex = blockIndex * colsPerBlock() + (col - 1);
+		if (col >= 1 && col <= colsPerBlock() && productIndex >= 0 && productIndex < formCount.value) {
 			currentColIndex.value = productIndex;
 		} else {
 			ElMessage.warning('请先在表格中选择有效的商品列！');
@@ -1695,45 +1698,45 @@ const formatVipGiftsToText = (threshold: string, items: any[]): string => {
 const syncUniverToForm = () => {
 	const activeSheet = workbook?.getActiveSheet() || sheet;
 	if (!activeSheet) return;
-	
+
 	const idx = currentColIndex.value;
-	const { blockCol, blockStartRow } = getProductCoords(idx);
-	
+	const { blockCol, blockStartRow } = getProductCoords(idx, rowsPerBlock(), colsPerBlock());
+
 	const getValue = (r: number, c: number) => {
 		const cell = activeSheet.getRange(r, c, 1, 1).getValue() as any;
 		return cell && typeof cell === 'object' ? cell.v : cell || '';
 	};
-	
-	brandVal.value = getValue(blockStartRow + 1, blockCol) || '巨子生物 | 可丽金';
-	
-	const nicknameRaw = getValue(blockStartRow + 2, blockCol);
+
+	brandVal.value = getValue(blockStartRow + rowOf('brand'), blockCol) || '巨子生物 | 可丽金';
+
+	const nicknameRaw = getValue(blockStartRow + rowOf('nickname'), blockCol);
 	const cleanNick = getCleanNickname(nicknameRaw, uniqueNicknames.value);
 	selectedMainProduct.value = rawProductList.value.find(p => p.nickname === cleanNick) || null;
-	mainSpec.value = getValue(blockStartRow + 4, blockCol) || '';
-	
-	efficacyVal.value = getValue(blockStartRow + 5, blockCol) || '';
-	
-	const giftsRaw = getValue(blockStartRow + 6, blockCol);
+	mainSpec.value = getValue(blockStartRow + rowOf('spec'), blockCol) || '';
+
+	efficacyVal.value = getValue(blockStartRow + rowOf('efficacy'), blockCol) || '';
+
+	const giftsRaw = getValue(blockStartRow + rowOf('gifts'), blockCol);
 	formGiftItems.value = parseGiftsFromText(giftsRaw).map((g, i) => ({
 		id: i + 1,
 		nickname: g.name.replace(/\[\d+\]/g, ''), // 去掉 [编号] 后缀
 		qty: parseInt(g.qty) || 1,
 		unit: g.qty.replace(/^\d+\s*/, '') || '个'
 	}));
-	
-	const tiersRaw = getValue(blockStartRow + 7, blockCol);
+
+	const tiersRaw = getValue(blockStartRow + rowOf('thresholdA'), blockCol);
 	formTiers.value = parseTiersFromText(tiersRaw);
-	
-	const vipThresholdRaw = getValue(blockStartRow + 8, blockCol);
+
+	const vipThresholdRaw = getValue(blockStartRow + rowOf('memberGift'), blockCol);
 	const vipParsed = parseVipGifts(vipThresholdRaw);
 	vipThresholdVal.value = vipParsed.threshold;
 	formVipItems.value = vipParsed.items;
-	vipValueVal.value = getValue(blockStartRow + 9, blockCol) || '价值 409 元';
-	
-	sellingPointVal.value = getValue(blockStartRow + 10, blockCol) || '';
-	priceVal.value = getValue(blockStartRow + 11, blockCol) || '';
-	
-	const dateRangeStr = getValue(blockStartRow + 12, blockCol) || '';
+	vipValueVal.value = getValue(blockStartRow + rowOf('memberValue'), blockCol) || '价值 409 元';
+
+	sellingPointVal.value = getValue(blockStartRow + rowOf('sellingPoint'), blockCol) || '';
+	priceVal.value = getValue(blockStartRow + rowOf('price'), blockCol) || '';
+
+	const dateRangeStr = getValue(blockStartRow + rowOf('dateRange'), blockCol) || '';
 	if (dateRangeStr.includes('~')) {
 		const parts = dateRangeStr.split('~');
 		startDateVal.value = parts[0].trim();
@@ -1742,8 +1745,8 @@ const syncUniverToForm = () => {
 		startDateVal.value = dateRangeStr.trim() || '2026-05-15 00:00';
 		endDateVal.value = dateRangeStr.trim() || '2026-05-31 00:00';
 	}
-	
-	remarksVal.value = cleanFootnotesAndDetails(getValue(blockStartRow + 13, blockCol) || '');
+
+	remarksVal.value = cleanFootnotesAndDetails(getValue(blockStartRow + rowOf('remarks'), blockCol) || '');
 };
 
 const syncFormToUniver = () => {
@@ -1752,60 +1755,60 @@ const syncFormToUniver = () => {
 	if (submissionStatus.value === 'submitted') return; // Read-only locked
 	
 	const idx = currentColIndex.value;
-	const { blockCol, blockStartRow } = getProductCoords(idx);
+	const { blockCol, blockStartRow } = getProductCoords(idx, rowsPerBlock(), colsPerBlock());
 	const theme = currentTheme.value;
-	
+
 	const setValue = (r: number, c: number, val: any, styleType: string) => {
 		activeSheet.getRange(r, c, 1, 1).setValue({
 			v: val,
 			s: `${styleType}_${theme}`
 		});
 	};
-	
+
 	isHandlingEvent = true;
 		isHandlingEvent = true;
 		try {
 			setValue(blockStartRow, blockCol, `商品提报 ${idx + 1}`, 'headerStyle');
-			setValue(blockStartRow + 1, blockCol, brandVal.value, 'contentCenterStyle');
+			setValue(blockStartRow + rowOf('brand'), blockCol, brandVal.value, 'contentCenterStyle');
 
 			// 昵称写入纯文本（不含编号），由 recalculateSuffixesAndFootnotes 统一添加编号
 			const mainNick = selectedMainProduct.value ? selectedMainProduct.value.nickname : '';
 			const spec = mainSpec.value;
 			const nicknameOnly = spec ? `${mainNick}${spec}` : mainNick;
-			setValue(blockStartRow + 2, blockCol, nicknameOnly, 'editableCenterStyle');
+			setValue(blockStartRow + rowOf('nickname'), blockCol, nicknameOnly, 'editableCenterStyle');
 
 			const fullName = selectedMainProduct.value ? selectedMainProduct.value.fullName : '';
-			setValue(blockStartRow + 3, blockCol, fullName, 'contentLeftStyle');
+			setValue(blockStartRow + rowOf('fullName'), blockCol, fullName, 'contentLeftStyle');
 
-			setValue(blockStartRow + 4, blockCol, spec, 'contentCenterStyle');
+			setValue(blockStartRow + rowOf('spec'), blockCol, spec, 'contentCenterStyle');
 
-			setValue(blockStartRow + 5, blockCol, efficacyVal.value, 'contentLeftStyle');
+			setValue(blockStartRow + rowOf('efficacy'), blockCol, efficacyVal.value, 'contentLeftStyle');
 
 			// 赠品/满赠/会员礼写入纯文本（不含编号），由 recalculateSuffixesAndFootnotes 统一添加编号
 			const giftsList = formGiftItems.value.map(g => ({ name: g.nickname, qty: `${g.qty}${g.unit}` }));
 			const giftsText = formatGiftsToText(giftsList) || '';
-			setValue(blockStartRow + 6, blockCol, giftsText, 'editableCenterStyle');
+			setValue(blockStartRow + rowOf('gifts'), blockCol, giftsText, 'editableCenterStyle');
 
 			const tiersText = formatTiersToText(formTiers.value);
-			setValue(blockStartRow + 7, blockCol, tiersText, 'editableCenterStyle');
+			setValue(blockStartRow + rowOf('thresholdA'), blockCol, tiersText, 'editableCenterStyle');
 
 			const vipThreshold = vipThresholdVal.value;
 			const vipGiftsText = formatVipGiftsToText(vipThreshold, formVipItems.value);
-			setValue(blockStartRow + 8, blockCol, vipGiftsText, 'editableCenterStyle');
-			setValue(blockStartRow + 9, blockCol, vipValueVal.value, 'editableCenterStyle');
+			setValue(blockStartRow + rowOf('memberGift'), blockCol, vipGiftsText, 'editableCenterStyle');
+			setValue(blockStartRow + rowOf('memberValue'), blockCol, vipValueVal.value, 'editableCenterStyle');
 
-			setValue(blockStartRow + 10, blockCol, sellingPointVal.value, 'contentLeftStyle_shaded');
-			setValue(blockStartRow + 11, blockCol, priceVal.value, 'editableCenterStyle');
+			setValue(blockStartRow + rowOf('sellingPoint'), blockCol, sellingPointVal.value, 'contentLeftStyle_shaded');
+			setValue(blockStartRow + rowOf('price'), blockCol, priceVal.value, 'editableCenterStyle');
 
 			const dateRangeText = (startDateVal.value && endDateVal.value) ? `${startDateVal.value} ~ ${endDateVal.value}` : '';
-			setValue(blockStartRow + 12, blockCol, dateRangeText, 'editableCenterStyle');
+			setValue(blockStartRow + rowOf('dateRange'), blockCol, dateRangeText, 'editableCenterStyle');
 
-			setValue(blockStartRow + 13, blockCol, remarksVal.value, 'editableCenterStyle');
+			setValue(blockStartRow + rowOf('remarks'), blockCol, remarksVal.value, 'editableCenterStyle');
 
 			recalculateSuffixesAndFootnotes(activeSheet);
 
-		
-		try { activeSheet.autoResizeRows(blockStartRow, 15); } catch (e) { /* ignore */ }
+
+		try { activeSheet.autoResizeRows(blockStartRow, rowsPerBlock()); } catch (e) { /* ignore */ }
 	} finally {
 		isHandlingEvent = false;
 	}
