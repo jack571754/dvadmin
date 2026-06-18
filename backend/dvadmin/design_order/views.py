@@ -187,8 +187,12 @@ class SaveProductSpecView(APIView):
             if not nickname:
                 continue  # 空 nickname 的产品跳过
 
-            # 必填字段校验（brand/fullName/spec 三个核心字段保持旧行为）
-            for field_key, field_label in [('brand', '品牌'), ('fullName', '官方全称'), ('spec', '规格')]:
+            # 必填字段校验：从模板 Schema 的 validation.requiredProductFields 读取
+            required_product_fields = validation.get('requiredProductFields', [])
+            field_defs = {f['key']: f for f in schema['fields']}
+            for field_key in required_product_fields:
+                fdef = field_defs.get(field_key)
+                field_label = fdef['label'] if fdef else field_key
                 val = (prod.get(field_key) or '').strip()
                 if not val or val == '***':
                     errors.append({
@@ -353,18 +357,20 @@ class SaveProductSpecView(APIView):
             end_date = _restore('endDate', 'end_date')
             remarks = _restore('remarks', 'remarks')
 
-            # —— 新增：动态字段统一收集到 spec_data（按当前模板 Schema 的所有字段键）——
+            # —— 新增：动态字段统一收集到 spec_data（按当前模板 Schema 字段 kind 派发）——
             spec_data = {}
             for fdef in schema_fields:
                 fk = fdef['key']
-                if fk == 'gifts':
+                kind = fdef['kind']
+                if kind == 'gifts':
                     # gifts 单独处理：存结构化数组
                     if has_masked_gift and existing and existing.spec_data and 'gifts' in existing.spec_data:
                         spec_data['gifts'] = existing.spec_data['gifts']
                     else:
                         spec_data['gifts'] = gifts_list
-                elif fk == 'dateRange':
-                    spec_data['dateRange'] = {'startDate': start_date, 'endDate': end_date}
+                elif kind == 'dateRange':
+                    # 日期字段：按字段键存结构化对象（兼容自定义 dateRange 键名）
+                    spec_data[fk] = {'startDate': start_date, 'endDate': end_date}
                 else:
                     # 优先取前端传的 camelCase 键；*** 时从旧 spec_data 恢复
                     val = prod.get(fk, '')
