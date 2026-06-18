@@ -28,6 +28,7 @@ MAIN_IMAGE_SCHEMA = {
     ],
     "validation": {
         "requiredSubmissionFields": ["name", "shop"],
+        "requiredProductFields": ["brand", "fullName", "spec"],
         "priceFieldKey": "price",
         "dateRangeFieldKey": "dateRange",
     },
@@ -55,6 +56,7 @@ LIVE_STREAM_SCHEMA = {
     ],
     "validation": {
         "requiredSubmissionFields": ["name", "shop"],
+        "requiredProductFields": ["brand", "fullName", "spec"],
         "priceFieldKey": "price",
         "dateRangeFieldKey": "dateRange",
     },
@@ -82,22 +84,75 @@ DETAIL_PAGE_SCHEMA = {
     ],
     "validation": {
         "requiredSubmissionFields": ["name", "shop"],
+        "requiredProductFields": ["brand", "fullName", "spec"],
         "priceFieldKey": "price",
         "dateRangeFieldKey": "dateRange",
     },
 }
 
-TEMPLATES: Dict[str, dict] = {
+BUILTIN_TEMPLATES: Dict[str, dict] = {
     "main_image": MAIN_IMAGE_SCHEMA,
     "live_stream": LIVE_STREAM_SCHEMA,
     "detail_page": DETAIL_PAGE_SCHEMA,
 }
 
+# 兼容旧引用（tests/test_schemas.py 直接 import TEMPLATES）
+TEMPLATES = BUILTIN_TEMPLATES
+
+BUILTIN_TEMPLATE_KEYS = frozenset(BUILTIN_TEMPLATES.keys())
+
 DEFAULT_TEMPLATE_TYPE = "main_image"
+
+# SystemConfig 中自定义模板的父配置键；子行键为模板 templateType，
+# dispatch 缓存键为 "design_order_template.<templateType>"，值为完整 Schema dict。
+_TEMPLATE_PARENT_KEY = "design_order_template"
+
+
+def _get_dispatch_config() -> Dict[str, any]:
+    """读取 dispatch 缓存的 SystemConfig 扁平字典；失败返回空 dict。"""
+    try:
+        from application import dispatch
+        return dispatch.get_system_config() or {}
+    except Exception:
+        return {}
+
+
+def _get_custom_template(template_type: str) -> Optional[dict]:
+    """从 SystemConfig 缓存读单个自定义模板；缓存 miss 返回 None。"""
+    cfg = _get_dispatch_config()
+    value = cfg.get(f"{_TEMPLATE_PARENT_KEY}.{template_type}")
+    return value if isinstance(value, dict) else None
+
+
+def list_all_templates() -> Dict[str, dict]:
+    """内置 ∪ 自定义。内置优先（DB 同名 key 被忽略，实现内置锁定）。"""
+    result = dict(BUILTIN_TEMPLATES)
+    prefix = f"{_TEMPLATE_PARENT_KEY}."
+    for full_key, value in _get_dispatch_config().items():
+        if full_key.startswith(prefix) and isinstance(value, dict):
+            tt = full_key[len(prefix):]
+            if tt and tt not in BUILTIN_TEMPLATE_KEYS:
+                result[tt] = value
+    return result
+
+
+def list_template_types() -> List[dict]:
+    """供前端 dict-select 用：[{value, label, builtin}]。"""
+    return [
+        {"value": tt, "label": s.get("label", tt), "builtin": tt in BUILTIN_TEMPLATE_KEYS}
+        for tt, s in list_all_templates().items()
+    ]
 
 
 def get_schema(template_type: Optional[str] = None) -> dict:
-    return TEMPLATES.get(template_type or DEFAULT_TEMPLATE_TYPE, TEMPLATES[DEFAULT_TEMPLATE_TYPE])
+    """合并查询：内置常量优先，其次 DB 自定义，最后降级默认内置。"""
+    tt = template_type or DEFAULT_TEMPLATE_TYPE
+    if tt in BUILTIN_TEMPLATES:
+        return BUILTIN_TEMPLATES[tt]
+    custom = _get_custom_template(tt)
+    if custom:
+        return custom
+    return BUILTIN_TEMPLATES[DEFAULT_TEMPLATE_TYPE]
 
 
 def get_rows_per_block(template_type: Optional[str] = None) -> int:
