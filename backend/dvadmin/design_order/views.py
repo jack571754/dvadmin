@@ -17,6 +17,7 @@ from dvadmin.utils.field_permission import FieldPermissionMixin
 from dvadmin.system.models import FieldPermission, MenuField
 from .models import ProductArchive, ProductSpec, ProductSpecSnapshot, ProductSpecSubmission
 from .serializers import ProductArchiveSerializer, ProductSpecSerializer, ProductSpecSubmissionSerializer
+from .templates_schemas import get_schema, get_rows_per_block, get_maskkey_to_row
 
 
 class ProductArchiveViewSet(FieldPermissionMixin, CustomModelViewSet):
@@ -79,7 +80,7 @@ class ProductSpecSubmissionViewSet(FieldPermissionMixin, CustomModelViewSet):
     queryset = ProductSpecSubmission.objects.all()
     serializer_class = ProductSpecSubmissionSerializer
     permission_classes = [CustomPermission]
-    filter_fields = ['name', 'shop', 'status']
+    filter_fields = ['name', 'shop', 'status', 'template_type']
     search_fields = ['name', 'shop']
 
     @action(detail=True, methods=['post'])
@@ -111,42 +112,6 @@ class ProductSpecSubmissionViewSet(FieldPermissionMixin, CustomModelViewSet):
         ProductSpec.objects.bulk_create(specs_to_create)
         
         return DetailResponse(data={'id': clone.id}, msg="活动提报复用成功！")
-
-
-ROW_TO_FIELD_MAP_16 = {
-    1: 'brand',
-    2: 'nickname',
-    3: 'full_name',
-    4: 'specification',
-    5: 'efficacy',
-    6: 'gifts',
-    7: 'threshold_a',
-    8: 'member_gift',
-    9: 'member_value',
-    10: 'selling_point',
-    11: 'price',
-    12: 'start_date',
-    13: 'end_date',
-    14: 'remarks'
-}
-
-ROW_TO_FIELD_MAP_15 = {
-    1: 'brand',
-    2: 'nickname',
-    3: 'full_name',
-    4: 'specification',
-    5: 'efficacy',
-    6: 'gifts',
-    7: 'threshold_a',
-    8: 'member_gift',
-    9: 'member_value',
-    10: 'selling_point',
-    11: 'price',
-    12: 'start_date',
-    13: 'remarks'
-}
-
-ROW_TO_FIELD_MAP = ROW_TO_FIELD_MAP_15
 
 
 def merge_snapshots(old_snapshot, new_snapshot):
@@ -183,25 +148,23 @@ class SaveProductSpecView(APIView):
     permission_classes = [permissions.IsAuthenticated]
 
     def validate_submission(self, data):
-        """校验提交数据的完整性"""
+        """按模板 Schema 驱动校验提交数据的完整性"""
         errors = []
+        template_type = data.get('templateType') or 'main_image'
+        schema = get_schema(template_type)
+        validation = schema['validation']
 
-        # 1. 提报级校验
-        name = (data.get('name') or '').strip()
-        if not name:
-            errors.append({
-                'productIndex': -1, 'productLabel': '提报信息',
-                'field': 'name', 'fieldLabel': '提报名称',
-                'rule': 'required', 'message': '提报名称不能为空'
-            })
-
-        shop = (data.get('shop') or '').strip()
-        if not shop:
-            errors.append({
-                'productIndex': -1, 'productLabel': '提报信息',
-                'field': 'shop', 'fieldLabel': '提报店铺',
-                'rule': 'required', 'message': '提报店铺不能为空'
-            })
+        # 1. 提报级必填校验
+        for fkey in validation.get('requiredSubmissionFields', []):
+            raw = data.get(fkey)
+            val = raw.strip() if isinstance(raw, str) else raw
+            if not val:
+                labels = {'name': '提报名称', 'shop': '提报店铺'}
+                errors.append({
+                    'productIndex': -1, 'productLabel': '提报信息',
+                    'field': fkey, 'fieldLabel': labels.get(fkey, fkey),
+                    'rule': 'required', 'message': f'{labels.get(fkey, fkey)}不能为空'
+                })
 
         # 2. 产品级校验
         products = data.get('products', [])
@@ -212,18 +175,17 @@ class SaveProductSpecView(APIView):
                 'rule': 'required', 'message': '至少需要1个有效产品'
             })
 
+        price_key = validation.get('priceFieldKey')
+        date_key = validation.get('dateRangeFieldKey')
+
         for idx, prod in enumerate(products):
             label = f"商品提报 {idx + 1}"
             nickname = (prod.get('nickname') or '').strip()
             if not nickname:
                 continue  # 空 nickname 的产品跳过
 
-            # 必填字段
-            for field_key, field_label in [
-                ('brand', '品牌'),
-                ('fullName', '官方全称'),
-                ('spec', '规格'),
-            ]:
+            # 必填字段校验（brand/fullName/spec 三个核心字段保持旧行为）
+            for field_key, field_label in [('brand', '品牌'), ('fullName', '官方全称'), ('spec', '规格')]:
                 val = (prod.get(field_key) or '').strip()
                 if not val or val == '***':
                     errors.append({
@@ -234,37 +196,39 @@ class SaveProductSpecView(APIView):
                     })
 
             # 价格校验
-            price = (prod.get('price') or '').strip()
-            if not price or price == '***':
-                errors.append({
-                    'productIndex': idx, 'productLabel': label,
-                    'field': 'price', 'fieldLabel': '提报价格',
-                    'rule': 'required',
-                    'message': f'{label} 的「提报价格」不能为空'
-                })
-            else:
-                try:
-                    price_num = float(str(price).replace(',', ''))
-                    if price_num <= 0:
-                        raise ValueError()
-                except (ValueError, TypeError):
+            if price_key:
+                price = (prod.get(price_key) or '').strip()
+                if not price or price == '***':
                     errors.append({
                         'productIndex': idx, 'productLabel': label,
-                        'field': 'price', 'fieldLabel': '提报价格',
-                        'rule': 'format',
-                        'message': f'{label} 的「提报价格」必须为大于0的数值'
+                        'field': price_key, 'fieldLabel': '提报价格',
+                        'rule': 'required',
+                        'message': f'{label} 的「提报价格」不能为空'
                     })
+                else:
+                    try:
+                        price_num = float(str(price).replace(',', ''))
+                        if price_num <= 0:
+                            raise ValueError()
+                    except (ValueError, TypeError):
+                        errors.append({
+                            'productIndex': idx, 'productLabel': label,
+                            'field': price_key, 'fieldLabel': '提报价格',
+                            'rule': 'format',
+                            'message': f'{label} 的「提报价格」必须为大于0的数值'
+                        })
 
             # 日期校验
-            start_date = (prod.get('startDate') or '').strip()
-            end_date = (prod.get('endDate') or '').strip()
-            if not start_date or not end_date or start_date == '***' or end_date == '***':
-                errors.append({
-                    'productIndex': idx, 'productLabel': label,
-                    'field': 'dateRange', 'fieldLabel': '活动时间',
-                    'rule': 'required',
-                    'message': f'{label} 的「活动时间」不能为空'
-                })
+            if date_key:
+                start_date = (prod.get('startDate') or '').strip()
+                end_date = (prod.get('endDate') or '').strip()
+                if not start_date or not end_date or start_date == '***' or end_date == '***':
+                    errors.append({
+                        'productIndex': idx, 'productLabel': label,
+                        'field': 'dateRange', 'fieldLabel': '活动时间',
+                        'rule': 'required',
+                        'message': f'{label} 的「活动时间」不能为空'
+                    })
 
         return errors
 
@@ -303,6 +267,7 @@ class SaveProductSpecView(APIView):
                  submission_id, name, shop, status, template_type):
         """事务内执行实际保存逻辑"""
         submission = None
+        schema_fields = get_schema(template_type)['fields']
 
         # 1. 查找或创建提报历史维度记录
         if submission_id:
@@ -353,27 +318,19 @@ class SaveProductSpecView(APIView):
             card_index = prod.get('cardIndex', 0)
             existing = existing_specs.get(card_index)
 
-            nickname = prod.get('nickname', '')
-            if nickname == '***' and existing:
-                nickname = existing.nickname
-            
-            brand = prod.get('brand', '')
-            if brand == '***' and existing:
-                brand = existing.brand
+            # —— 兼容旧固定列：保持原有 *** 恢复逻辑（仅 main_image 的标准字段键存在）——
+            def _restore(field_key, existing_attr):
+                val = prod.get(field_key, '')
+                if val == '***' and existing:
+                    return getattr(existing, existing_attr, '')
+                return val
 
-            full_name = prod.get('fullName', '')
-            if full_name == '***' and existing:
-                full_name = existing.full_name
+            nickname = _restore('nickname', 'nickname')
+            brand = _restore('brand', 'brand')
+            full_name = _restore('fullName', 'full_name')
+            spec = _restore('spec', 'specification')
+            efficacy = _restore('efficacy', 'efficacy')
 
-            spec = prod.get('spec', '')
-            if spec == '***' and existing:
-                spec = existing.specification
-
-            efficacy = prod.get('efficacy', '')
-            if efficacy == '***' and existing:
-                efficacy = existing.efficacy
-
-            # gifts
             gifts_list = prod.get('gifts', [])
             has_masked_gift = any(g.get('name') == '***' for g in gifts_list if isinstance(g, dict))
             if has_masked_gift and existing:
@@ -381,41 +338,36 @@ class SaveProductSpecView(APIView):
             else:
                 gifts_str = " | ".join([f"🎁 {g.get('name')} x {g.get('qty')}" for g in gifts_list if g.get('name')])
 
-            threshold_a = prod.get('thresholdA', '')
-            if threshold_a == '***' and existing:
-                threshold_a = existing.threshold_a
-
+            threshold_a = _restore('thresholdA', 'threshold_a')
             value_a = prod.get('valueA', '')
             threshold_b = prod.get('thresholdB', '')
             value_b = prod.get('valueB', '')
+            member_gift = _restore('memberGift', 'member_gift')
+            member_value = _restore('memberValue', 'member_value')
+            selling_point = _restore('sellingPoint', 'selling_point')
+            price = _restore('price', 'price')
+            start_date = _restore('startDate', 'start_date')
+            end_date = _restore('endDate', 'end_date')
+            remarks = _restore('remarks', 'remarks')
 
-            member_gift = prod.get('memberGift', '')
-            if member_gift == '***' and existing:
-                member_gift = existing.member_gift
-
-            member_value = prod.get('memberValue', '')
-            if member_value == '***' and existing:
-                member_value = existing.member_value
-
-            selling_point = prod.get('sellingPoint', '')
-            if selling_point == '***' and existing:
-                selling_point = existing.selling_point
-
-            price = prod.get('price', '')
-            if price == '***' and existing:
-                price = existing.price
-
-            start_date = prod.get('startDate', '')
-            if start_date == '***' and existing:
-                start_date = existing.start_date
-
-            end_date = prod.get('endDate', '')
-            if end_date == '***' and existing:
-                end_date = existing.end_date
-
-            remarks = prod.get('remarks', '')
-            if remarks == '***' and existing:
-                remarks = existing.remarks
+            # —— 新增：动态字段统一收集到 spec_data（按当前模板 Schema 的所有字段键）——
+            spec_data = {}
+            for fdef in schema_fields:
+                fk = fdef['key']
+                if fk == 'gifts':
+                    # gifts 单独处理：存结构化数组
+                    if has_masked_gift and existing and existing.spec_data and 'gifts' in existing.spec_data:
+                        spec_data['gifts'] = existing.spec_data['gifts']
+                    else:
+                        spec_data['gifts'] = gifts_list
+                elif fk == 'dateRange':
+                    spec_data['dateRange'] = {'startDate': start_date, 'endDate': end_date}
+                else:
+                    # 优先取前端传的 camelCase 键；*** 时从旧 spec_data 恢复
+                    val = prod.get(fk, '')
+                    if val == '***' and existing and existing.spec_data:
+                        val = existing.spec_data.get(fk, '')
+                    spec_data[fk] = val
 
             # 关联或更新已存在产品档案
             matched_product = None
@@ -459,7 +411,8 @@ class SaveProductSpecView(APIView):
                 price=price,
                 start_date=start_date,
                 end_date=end_date,
-                remarks=remarks
+                remarks=remarks,
+                spec_data=spec_data
             )
 
         return DetailResponse(
@@ -501,31 +454,27 @@ class LoadProductSpecView(APIView):
                 restricted_fields = set(menu_fields) - queryable_fields
                 
                 if restricted_fields and 'sheets' in snapshot:
-                    for sheet_id, sheet_data in snapshot['sheets'].items():
-                        cell_data = sheet_data.get('cellData', {})
-                        # Determine if this sheet is 16-row or 15-row based on row 13 label
-                        # Row 13 of col 0 in 16-row is '活动结束日期'
-                        row13_col0 = cell_data.get('13', {}).get('0', {})
-                        is_16_row = False
-                        if isinstance(row13_col0, dict):
-                            val = row13_col0.get('v')
-                            if val in ['活动结束日期', '活动结束时间']:
-                                is_16_row = True
-                        
-                        mod_val = 16 if is_16_row else 15
-                        field_map = ROW_TO_FIELD_MAP_16 if is_16_row else ROW_TO_FIELD_MAP_15
-                        
-                        for row_str, cols in list(cell_data.items()):
-                            row = int(row_str)
-                            rel_row = row % mod_val
-                            field_name = field_map.get(rel_row)
-                            if field_name in restricted_fields:
-                                for col_str in list(cols.keys()):
-                                    col = int(col_str)
-                                    if col > 0:
-                                        if isinstance(cols[col_str], dict):
-                                            cols[col_str]['v'] = '***'
-            
+                    template_type = snapshot_obj.template_type or 'main_image'
+                    rows_per_block = get_rows_per_block(template_type)
+                    maskkey_to_row = get_maskkey_to_row(template_type)
+                    # 受限遮罩键 -> 块内行偏移集合
+                    restricted_rows = {
+                        maskkey_to_row[mk] for mk in restricted_fields if mk in maskkey_to_row
+                    }
+
+                    if restricted_rows:
+                        for sheet_id, sheet_data in snapshot['sheets'].items():
+                            cell_data = sheet_data.get('cellData', {})
+                            for row_str, cols in list(cell_data.items()):
+                                row = int(row_str)
+                                rel_row = row % rows_per_block
+                                if rel_row in restricted_rows:
+                                    for col_str in list(cols.keys()):
+                                        col = int(col_str)
+                                        if col > 0:
+                                            if isinstance(cols[col_str], dict):
+                                                cols[col_str]['v'] = '***'
+
             return DetailResponse(
                 data={
                     'id': snapshot_obj.id,
