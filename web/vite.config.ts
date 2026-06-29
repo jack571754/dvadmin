@@ -50,16 +50,42 @@ const viteConfig = defineConfig((mode: ConfigEnv) => {
 		},
 		build: {
 			outDir: env.VITE_DIST_PATH || 'dist',
-			chunkSizeWarningLimit: 1500,
+			// 各 vendor 拆分后单 chunk 仍可能 > 1500kB（如 univer/element-plus），按需放宽告警阈值
+			chunkSizeWarningLimit: 2000,
 			rollupOptions: {
 				output: {
 					entryFileNames: `assets/[name].[hash].js`,
 					chunkFileNames: `assets/[name].[hash].js`,
 					assetFileNames: `assets/[name].[hash].[ext]`,
 					compact: true,
-					manualChunks: {
-						vue: ['vue', 'vue-router', 'pinia'],
-						echarts: ['echarts'],
+					// 按 node_modules 包名拆分大体积依赖，避免入口包堆积。
+					// 路由视图本身已通过 import.meta.glob 懒加载，这里只处理 main.ts 静态引入的 vendor。
+					manualChunks(id) {
+						if (!id.includes('node_modules')) return;
+						// 图表全家桶（echarts / echarts-gl / echarts-wordcloud / zrender）
+						if (/[\\/]node_modules[\\/](echarts|echarts-gl|echarts-wordcloud|zrender)[\\/]/.test(id)) return 'echarts';
+						// Univer 电子表格（仅 product_spec 页面使用，懒加载进该页 chunk）
+						if (id.includes('@univerjs')) return 'univer';
+						// 富文本编辑器
+						if (id.includes('@wangeditor')) return 'wangeditor';
+						// JSON 编辑器
+						if (/[\\/]node_modules[\\/](jsoneditor|json-editor-vue3)[\\/]/.test(id)) return 'jsoneditor';
+						// fast-crud 全家桶
+						if (id.includes('@fast-crud')) return 'fast-crud';
+						// Element Plus + 其图标
+						if (/[\\/]node_modules[\\/](element-plus|@element-plus)[\\/]/.test(id)) return 'element-plus';
+						// vxe-table + xe-utils
+						if (/[\\/]node_modules[\\/](vxe-table|xe-utils)[\\/]/.test(id)) return 'vxe-table';
+						// Vant 移动端组件（仅部分页面使用）
+						if (/[\\/]node_modules[\\/](vant|vant4-kit|@meetjs[\\/]vant4-kit)[\\/]/.test(id)) return 'vant';
+						// 图标选择器 + iconify
+						if (/[\\/]node_modules[\\/](e-icon-picker|@iconify)[\\/]/.test(id)) return 'icons';
+						// 拖拽 / 布局 / 裁剪等较大独立库
+						if (id.includes('vue-grid-layout')) return 'grid-layout';
+						if (/[\\/]node_modules[\\/](cropperjs|vue-cropper)[\\/]/.test(id)) return 'cropper';
+						if (id.includes('jsplumb')) return 'jsplumb';
+						// Vue 核心（vue / vue-router / pinia / @vue/*）独立成最早加载的 chunk
+						if (/[\\/]node_modules[\\/](@vue|vue|vue-router|pinia)[\\/]/.test(id)) return 'vue';
 					},
 				},
 			},

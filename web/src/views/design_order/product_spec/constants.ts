@@ -1,32 +1,5 @@
 import { ProductInfo } from './types';
 
-export const PRODUCT_DATABASE: Record<string, ProductInfo> = {};
-
-export const PRODUCT_KEYWORDS: Record<string, string[]> = {};
-
-export const LABEL_DATA: Record<number, string> = {
-	0: '配置字段',
-	1: '品牌与标志',
-	2: '产品昵称',
-	3: '官方全称',
-	4: '商品规格',
-	5: '主打功效',
-	6: '标配赠品配置',
-	7: '满赠档位配置',
-	8: '会员专享礼门槛',
-	9: '会员专享礼价值',
-	10: '商品卖点',
-	11: '提报价格说明',
-	12: '活动时间范围',
-	13: '运营备注说明',
-};
-
-export const TEMPLATE_TYPES = [
-	{ value: 'main_image', label: '主图模板' },
-	{ value: 'live_stream', label: '直播间模板' },
-	{ value: 'detail_page', label: '详情页模板' },
-];
-
 export const TEMPLATE_LABELS: Record<string, Record<number, string>> = {
 	main_image: {
 		0: '配置字段',

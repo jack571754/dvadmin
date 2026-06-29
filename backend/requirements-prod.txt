@@ -1,0 +1,22 @@
+# 生产环境依赖文件
+# 使用方式：pip install -r requirements-prod.txt
+
+# 引入基础依赖
+-r requirements.txt
+
+# ========== 生产环境额外依赖 ==========
+
+# PostgreSQL 数据库驱动（生产环境推荐）
+psycopg2-binary==2.9.9
+
+# WSGI 服务器（高性能部署）
+gunicorn==23.0.0
+
+# 协程库（提升并发性能）
+gevent==24.2.1
+
+# Redis 客户端（Celery 和缓存）
+redis==5.0.8
+
+# 生产环境性能监控（可选）
+# django-prometheus==2.3.1

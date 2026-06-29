@@ -3,7 +3,7 @@
 		<el-alert type="info" :closable="false" style="margin-bottom: 8px;">
 			字段数必须 = 每块行数 - 2；行号 1..N 连续唯一；倒数第二行 key='price'+kind='price'；倒数第三行 key='dateRange'+kind='dateRange'。
 		</el-alert>
-		<el-table :data="modelValue" border size="small" style="width:100%">
+		<el-table :data="fields" border size="small" style="width:100%">
 			<el-table-column label="行号" width="70">
 				<template #default="{ row }">
 					<el-input-number v-model="row.row" :min="1" :controls="false" style="width:100%" size="small" />

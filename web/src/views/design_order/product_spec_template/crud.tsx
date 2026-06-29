@@ -38,7 +38,9 @@ function validateForm(form: any): string[] {
 export const createCrudOptions = function ({ crudExpose }: CreateCrudOptionsProps): CreateCrudOptionsRet {
 	const pageRequest = async (query: UserPageQuery) => {
 		const res: any = await api.GetList(query);
-		// 后端 list 返回 {code, data:[...]} 或平铺数组；统一包装为 fast-crud 分页结构
+		// 后端 list 返回 DetailResponse({code, data:[...]}) 平铺数组（无分页字段），
+		// 这里手动包装为 fast-crud 分页结构；同时用局部 transformRes 透传，
+		// 避免被 settings.ts 全局 transformRes（按 res.data/res.page/res.limit 取值）二次错误转换
 		const list = Array.isArray(res) ? res : (res.data || []);
 		return { records: list, total: list.length, currentPage: 1, pageSize: 100 };
 	};
@@ -59,7 +61,7 @@ export const createCrudOptions = function ({ crudExpose }: CreateCrudOptionsProp
 
 	return {
 		crudOptions: {
-			request: { pageRequest, addRequest, editRequest, delRequest },
+			request: { pageRequest, transformRes: ({ res }: any) => res, addRequest, editRequest, delRequest },
 			rowHandle: {
 				fixed: 'right',
 				width: 240,
