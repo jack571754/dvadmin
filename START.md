@@ -15,10 +15,10 @@
 
 ```powershell
 # 进入后端目录
-cd django-vue3-admin-master/backend
+cd backend
 
 # 激活虚拟环境（如果已创建）
-.\venv\Scripts\Activate.ps1
+# .\venv\Scripts\Activate.ps1
 
 # 首次启动需要安装依赖
 pip install -r requirements.txt
@@ -31,25 +31,25 @@ python manage.py migrate
 python manage.py init
 
 # 启动服务（支持 WebSocket）
-powershell -ExecutionPolicy Bypass -File start_daphne.ps1
+python main.py
 ```
 
-**后端地址：** http://localhost:8001
+**后端地址：** http://localhost:9000
 
 ### 2️⃣ 管理后台前端启动
 
 ```powershell
 # 进入前端目录
-cd django-vue3-admin-master/web
+cd web
 
-# 首次启动需要安装依赖
-npm install
+# 首次启动需要安装依赖（可以使用 pnpm, yarn 或 npm）
+pnpm install
 
 # 启动开发服务器
-npm run dev
+pnpm run dev
 ```
 
-**前端地址：** http://localhost:9001
+**前端地址：** http://localhost:8080
 
 
 ## 🔑 默认账号
@@ -70,7 +70,7 @@ npm run dev
 - Vue 3.5.27
 - Element Plus 2.13.2
 - Vite 5.4.1
-- TypeScript 4.9.4
+- TypeScript 5.9.3 (已从 4.9.4 升级)
 - Pinia 2.3.1
 
 ## 🔧 常用命令
@@ -127,7 +127,7 @@ REDIS_PASSWORD = ""
 
 ```env
 # API 地址
-VITE_API_URL = 'http://127.0.0.1:8001'
+VITE_API_URL = 'http://127.0.0.1:9000'
 
 # 是否启用按钮权限
 VITE_PM_ENABLED = true
@@ -137,14 +137,14 @@ VITE_PM_ENABLED = true
 
 | 服务 | 端口 | 说明 |
 |------|------|------|
-| 后端 API | 8001 | Django + Daphne（支持 WebSocket） |
-| 管理后台 | 9001 | Vue3 前端（9000 被占用时自动切换） |
+| 后端 API | 9000 | Django + Uvicorn/Daphne（支持 WebSocket） |
+| 管理后台 | 8080 | Vue3 前端 |
 
 ## 🔌 WebSocket 支持
 
-项目使用 **Daphne** 作为 ASGI 服务器，完整支持 WebSocket。
+项目完整支持 WebSocket。
 
-**WebSocket 地址：** `ws://127.0.0.1:8001/ws/<token>/`
+**WebSocket 地址：** `ws://127.0.0.1:9000/ws/<token>/`
 
 **功能：**
 - 实时消息通知
@@ -160,7 +160,7 @@ VITE_PM_ENABLED = true
 **解决：**
 ```powershell
 # 查找占用端口的进程
-netstat -ano | findstr :8001
+netstat -ano | findstr :9000
 
 # 停止进程（替换 <PID>）
 Stop-Process -Id <PID> -Force
@@ -171,7 +171,7 @@ Stop-Process -Id <PID> -Force
 **问题：** 前端请求超时或连接失败
 
 **解决：**
-1. 确认后端已启动：http://localhost:8001
+1. 确认后端已启动：http://localhost:9000
 2. 检查前端配置：`.env.development` 中的 `VITE_API_URL`
 3. 重启前端服务
 
@@ -180,7 +180,7 @@ Stop-Process -Id <PID> -Force
 **问题：** 浏览器控制台显示 WebSocket 连接失败
 
 **解决：**
-1. 确认使用 Daphne 启动（不是 Uvicorn）
+1. 确认使用 main.py (Uvicorn) 启动
 2. 检查后端日志是否有错误
 3. 确认 `websockets` 包已安装：`pip list | findstr websockets`
 
@@ -199,12 +199,12 @@ python manage.py migrate
 ## 📚 相关文档
 
 - [主文档](./CLAUDE.md) - 完整的项目文档
-- [后端架构文档](./django-vue3-admin-master/backend/docs_architecture/) - 详细的架构说明
-- [API 文档](http://localhost:8001/swagger/) - Swagger API 文档
+- [后端架构文档](./backend/docs_architecture/) - 详细的架构说明
+- [API 文档](http://localhost:9000/swagger/) - Swagger API 文档
 
 ## 🎯 下一步
 
-1. 访问管理后台：http://localhost:9001
+1. 访问管理后台：http://localhost:8080
 2. 使用默认账号登录
 3. 探索系统功能：
    - 用户管理
@@ -237,5 +237,5 @@ python manage.py migrate
 
 ---
 
-**最后更新：** 2026-02-03
+**最后更新：** 2026-06-11 (升级缺陷修复，整合多项修复方案)
 **项目版本：** 3.2.0

@@ -30,20 +30,20 @@
 
 ```powershell
 # 1. 后端启动
-cd django-vue3-admin-master/backend
-powershell -ExecutionPolicy Bypass -File start_daphne.ps1
+cd backend
+python main.py
 
 # 2. 前端启动
-cd django-vue3-admin-master/web
-npm install
-npm run dev
+cd web
+pnpm install  # 或 yarn install / npm install
+pnpm run dev
 ```
 
 ### 访问地址
 
-- 管理后台：http://localhost:9001
-- 后端 API：http://localhost:8001
-- API 文档：http://localhost:8001/swagger/
+- 管理后台：http://localhost:8080
+- 后端 API：http://localhost:9000
+- API 文档：http://localhost:9000/swagger/
 
 ### 默认账号
 
@@ -54,7 +54,7 @@ npm run dev
 
 - [快速启动指南](./START.md) - 详细的启动步骤
 - [完整文档](./CLAUDE.md) - 项目架构 and 开发指南
-- [后端架构文档](./django-vue3-admin-master/backend/docs_architecture/) - 后端详细说明
+- [后端架构文档](./backend/docs_architecture/) - 后端详细说明
 
 ## 🛠️ 技术栈
 
@@ -75,7 +75,7 @@ npm run dev
 - **状态管理**：Pinia 2.3.1
 - **路由**：Vue Router 4.6.4
 - **HTTP 客户端**：Axios 1.13.4
-- **语言**：TypeScript 4.9.4
+- **语言**：TypeScript 5.9.3 (已从 4.9.4 升级)
 
 ## 📦 核心功能
 
@@ -105,19 +105,18 @@ npm run dev
 
 ```
 dvadmin/
-├── django-vue3-admin-master/    # 主项目
-│   ├── backend/                 # Django 后端
-│   │   ├── application/         # 项目配置
-│   │   ├── dvadmin/            # 核心业务模块
-│   │   │   ├── system/         # 系统管理
-│   │   │   └── utils/          # 工具类
-│   │   └── plugins/            # 插件目录
-│   └── web/                    # Vue3 前端
-│       └── src/
-│           ├── api/            # API 接口
-│           ├── components/     # 组件
-│           ├── views/          # 页面
-│           └── stores/         # 状态管理
+├── backend/                 # Django 后端
+│   ├── application/         # 项目配置
+│   ├── dvadmin/            # 核心业务模块
+│   │   ├── system/         # 系统管理
+│   │   └── utils/          # 工具类
+│   └── plugins/            # 插件目录
+├── web/                    # Vue3 前端
+│   └── src/
+│       ├── api/            # API 接口
+│       ├── components/     # 组件
+│       ├── views/          # 页面
+│       └── stores/         # 状态管理
 ├── START.md                    # 启动指南
 └── CLAUDE.md                   # 完整文档
 ```
@@ -144,7 +143,7 @@ REDIS_PASSWORD = ""
 
 ```env
 # API 地址
-VITE_API_URL = 'http://127.0.0.1:8001'
+VITE_API_URL = 'http://127.0.0.1:9000'
 ```
 
 ## 🤝 贡献
@@ -165,4 +164,4 @@ VITE_API_URL = 'http://127.0.0.1:8001'
 
 ---
 
-**最后更新：** 2026-02-03
+**最后更新：** 2026-06-11

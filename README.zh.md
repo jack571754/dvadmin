@@ -68,16 +68,13 @@ git clone https://github.com/jack571754/dvadmin.git
 # 进入项目目录
 cd web
 
-# 安装依赖
-npm install yarn
-yarn install --registry=https://registry.npmmirror.com
-
-# 启动服务
-yarn build
+# 安装依赖并启动（推荐使用 pnpm 或 yarn）
+pnpm install
+pnpm run dev
 # 浏览器访问 http://localhost:8080
 # .env.development 文件中可配置启动端口等参数
 # 构建生产环境
-# yarn run build
+# pnpm run build
 ```
 
 
@@ -99,10 +96,10 @@ yarn build
 	python3 manage.py init
 7. 初始化省市县数据:
 	python3 manage.py init_area
-8. 启动项目
-	python3 manage.py runserver 0.0.0.0:8000
-或使用 uvicorn :
-  uvicorn application.asgi:application --port 8000 --host 0.0.0.0 --workers 8
+8. 启动项目（使用 uvicorn ASGI）
+	python main.py
+或使用 runserver:
+	python manage.py runserver 0.0.0.0:9000
 ~~~
 
 ## 开发建议

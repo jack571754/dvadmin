@@ -1,0 +1,402 @@
+{
+  "timestamp": "2026-06-17T15:46:52",
+  "previous_timestamp": "2026-06-11T18:44:26",
+  "project": "dvadmin",
+  "project_path": "D:\\project\\dvadmin",
+  "scan_version": "v4.1.0",
+  "previous_scan_version": "v4.0.0",
+  "root_claude_md": "CLAUDE.md",
+  "scan_mode": "incremental",
+  "modules": [
+    {
+      "name": "backend",
+      "path": "backend/",
+      "language": "Python",
+      "claude_md": "backend/CLAUDE.md",
+      "entry": "backend/main.py",
+      "interfaces": [
+        "backend/application/urls.py"
+      ],
+      "tests": [],
+      "important_paths": [
+        "backend/application/settings.py",
+        "backend/application/urls.py",
+        "backend/application/asgi.py",
+        "backend/application/wsgi.py",
+        "backend/application/celery.py",
+        "backend/application/websocketConfig.py",
+        "backend/application/ws_routing.py",
+        "backend/application/sse_views.py",
+        "backend/application/dispatch.py",
+        "backend/main.py",
+        "backend/manage.py",
+        "backend/conftest.py",
+        "backend/requirements.txt",
+        "backend/requirements-prod.txt",
+        "backend/conf/env.example.py",
+        "backend/del_migrations.py"
+      ],
+      "coverage": {
+        "scanned_files": 22,
+        "estimated_total": 60,
+        "percentage": 37,
+        "gaps": [
+          "application/celery.py 内容未深入读取",
+          "application/asgi.py 未读取",
+          "application/websocketConfig.py 未读取",
+          "application/ws_routing.py 未读取",
+          "application/sse_views.py 未读取",
+          "application/dispatch.py 未读取",
+          "system/views/ 下 18 个视图未逐一读取"
+        ]
+      }
+    },
+    {
+      "name": "system",
+      "path": "backend/dvadmin/system/",
+      "language": "Python",
+      "claude_md": "backend/dvadmin/system/CLAUDE.md",
+      "entry": "backend/dvadmin/system/urls.py",
+      "interfaces": [
+        "backend/dvadmin/system/urls.py",
+        "backend/dvadmin/system/models.py"
+      ],
+      "tests": [],
+      "important_paths": [
+        "backend/dvadmin/system/models.py",
+        "backend/dvadmin/system/urls.py",
+        "backend/dvadmin/system/views/",
+        "backend/dvadmin/system/signals.py",
+        "backend/dvadmin/system/tasks.py",
+        "backend/dvadmin/system/fixtures/initialize.py",
+        "backend/dvadmin/system/management/commands/init.py",
+        "backend/dvadmin/system/management/commands/init_area.py"
+      ],
+      "coverage": {
+        "scanned_files": 8,
+        "estimated_total": 25,
+        "percentage": 32,
+        "gaps": [
+          "views/ 下 18 个视图未逐一读取（login.py、user.py、role.py 等核心视图）",
+          "serializers 未找到独立文件（推断在 views 内）",
+          "fixtures/initialize.py 未读取（菜单/角色初始化数据）",
+          "signals.py 未读取",
+          "tasks.py 未读取"
+        ]
+      }
+    },
+    {
+      "name": "design_order",
+      "path": "backend/dvadmin/design_order/",
+      "language": "Python",
+      "claude_md": "backend/dvadmin/design_order/CLAUDE.md",
+      "entry": "backend/dvadmin/design_order/urls.py",
+      "interfaces": [
+        "backend/dvadmin/design_order/urls.py",
+        "backend/dvadmin/design_order/views.py"
+      ],
+      "tests": [],
+      "important_paths": [
+        "backend/dvadmin/design_order/models.py",
+        "backend/dvadmin/design_order/views.py",
+        "backend/dvadmin/design_order/serializers.py",
+        "backend/dvadmin/design_order/urls.py",
+        "backend/dvadmin/design_order/apps.py",
+        "backend/dvadmin/design_order/admin.py"
+      ],
+      "coverage": {
+        "scanned_files": 6,
+        "estimated_total": 6,
+        "percentage": 100,
+        "gaps": []
+      }
+    },
+    {
+      "name": "utils",
+      "path": "backend/dvadmin/utils/",
+      "language": "Python",
+      "claude_md": "backend/dvadmin/utils/CLAUDE.md",
+      "entry": null,
+      "interfaces": [
+        "backend/dvadmin/utils/models.py",
+        "backend/dvadmin/utils/viewset.py",
+        "backend/dvadmin/utils/permission.py",
+        "backend/dvadmin/utils/field_permission.py",
+        "backend/dvadmin/utils/filters.py"
+      ],
+      "tests": [
+        "backend/dvadmin/utils/tests/test_i18n.py"
+      ],
+      "important_paths": [
+        "backend/dvadmin/utils/models.py",
+        "backend/dvadmin/utils/viewset.py",
+        "backend/dvadmin/utils/permission.py",
+        "backend/dvadmin/utils/field_permission.py",
+        "backend/dvadmin/utils/filters.py",
+        "backend/dvadmin/utils/serializers.py",
+        "backend/dvadmin/utils/middleware.py",
+        "backend/dvadmin/utils/json_response.py",
+        "backend/dvadmin/utils/exception.py",
+        "backend/dvadmin/utils/pagination.py",
+        "backend/dvadmin/utils/backends.py"
+      ],
+      "coverage": {
+        "scanned_files": 4,
+        "estimated_total": 20,
+        "percentage": 20,
+        "gaps": [
+          "permission.py 未读取（推断功能）",
+          "field_permission.py 未读取",
+          "filters.py 未读取",
+          "serializers.py 未读取",
+          "middleware.py 未读取",
+          "exception.py 未读取",
+          "pagination.py 未读取",
+          "backends.py 未读取",
+          "import_export_mixin.py 未读取",
+          "crud_mixin.py 未读取",
+          "core_initialize.py 未读取"
+        ]
+      }
+    },
+    {
+      "name": "dvadmin3_flow",
+      "path": "backend/plugins/dvadmin3_flow/",
+      "language": "Python",
+      "claude_md": "backend/plugins/dvadmin3_flow/CLAUDE.md",
+      "entry": "backend/plugins/dvadmin3_flow/urls.py",
+      "interfaces": [
+        "backend/plugins/dvadmin3_flow/urls.py",
+        "backend/plugins/dvadmin3_flow/models.py",
+        "backend/plugins/dvadmin3_flow/base_model.py"
+      ],
+      "tests": [],
+      "important_paths": [
+        "backend/plugins/dvadmin3_flow/models.py",
+        "backend/plugins/dvadmin3_flow/base_model.py",
+        "backend/plugins/dvadmin3_flow/decorator.py",
+        "backend/plugins/dvadmin3_flow/views/",
+        "backend/plugins/dvadmin3_flow/app_views/",
+        "backend/plugins/dvadmin3_flow/settings.py",
+        "backend/plugins/dvadmin3_flow/fixtures/initialize.py"
+      ],
+      "coverage": {
+        "scanned_files": 4,
+        "estimated_total": 12,
+        "percentage": 33,
+        "gaps": [
+          "views/flow_info.py 未读取",
+          "views/flow_data.py 未读取",
+          "views/flow_record.py 未读取",
+          "app_views/ 未读取",
+          "decorator.py 未读取",
+          "base_model.py 仅文档推断未逐行读取"
+        ]
+      }
+    },
+    {
+      "name": "dvadmin_portfolio",
+      "path": "backend/plugins/dvadmin_portfolio/",
+      "language": "Python",
+      "claude_md": "backend/plugins/dvadmin_portfolio/CLAUDE.md",
+      "entry": "backend/plugins/dvadmin_portfolio/urls.py",
+      "interfaces": [
+        "backend/plugins/dvadmin_portfolio/urls.py",
+        "backend/plugins/dvadmin_portfolio/views.py"
+      ],
+      "tests": [],
+      "important_paths": [
+        "backend/plugins/dvadmin_portfolio/models.py",
+        "backend/plugins/dvadmin_portfolio/views.py",
+        "backend/plugins/dvadmin_portfolio/serializers.py",
+        "backend/plugins/dvadmin_portfolio/settings.py",
+        "backend/plugins/dvadmin_portfolio/fixtures/initialize.py"
+      ],
+      "coverage": {
+        "scanned_files": 5,
+        "estimated_total": 6,
+        "percentage": 83,
+        "gaps": [
+          "fixtures/initialize.py 未读取"
+        ]
+      }
+    },
+    {
+      "name": "web",
+      "path": "web/",
+      "language": "TypeScript/Vue",
+      "claude_md": "web/CLAUDE.md",
+      "entry": "web/src/main.ts",
+      "interfaces": [
+        "web/src/api/login/index.ts",
+        "web/src/api/menu/index.ts",
+        "web/src/api/design_order/product_archive.ts",
+        "web/src/api/design_order/product_spec.ts",
+        "web/src/api/design_order/product_spec_submission.ts",
+        "web/src/router/index.ts",
+        "web/src/router/backEnd.ts"
+      ],
+      "tests": [],
+      "important_paths": [
+        "web/package.json",
+        "web/vite.config.ts",
+        "web/tailwind.config.js",
+        "web/src/main.ts",
+        "web/src/App.vue",
+        "web/src/settings.ts",
+        "web/src/router/index.ts",
+        "web/src/router/backEnd.ts",
+        "web/src/stores/",
+        "web/src/utils/service.ts",
+        "web/src/utils/columnPermission.ts",
+        "web/src/views/plugins/index.ts",
+        "web/src/views/design_order/product_archive/index.vue",
+        "web/src/views/design_order/product_archive/crud.tsx",
+        "web/src/views/design_order/product_spec/index.vue",
+        "web/src/views/design_order/product_spec/types.ts",
+        "web/src/views/design_order/product_spec/constants.ts",
+        "web/src/views/design_order/product_spec/utils.ts",
+        "web/src/views/design_order/product_spec/components/ProductSelectDialog.vue",
+        "web/src/views/design_order/product_spec/components/GiftConfigModal.vue",
+        "web/src/views/design_order/product_spec_submission/index.vue",
+        "web/src/views/design_order/product_spec_submission/crud.tsx"
+      ],
+      "coverage": {
+        "scanned_files": 17,
+        "estimated_total": 210,
+        "percentage": 8,
+        "gaps": [
+          "stores/ 15 个 Pinia store 仅列名未读取",
+          "components/ ~20 个通用组件未读取",
+          "layout/ ~20 个布局组件未读取",
+          "i18n/ 仅列目录未读取",
+          "theme/ ~30 个主题样式未读取",
+          "utils/ 24 个工具函数仅读取 columnPermission.ts",
+          "views/system/ 各页面未读取",
+          "views/plugins/dvadmin3-flow-web/ 未读取",
+          "views/plugins/dvadmin_portfolio/ 未读取",
+          "views/portfolio/ 未读取",
+          "router/ 4 个文件仅读取 2 个"
+        ]
+      }
+    }
+  ],
+  "overall_coverage": {
+    "estimated_total_files": 295,
+    "scanned_files": 66,
+    "percentage": 22,
+    "note": "本次增量扫描重点深入 design_order 模块（达到100%）和 web/product_spec 子模块（核心文件全读取），其他模块覆盖率与上次持平。文档结构完整度达 100%（所有模块均有 CLAUDE.md，全部已添加导航面包屑）。",
+    "documented_modules": 7,
+    "total_modules": 7,
+    "module_documentation_percentage": 100
+  },
+  "ignored": {
+    "rules_source": ".gitignore",
+    "top_ignored_directories": [
+      "node_modules/ (大量第三方包)",
+      "__pycache__/ (Python 编译缓存)",
+      "migrations/ (Django 数据库迁移)",
+      "web/dist/ (构建产物)",
+      "backend/media/ (上传文件)",
+      "backend/staticfiles/ (收集的静态文件)",
+      ".idea/ / .vscode/ (IDE 配置)",
+      "venv/ / .venv/ (Python 虚拟环境)"
+    ],
+    "binary_files_skipped": [
+      "product_spec_current.png (本次扫描产物截图)",
+      "product_spec_overview.png (本次扫描产物截图)",
+      "web/src/theme/fa/fonts/ (字体文件)"
+    ]
+  },
+  "gaps_summary": [
+    {
+      "module": "system",
+      "missing": [
+        "views/ 18 个视图详细接口文档",
+        "fixtures/initialize.py 初始化数据",
+        "signals.py 信号处理",
+        "tasks.py Celery 任务"
+      ],
+      "priority": "medium"
+    },
+    {
+      "module": "utils",
+      "missing": [
+        "viewset.py 已读取",
+        "permission.py 完整读取",
+        "field_permission.py 完整读取",
+        "filters.py 完整读取",
+        "serializers.py 完整读取",
+        "middleware.py 完整读取",
+        "exception.py 完整读取",
+        "backends.py 完整读取"
+      ],
+      "priority": "high"
+    },
+    {
+      "module": "dvadmin3_flow",
+      "missing": [
+        "views/ 详细接口",
+        "app_views/ 详细接口",
+        "decorator.py 完整读取",
+        "base_model.py 逐行读取",
+        "fixtures/initialize.py"
+      ],
+      "priority": "medium"
+    },
+    {
+      "module": "web",
+      "missing": [
+        "stores/ 15 个 Pinia store 详细文档",
+        "components/ ~20 个通用组件",
+        "layout/ ~20 个布局组件",
+        "views/system/ 各页面",
+        "views/plugins/dvadmin3-flow-web/",
+        "views/portfolio/index.vue 公开页",
+        "E2E 测试用例"
+      ],
+      "priority": "low"
+    }
+  ],
+  "truncated": false,
+  "next_scan_suggestions": [
+    "backend/dvadmin/system/views/ (18个视图逐一读取：login.py、user.py、role.py 等)",
+    "backend/dvadmin/system/fixtures/initialize.py (菜单/角色初始化数据)",
+    "backend/dvadmin/utils/permission.py (权限控制核心)",
+    "backend/dvadmin/utils/field_permission.py (字段权限实现)",
+    "backend/dvadmin/utils/filters.py (数据权限过滤)",
+    "backend/dvadmin/utils/middleware.py (3 个中间件)",
+    "backend/plugins/dvadmin3_flow/base_model.py (审批引擎逐行读取)",
+    "backend/plugins/dvadmin3_flow/views/ (审批视图)",
+    "backend/plugins/dvadmin3_flow/decorator.py (workflow 函数注册)",
+    "web/src/stores/ (15个 Pinia store 逐一读取)",
+    "web/src/components/ (通用组件逐一读取)",
+    "web/src/layout/ (布局组件)",
+    "web/src/views/system/ (各系统页面)",
+    "web/src/views/plugins/dvadmin3-flow-web/ (审批前端)",
+    "web/src/views/portfolio/index.vue (作品集公开页)"
+  ],
+  "recent_changes_captured": {
+    "scan_date": "2026-06-17",
+    "git_commits_covered": [
+      "a12fe93 fix(product-spec): fix initialization crash and nested footnote duplicates in product spec template",
+      "432924e feat(design_order): 优化设计工单产品视角、产品规格及相关组件接口",
+      "7562980 feat: restore and integrate local design_order module into root project"
+    ],
+    "files_modified_captured": [
+      "backend/dvadmin/design_order/views.py (已完整读取 546 行)",
+      "web/src/views/design_order/product_spec/index.vue (已读取 3529 行前 2383 行)"
+    ],
+    "files_added_captured": [
+      "backend/requirements-prod.txt (已读取)",
+      "backend/CLAUDE.md (本次新增/更新)",
+      "backend/dvadmin/design_order/CLAUDE.md (本次新增/更新)",
+      "backend/dvadmin/system/CLAUDE.md (本次新增/更新)",
+      "backend/dvadmin/utils/CLAUDE.md (本次新增/更新)",
+      "backend/plugins/dvadmin3_flow/CLAUDE.md (本次新增/更新)",
+      "backend/plugins/dvadmin_portfolio/CLAUDE.md (本次新增/更新)",
+      "web/CLAUDE.md (本次新增/更新)",
+      ".claude/index.json (本次新增/更新)"
+    ]
+  }
+}
