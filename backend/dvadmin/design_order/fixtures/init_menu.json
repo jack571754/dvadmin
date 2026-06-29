@@ -1,0 +1,210 @@
+[
+  {
+    "name": "设计工单管理",
+    "name_en": "Design Order",
+    "name_zh_tw": "設計工單管理",
+    "icon": "ele-Menu",
+    "sort": 1,
+    "is_link": false,
+    "is_catalog": true,
+    "web_path": "/design_order",
+    "component": "LAYOUT",
+    "component_name": "layout_router_view",
+    "status": true,
+    "cache": false,
+    "visible": true,
+    "parent": null,
+    "children": [
+      {
+        "name": "产品档案维护",
+        "name_en": "Product Archive",
+        "name_zh_tw": "產品檔案維護",
+        "icon": "ele-Goods",
+        "sort": 1,
+        "is_link": false,
+        "is_catalog": false,
+        "web_path": "product_archive",
+        "component": "design_order/product_archive/index",
+        "component_name": "productArchive",
+        "status": true,
+        "cache": false,
+        "visible": true,
+        "menu_button": [
+          {
+            "name": "查询",
+            "value": "design_order:product_archive:Search",
+            "api": "/api/design_order/product_archives/",
+            "method": 0
+          },
+          {
+            "name": "单例查询",
+            "value": "design_order:product_archive:View",
+            "api": "/api/design_order/product_archives/{id}/",
+            "method": 0
+          },
+          {
+            "name": "新增",
+            "value": "design_order:product_archive:Create",
+            "api": "/api/design_order/product_archives/",
+            "method": 1
+          },
+          {
+            "name": "编辑",
+            "value": "design_order:product_archive:Update",
+            "api": "/api/design_order/product_archives/{id}/",
+            "method": 2
+          },
+          {
+            "name": "删除",
+            "value": "design_order:product_archive:Delete",
+            "api": "/api/design_order/product_archives/{id}/",
+            "method": 3
+          }
+        ]
+      },
+      {
+        "name": "规格书模板管理",
+        "name_en": "Spec Template",
+        "name_zh_tw": "規格書模板管理",
+        "icon": "ele-Document",
+        "sort": 2,
+        "is_link": false,
+        "is_catalog": false,
+        "web_path": "product_spec_template",
+        "component": "design_order/product_spec_template/index",
+        "component_name": "productSpecTemplate",
+        "status": true,
+        "cache": false,
+        "visible": true,
+        "menu_button": [
+          {
+            "name": "查询",
+            "value": "design_order:product_spec_template:Search",
+            "api": "/api/design_order/product_spec_templates/",
+            "method": 0
+          },
+          {
+            "name": "单例查询",
+            "value": "design_order:product_spec_template:View",
+            "api": "/api/design_order/product_spec_templates/{id}/",
+            "method": 0
+          },
+          {
+            "name": "新增",
+            "value": "design_order:product_spec_template:Create",
+            "api": "/api/design_order/product_spec_templates/",
+            "method": 1
+          },
+          {
+            "name": "编辑",
+            "value": "design_order:product_spec_template:Update",
+            "api": "/api/design_order/product_spec_templates/{id}/",
+            "method": 2
+          },
+          {
+            "name": "删除",
+            "value": "design_order:product_spec_template:Delete",
+            "api": "/api/design_order/product_spec_templates/{id}/",
+            "method": 3
+          }
+        ]
+      },
+      {
+        "name": "规格提报历史",
+        "name_en": "Spec Submission",
+        "name_zh_tw": "規格提報歷史",
+        "icon": "ele-Tickets",
+        "sort": 3,
+        "is_link": false,
+        "is_catalog": false,
+        "web_path": "product_spec_submission",
+        "component": "design_order/product_spec_submission/index",
+        "component_name": "productSpecSubmission",
+        "status": true,
+        "cache": false,
+        "visible": true,
+        "menu_button": [
+          {
+            "name": "查询",
+            "value": "design_order:product_spec_submission:Search",
+            "api": "/api/design_order/product_spec_submissions/",
+            "method": 0
+          },
+          {
+            "name": "单例查询",
+            "value": "design_order:product_spec_submission:View",
+            "api": "/api/design_order/product_spec_submissions/{id}/",
+            "method": 0
+          },
+          {
+            "name": "新增",
+            "value": "design_order:product_spec_submission:Create",
+            "api": "/api/design_order/product_spec_submissions/",
+            "method": 1
+          },
+          {
+            "name": "编辑",
+            "value": "design_order:product_spec_submission:Update",
+            "api": "/api/design_order/product_spec_submissions/{id}/",
+            "method": 2
+          },
+          {
+            "name": "删除",
+            "value": "design_order:product_spec_submission:Delete",
+            "api": "/api/design_order/product_spec_submissions/{id}/",
+            "method": 3
+          },
+          {
+            "name": "复用提报",
+            "value": "design_order:product_spec_submission:Copy",
+            "api": "/api/design_order/product_spec_submissions/{id}/copy/",
+            "method": 1
+          }
+        ],
+        "menu_field": [
+          { "field_name": "id", "title": "Id", "model": "ProductSpecSubmission" },
+          { "field_name": "description", "title": "描述", "model": "ProductSpecSubmission" },
+          { "field_name": "creator", "title": "创建人", "model": "ProductSpecSubmission" },
+          { "field_name": "modifier", "title": "修改人", "model": "ProductSpecSubmission" },
+          { "field_name": "dept_belong_id", "title": "数据归属部门", "model": "ProductSpecSubmission" },
+          { "field_name": "update_datetime", "title": "修改时间", "model": "ProductSpecSubmission" },
+          { "field_name": "create_datetime", "title": "创建时间", "model": "ProductSpecSubmission" },
+          { "field_name": "name", "title": "提报名称", "model": "ProductSpecSubmission" },
+          { "field_name": "shop", "title": "提报店铺", "model": "ProductSpecSubmission" },
+          { "field_name": "status", "title": "状态", "model": "ProductSpecSubmission" },
+          { "field_name": "product_count", "title": "产品数量", "model": "ProductSpecSubmission" },
+          { "field_name": "snapshot_data", "title": "快照JSON数据", "model": "ProductSpecSubmission" }
+        ]
+      },
+      {
+        "name": "产品规格对比",
+        "name_en": "Product Spec",
+        "name_zh_tw": "產品規格對比",
+        "icon": "ele-Grid",
+        "sort": 4,
+        "is_link": false,
+        "is_catalog": false,
+        "web_path": "product_spec",
+        "component": "design_order/product_spec/index",
+        "component_name": "productSpec",
+        "status": true,
+        "cache": false,
+        "visible": false,
+        "menu_button": [
+          {
+            "name": "保存规格",
+            "value": "design_order:product_spec:Save",
+            "api": "/api/design_order/product_archives/save_spec/",
+            "method": 1
+          },
+          {
+            "name": "加载规格",
+            "value": "design_order:product_spec:Load",
+            "api": "/api/design_order/product_archives/load_spec/",
+            "method": 0
+          }
+        ]
+      }
+    ]
+  }
+]

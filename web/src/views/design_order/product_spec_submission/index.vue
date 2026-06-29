@@ -19,7 +19,9 @@ onMounted(async () => {
 	const templateStore = useProductSpecTemplateStore();
 	await templateStore.load();
 	// 重新构建 crudOptions（此时 store 已加载，template_type dict 含自定义模板）
-	const refreshedOptions = createCrudOptions({ crudExpose });
+	// 注意：createCrudOptions 返回 { crudOptions: {...} } 包装，handleColumnPermission / resetCrudOptions
+	// 需要内层 CrudOptions（含 columns/request），若传整个包装会导致 request 配置丢失、doRefresh 不发请求
+	const refreshedOptions = createCrudOptions({ crudExpose }).crudOptions;
 	// 设置列权限
 	const newOptions = await handleColumnPermission(GetPermission, refreshedOptions);
 	// 重置crudBinding

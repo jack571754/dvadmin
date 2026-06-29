@@ -24,7 +24,12 @@ function getTemplateTypeDict() {
 
 export const createCrudOptions = function ({ crudExpose }: CreateCrudOptionsProps): CreateCrudOptionsRet {
 	const pageRequest = async (query: UserPageQuery) => {
-		return await api.GetList(query);
+		// 后端 list 返回 CustomPagination 平铺分页结构 {code, data:[...], page, limit, total}
+		// 手动包装为 fast-crud 分页结构；并用局部 transformRes 透传，
+		// 避免被 settings.ts 全局 transformRes（按 res.data/res.page/res.limit 取值）二次错误转换
+		const res: any = await api.GetList(query);
+		const list = Array.isArray(res) ? res : res.data || [];
+		return { records: list, total: res.total ?? list.length, currentPage: res.page ?? 1, pageSize: res.limit ?? 20 };
 	};
 	const editRequest = async ({ form, row }: EditReq) => {
 		form.id = row.id;
@@ -50,6 +55,7 @@ export const createCrudOptions = function ({ crudExpose }: CreateCrudOptionsProp
 		crudOptions: {
 			request: {
 				pageRequest,
+				transformRes: ({ res }: any) => res,
 				addRequest,
 				editRequest,
 				delRequest,
