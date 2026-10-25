@@ -1,0 +1,61 @@
+name: Frontend Quality and Isolated E2E
+
+on:
+  push:
+    branches: [master]
+    paths: ['web/**', 'backend/**', '.github/workflows/playwright-i18n.yml']
+  pull_request:
+    paths: ['web/**', 'backend/**', '.github/workflows/playwright-i18n.yml']
+
+jobs:
+  frontend:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: web
+    env:
+      PYTHONUTF8: '1'
+      TEST_ADMIN_PASSWORD: 'E2eOnly-ChangeMe123!'
+    steps:
+      - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v4
+        with:
+          version: 11.25.0
+      - uses: actions/setup-node@v4
+        with:
+          node-version-file: web/.node-version
+          cache: pnpm
+          cache-dependency-path: web/pnpm-lock.yaml
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Backend dependencies
+        working-directory: backend
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y pkg-config default-libmysqlclient-dev
+          python -m pip install -r requirements.txt
+      - name: Frozen frontend dependencies
+        run: pnpm install --frozen-lockfile --ignore-scripts
+      - name: Lint, scoped types and tooling tests
+        run: |
+          pnpm lint
+          pnpm typecheck
+          pnpm test:unit
+      - name: Browser dependencies
+        run: pnpm exec playwright install chromium --with-deps
+      - name: Production build
+        run: pnpm build
+      - name: Isolated browser and API smoke tests
+        run: pnpm test:e2e
+      - name: Pilot internationalization tests
+        run: pnpm test:i18n tests/i18n/home.spec.ts tests/i18n/user.spec.ts tests/i18n/role.spec.ts
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: frontend-quality
+          path: |
+            web/playwright-report/
+            web/test-results/
+            web/quality-reports/
+          retention-days: 7

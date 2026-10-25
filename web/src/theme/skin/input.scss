@@ -1,0 +1,232 @@
+/* shadcn Form Controls Skin */
+.el-input {
+  --el-input-height: 32px;
+  font-size: 13px;
+
+  &__wrapper {
+    background-color: var(--admin-surface);
+    border: 1px solid var(--admin-input);
+    border-radius: var(--admin-radius-sm, 6px);
+    box-shadow: var(--admin-shadow-xs) !important;
+    padding: 1px 11px;
+    transition: border-color 0.15s ease, box-shadow 0.15s ease;
+
+    &:hover {
+      border-color: var(--admin-border-strong);
+    }
+
+    &.is-focus {
+      border-color: var(--admin-primary) !important;
+      box-shadow: 0 0 0 1px var(--admin-primary) !important;
+    }
+  }
+
+  &__inner {
+    border: none !important;
+    outline: none !important;
+    box-shadow: none !important;
+    background: transparent !important;
+    color: var(--admin-text);
+
+    &:focus,
+    &:focus-visible {
+      border: none !important;
+      outline: none !important;
+      box-shadow: none !important;
+    }
+
+    &::placeholder {
+      color: var(--admin-muted);
+    }
+  }
+
+  &--small {
+    --el-input-height: 28px;
+    font-size: 12px;
+  }
+
+  &--large {
+    --el-input-height: 38px;
+    font-size: 14px;
+  }
+}
+
+.el-textarea {
+  &__inner {
+    background-color: var(--admin-surface);
+    border: 1px solid var(--admin-input);
+    border-radius: var(--admin-radius-sm, 6px);
+    box-shadow: var(--admin-shadow-xs) !important;
+    color: var(--admin-text);
+    padding: 8px 11px;
+    font-size: 13px;
+    outline: none !important;
+    transition: border-color 0.15s ease, box-shadow 0.15s ease;
+
+    &:hover {
+      border-color: var(--admin-border-strong);
+    }
+
+    &:focus,
+    &:focus-visible {
+      border-color: var(--admin-primary) !important;
+      box-shadow: 0 0 0 1px var(--admin-primary) !important;
+      outline: none !important;
+    }
+
+    &::placeholder {
+      color: var(--admin-muted);
+    }
+  }
+}
+
+/* Select Dropdown */
+.el-select {
+  --el-select-input-focus-border-color: var(--admin-primary);
+
+  .el-select__wrapper {
+    background-color: var(--admin-surface);
+    border: 1px solid var(--admin-input);
+    border-radius: var(--admin-radius-sm, 6px);
+    box-shadow: var(--admin-shadow-xs) !important;
+    min-height: 32px;
+    transition: border-color 0.15s ease, box-shadow 0.15s ease;
+
+    &:hover {
+      border-color: var(--admin-border-strong);
+    }
+
+    &.is-focused {
+      border-color: var(--admin-primary) !important;
+      box-shadow: 0 0 0 1px var(--admin-primary) !important;
+      outline: none !important;
+    }
+  }
+
+  .el-select__input {
+    border: none !important;
+    outline: none !important;
+    box-shadow: none !important;
+    background: transparent !important;
+
+    &:focus,
+    &:focus-visible {
+      border: none !important;
+      outline: none !important;
+      box-shadow: none !important;
+    }
+  }
+}
+
+/* Date & Range Picker */
+.el-date-editor {
+  &.el-input__wrapper {
+    background-color: var(--admin-surface);
+    border: 1px solid var(--admin-input);
+    border-radius: var(--admin-radius-sm, 6px);
+    box-shadow: var(--admin-shadow-xs) !important;
+    transition: border-color 0.15s ease, box-shadow 0.15s ease;
+
+    &:hover {
+      border-color: var(--admin-border-strong);
+    }
+
+    &.is-active,
+    &.is-focus {
+      border-color: var(--admin-primary) !important;
+      box-shadow: 0 0 0 1px var(--admin-primary) !important;
+    }
+  }
+
+  .el-range-input {
+    background: transparent !important;
+    border: none !important;
+    outline: none !important;
+    box-shadow: none !important;
+    color: var(--admin-text);
+
+    &:focus,
+    &:focus-visible {
+      border: none !important;
+      outline: none !important;
+      box-shadow: none !important;
+    }
+
+    &::placeholder {
+      color: var(--admin-muted);
+    }
+  }
+
+  .el-range-separator {
+    color: var(--admin-muted);
+  }
+}
+
+/* Input Number */
+.el-input-number {
+  .el-input-number__decrease,
+  .el-input-number__increase {
+    background-color: var(--admin-surface-2);
+    border-color: var(--admin-input);
+    color: var(--admin-muted);
+
+    &:hover:not(.is-disabled) {
+      color: var(--admin-text);
+    }
+  }
+}
+
+/* Checkbox & Radio */
+.el-checkbox {
+  color: var(--admin-text);
+  font-size: 13px;
+
+  &__inner {
+    border-radius: 4px;
+    border-color: var(--admin-border-strong);
+    background-color: var(--admin-surface);
+  }
+
+  &__input.is-checked {
+    .el-checkbox__inner {
+      background-color: var(--admin-primary);
+      border-color: var(--admin-primary);
+    }
+    + .el-checkbox__label {
+      color: var(--admin-text);
+    }
+  }
+}
+
+.el-radio {
+  color: var(--admin-text);
+
+  &__inner {
+    border-color: var(--admin-border-strong);
+    background-color: var(--admin-surface);
+  }
+
+  &__input.is-checked {
+    .el-radio__inner {
+      background-color: var(--admin-primary);
+      border-color: var(--admin-primary);
+    }
+    + .el-radio__label {
+      color: var(--admin-text);
+    }
+  }
+}
+
+/* Switch */
+.el-switch {
+  &.is-checked {
+    .el-switch__core {
+      background-color: var(--admin-primary);
+      border-color: var(--admin-primary);
+    }
+  }
+  .el-switch__core {
+    background-color: var(--admin-surface-2);
+    border-color: var(--admin-border);
+  }
+}

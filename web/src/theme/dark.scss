@@ -1,0 +1,114 @@
+/* 深色模式
+   ---------------------------------------------------------------------------
+   暗色的两半分别由两处负责，本文件只做两边的对接，不再重复定义一套色板：
+
+   - Element Plus 官方暗色变量：`element-plus/theme-chalk/dark/css-vars.css`，
+     在 `main.ts` 中紧跟 `dist/index.css` 引入，选择器是 `html.dark`；
+   - 应用令牌层：`theme/tokens.scss` 里的 `[data-theme='dark'], html.dark`。
+
+   两个标记由 `shared/access/theme.ts` 的 `applyDarkMode()` 同时写入，
+   `themeConfig.isIsDark` 是唯一事实来源（`index.html` 的首帧脚本读的也是它）。
+
+   旧实现里 249 行 / 86 个 !important 中有相当一部分是在替官方暗色主题做它本来
+   就能做好的事，还有一部分是语义倒置的赋值（比如把 `--el-color-white` 改成 #191919，
+   结果正文文字跟着变黑）。这些都已经删掉；保留下来的只有官方主题覆盖不到的、
+   项目自有组件与运行时主题色的部分。完整旧实现见 `dark.legacy.scss`（不参与构建）。
+--------------------------------------------------------------------------- */
+
+html.dark {
+	/* ---- 1. Element Plus 语义变量 → 令牌层 ----
+	   官方暗色给的是 Element 自己的一套灰阶（#141414 / #1d1e1f），和 V2 的
+	   画布 #1b1d24、次级面 #242730 不是一套。统一指到令牌层，第三方组件
+	   才会和应用背景对齐。 */
+	--el-bg-color: var(--admin-surface);
+	--el-bg-color-page: var(--admin-canvas);
+	--el-bg-color-overlay: var(--admin-surface-2);
+	--el-fill-color-blank: var(--admin-surface);
+	--el-fill-color-light: var(--admin-surface-2);
+	--el-fill-color-lighter: var(--admin-surface-2);
+	--el-fill-color: var(--admin-surface-2);
+
+	--el-text-color-primary: var(--admin-text);
+	--el-text-color-regular: var(--admin-text-secondary);
+	--el-text-color-secondary: var(--admin-muted);
+	--el-text-color-placeholder: var(--admin-muted);
+
+	--el-border-color: var(--admin-border-strong);
+	--el-border-color-light: var(--admin-border);
+	--el-border-color-lighter: var(--admin-border);
+	--el-border-color-extra-light: var(--admin-border);
+
+	--el-box-shadow: var(--admin-shadow);
+	--el-box-shadow-light: var(--admin-shadow-sm);
+
+	/* Gradients and configurable shell colors are generated together by applyTheme(). */
+	/* 布局配置抽屉右侧的预览缩略图 */
+	--next-color-seting-main: var(--admin-surface) !important;
+	--next-color-seting-aside: var(--admin-navigation) !important;
+	--next-color-seting-header: var(--admin-border) !important;
+}
+
+/* ---- 4. 官方暗色主题覆盖不到的项目自有部分 ---- */
+
+/* 4.1 横向导航展开的浮层菜单：底色来自 --next-bg-topBar，文字来自 --next-bg-topBarColor，
+       上面已经指到令牌层，这里只补浮层本身没有的描边与阴影。 */
+html.dark .el-popper.is-light {
+	border-color: var(--admin-border);
+	box-shadow: var(--admin-shadow);
+}
+
+/* 4.2 弹窗 / 抽屉：官方暗色只换底色，V2 需要一条极细的描边把浮层从画布里分出来。 */
+html.dark .el-dialog,
+html.dark .el-drawer {
+	border: 1px solid var(--admin-border);
+}
+
+/* 4.3 TagsView：非当前页签保持中性色；当前页签在风格 4 / 5 下是「浅紫底 + 主色字」，
+       dark 里浅紫底已由上面 light-9 的覆盖变成深色，文字也要跟着提亮，
+       否则主色 #625de7 压在深底上对比度不足。风格 1 是「主色底 + 白字」，不受影响。 */
+html.dark .layout-navbars-tagsview .layout-navbars-tagsview-ul-li:hover {
+	color: var(--admin-text) !important;
+}
+html.dark .layout-navbars-tagsview .tags-style-four .is-active,
+html.dark .layout-navbars-tagsview .tags-style-five .is-active {
+	color: var(--admin-accent) !important;
+}
+
+/* 4.4 plain / 文字型主色按钮与链接：文字用的是 --el-color-primary（中间调），
+       plain 的底是上面变深后的 light-9，两者对比度都不够；暗色下改用提亮后的 accent。
+       实心主色按钮不在这里改——它保持主色底 + 白字，提亮反而会压低白字的对比度。 */
+html.dark .el-button--primary.is-plain,
+html.dark .el-button--primary.is-text,
+html.dark .el-button--primary.is-link {
+	--el-button-text-color: var(--admin-accent);
+	--el-button-hover-text-color: var(--admin-accent);
+	--el-button-border-color: var(--admin-border-strong);
+}
+html.dark .el-link--primary {
+	--el-link-text-color: var(--admin-accent);
+	--el-link-hover-text-color: var(--admin-accent);
+}
+
+/* 4.5 加载遮罩：官方暗色用纯黑半透明，压在深色画布上几乎看不出加载范围，
+       改成画布色 + 更高不透明度。 */
+html.dark .el-loading-mask {
+	background-color: color-mix(in srgb, var(--admin-canvas) 82%, transparent);
+}
+
+/* 4.6 「主色当文字色」的那批 Element 组件：官方暗色层不动 --el-color-primary，
+       于是主色 #625de7 直接压在 #1b1d24 上——实测标签页当前项只有 3.4:1，低于 AA。
+       这里的统一处理是改用提亮后的 --admin-accent（同 4.4 的思路）。
+       实心主色底（页码当前项、实心按钮）不在此列，它们有自己的底和字。
+       注意不要用 !important：官方规则特异性都比 `html.dark` 前缀低，正常层叠即可。 */
+html.dark .el-tabs__item.is-active,
+html.dark .el-tabs__item:hover,
+html.dark .el-pager li.is-active,
+html.dark .el-radio__input.is-checked + .el-radio__label,
+html.dark .el-radio__input.is-checked.is-focus + .el-radio__label,
+html.dark .el-checkbox__input.is-checked + .el-checkbox__label,
+html.dark .el-menu-item.is-active,
+html.dark .el-sub-menu.is-active > .el-sub-menu__title,
+html.dark .el-step__title.is-process,
+html.dark .el-step__head.is-process {
+	color: var(--admin-accent);
+}

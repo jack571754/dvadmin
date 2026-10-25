@@ -1,0 +1,140 @@
+/* fast-crud surface layer — V3 shadcn DataTable Skin.
+   Scoped to .fs-crud-container — the root class present on all 28 <fs-crud> instances. */
+.fs-crud-container {
+  --fs-row-height: 48px;
+
+  color: var(--admin-text);
+  font-size: 13px;
+  min-height: 0;
+
+  /* ---- search ---- */
+  .fs-crud-search {
+    padding: 12px 14px 4px;
+    background: var(--admin-surface);
+    border: 1px solid var(--admin-border);
+    border-radius: var(--admin-radius-lg, 10px);
+    margin-bottom: 12px;
+    box-shadow: var(--admin-shadow-xs);
+  }
+
+  .fs-search-form .el-form-item {
+    margin-top: 4px;
+    margin-bottom: 8px;
+  }
+
+  .fs-search-form .el-form-item__label {
+    font-size: 12.5px;
+    color: var(--admin-muted);
+    font-weight: 500;
+  }
+
+  .fs-search-col {
+    min-width: 160px;
+  }
+
+  .fs-search-buttons-group {
+    margin-left: auto;
+  }
+
+  .fs-search-buttons-group .el-button {
+    border-radius: var(--admin-radius-sm, 6px);
+  }
+
+  /* ---- header: actionbar + toolbar ---- */
+  .fs-crud-header {
+    padding: 4px 0 10px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+
+  .fs-actionbar {
+    align-items: center;
+    gap: 8px;
+  }
+
+  .fs-actionbar .el-button {
+    border-radius: var(--admin-radius-sm, 6px);
+    font-size: 13px;
+  }
+
+  .fs-toolbar {
+    gap: 6px;
+  }
+
+  .fs-toolbar .el-button {
+    background: var(--admin-surface);
+    border-color: var(--admin-border);
+    color: var(--admin-muted);
+    border-radius: var(--admin-radius-sm, 6px);
+    width: 32px;
+    height: 32px;
+    padding: 0;
+
+    &:hover {
+      background: var(--admin-hover);
+      border-color: var(--admin-border-strong);
+      color: var(--admin-text);
+    }
+  }
+
+  /* ---- table wrapper & body ---- */
+  .fs-crud-table {
+    --el-table-border-color: var(--admin-border);
+    --el-table-header-bg-color: var(--admin-surface-2);
+    --el-table-row-hover-bg-color: var(--admin-hover);
+    --el-table-bg-color: var(--admin-surface);
+    --el-table-tr-bg-color: var(--admin-surface);
+    border: 1px solid var(--admin-border);
+    border-radius: var(--admin-radius-lg, 10px);
+    overflow: hidden;
+    box-shadow: var(--admin-shadow-xs);
+    font-size: 13px;
+  }
+
+  .fs-crud-table th.el-table__cell {
+    height: 40px;
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--admin-muted);
+    background: var(--admin-surface-2) !important;
+    border-bottom: 1px solid var(--admin-border) !important;
+    border-right: none !important;
+  }
+
+  .fs-crud-table td.el-table__cell {
+    height: var(--fs-row-height);
+    color: var(--admin-text);
+    border-bottom: 1px solid var(--admin-border) !important;
+    border-right: none !important;
+  }
+
+  .fs-crud-table .cell {
+    padding-left: 12px;
+    padding-right: 12px;
+  }
+
+  /* 行内按钮 */
+  .fs-crud-table .el-button.is-text,
+  .fs-crud-table .el-button.is-link {
+    font-size: 12px;
+    padding: 2px 4px;
+    height: auto;
+  }
+
+  /* ---- footer / pagination ---- */
+  .fs-crud-footer {
+    padding: 10px 0 2px;
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+  }
+
+  .fs-crud-pagination {
+    justify-content: flex-end;
+  }
+
+  .fs-crud-pagination .el-pagination {
+    font-weight: 450;
+  }
+}

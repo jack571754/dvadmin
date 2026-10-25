@@ -1,0 +1,5 @@
+/* Approved modern theme preview, 2026-10-25. Runtime palettes: web/src/shared/access/themePresets.ts. */
+[data-palette='mono'] { --primary: #202124; --canvas: #ffffff; --surface: #ffffff; --sidebar: #f7f7f8; --text: #202124; --border: #e8e9ec; }
+[data-palette='slate'] { --primary: #3459cf; --canvas: #ffffff; --surface: #ffffff; --sidebar: #f6f7f9; --text: #22252b; --border: #e6e9ef; }
+[data-palette='sand'] { --primary: #80513c; --canvas: #fcfbf8; --surface: #fdfcfa; --sidebar: #f2f0ea; --text: #2b2925; --border: #e7e3da; }
+[data-palette='carbon'] { --primary: #b2c1ff; --canvas: #191a1d; --surface: #1d1e22; --sidebar: #151619; --text: #ebecef; --border: #2e3037; }

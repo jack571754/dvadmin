@@ -1,0 +1,77 @@
+/* Element Plus CSS Variables Bridge to shadcn Admin Design Tokens */
+:root {
+  --el-color-primary: var(--admin-primary);
+  --el-color-primary-light-3: color-mix(in srgb, var(--admin-primary) 70%, white);
+  --el-color-primary-light-5: color-mix(in srgb, var(--admin-primary) 50%, white);
+  --el-color-primary-light-7: color-mix(in srgb, var(--admin-primary) 30%, white);
+  --el-color-primary-light-8: color-mix(in srgb, var(--admin-primary) 20%, white);
+  --el-color-primary-light-9: color-mix(in srgb, var(--admin-primary) 10%, white);
+  --el-color-primary-dark-2: color-mix(in srgb, var(--admin-primary) 80%, black);
+  --el-color-success: var(--admin-success);
+  --el-color-warning: var(--admin-warning);
+  --el-color-danger: var(--admin-danger);
+
+  /* Element Plus borders & radius */
+  --el-border-color: var(--admin-border);
+  --el-border-color-light: var(--admin-border);
+  --el-border-color-lighter: var(--admin-border);
+  --el-border-color-extra-light: var(--admin-border);
+  --el-border-color-darker: var(--admin-border-strong);
+  --el-border-radius-base: var(--admin-radius-sm);
+  --el-border-radius-small: var(--admin-radius-xs);
+  --el-border-radius-round: var(--admin-radius-full);
+
+  /* Element Plus surfaces */
+  --el-bg-color: var(--admin-canvas);
+  --el-bg-color-overlay: var(--admin-surface);
+  --el-bg-color-page: var(--admin-canvas);
+  --el-fill-color-blank: var(--admin-surface);
+  --el-fill-color: var(--admin-surface-2);
+  --el-fill-color-light: var(--admin-surface-2);
+  --el-fill-color-lighter: var(--admin-surface-2);
+  --el-fill-color-extra-light: var(--admin-surface-2);
+
+  /* Element Plus typography */
+  --el-text-color-primary: var(--admin-text);
+  --el-text-color-regular: var(--admin-text-secondary);
+  --el-text-color-secondary: var(--admin-muted);
+  --el-text-color-placeholder: var(--admin-muted);
+  --el-font-family: inherit;
+
+  /* Form & Table common variables */
+  --el-table-border-color: var(--admin-border);
+  --el-table-header-bg-color: var(--admin-surface-2);
+  --el-table-header-text-color: var(--admin-muted);
+  --el-table-row-hover-bg-color: var(--admin-hover);
+  --el-table-current-row-bg-color: var(--admin-hover);
+  --el-input-border-color: var(--admin-border);
+  --el-input-hover-border-color: var(--admin-border-strong);
+  --el-input-focus-border-color: var(--admin-primary);
+  --el-input-bg-color: var(--admin-surface);
+  --el-card-bg-color: var(--admin-surface);
+  --el-card-border-color: var(--admin-border);
+  --el-dialog-bg-color: var(--admin-surface);
+}
+
+.el-switch {
+  --el-switch-on-color: var(--admin-primary);
+  --el-switch-off-color: var(--admin-border-strong);
+}
+.el-switch.is-checked .el-switch__action {
+  background: var(--admin-primary-foreground);
+}
+.el-checkbox__input.is-checked .el-checkbox__inner::after {
+  border-color: var(--admin-primary-foreground);
+}
+.el-radio__input.is-checked .el-radio__inner::after {
+  background: var(--admin-primary-foreground);
+}
+
+html.dark {
+  --el-color-primary-light-3: color-mix(in srgb, var(--admin-primary) 70%, black);
+  --el-color-primary-light-5: color-mix(in srgb, var(--admin-primary) 50%, black);
+  --el-color-primary-light-7: color-mix(in srgb, var(--admin-primary) 30%, black);
+  --el-color-primary-light-8: color-mix(in srgb, var(--admin-primary) 20%, black);
+  --el-color-primary-light-9: color-mix(in srgb, var(--admin-primary) 10%, black);
+  --el-color-primary-dark-2: color-mix(in srgb, var(--admin-primary) 80%, white);
+}

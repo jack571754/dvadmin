@@ -1,0 +1,92 @@
+/* shadcn Table & Pagination Skin */
+
+.el-table {
+  --el-table-border-color: var(--admin-border);
+  --el-table-header-bg-color: var(--admin-surface-2);
+  --el-table-header-text-color: var(--admin-muted);
+  --el-table-text-color: var(--admin-text);
+  --el-table-row-hover-bg-color: var(--admin-hover);
+  --el-table-current-row-bg-color: var(--admin-hover);
+
+  background-color: transparent !important;
+  font-size: 13px;
+
+  th.el-table__cell {
+    font-weight: 550;
+    font-size: 12px;
+    letter-spacing: 0.02em;
+    padding: 10px 0;
+    border-bottom: 1px solid var(--admin-border) !important;
+  }
+
+  td.el-table__cell {
+    padding: 11px 0;
+    border-bottom: 1px solid var(--admin-border) !important;
+  }
+
+  /* 去除纵向边框，保持干净水平横线 */
+  &--border {
+    border: 1px solid var(--admin-border);
+    border-radius: var(--admin-radius-sm, 6px);
+
+    .el-table__cell {
+      border-right: none !important;
+    }
+  }
+
+  &::before,
+  &::after {
+    display: none !important;
+  }
+}
+
+/* Pagination */
+.el-pagination {
+  gap: 4px;
+  font-size: 12px;
+  color: var(--admin-muted);
+  padding: 12px 0 4px;
+
+  button {
+    background: transparent !important;
+    border: 1px solid var(--admin-border) !important;
+    border-radius: var(--admin-radius-sm, 6px) !important;
+    min-width: 28px;
+    height: 28px;
+    color: var(--admin-muted) !important;
+
+    &:hover:not(:disabled) {
+      background: var(--admin-hover) !important;
+      color: var(--admin-text) !important;
+    }
+
+    &:disabled {
+      opacity: 0.4;
+      cursor: not-allowed;
+    }
+  }
+
+  .el-pager li {
+    background: transparent !important;
+    border: 1px solid transparent !important;
+    border-radius: var(--admin-radius-sm, 6px) !important;
+    min-width: 28px;
+    height: 28px;
+    line-height: 26px;
+    font-size: 12px;
+    color: var(--admin-muted);
+
+    &:hover {
+      background: var(--admin-hover) !important;
+      color: var(--admin-text) !important;
+    }
+
+    &.is-active {
+      background: var(--admin-surface) !important;
+      border-color: var(--admin-border) !important;
+      color: var(--admin-text) !important;
+      font-weight: 600;
+      box-shadow: var(--admin-shadow-xs);
+    }
+  }
+}

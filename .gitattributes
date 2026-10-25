@@ -1,0 +1,8 @@
+*.css linguist-language=Python
+*.less linguist-language=Python
+*.js linguist-language=Python
+*.html linguist-language=Python
+
+# BMAD resources use byte hashes; keep checkout line endings consistent.
+.agents/skills/** text eol=lf
+_bmad/** text eol=lf

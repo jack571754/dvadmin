@@ -1,0 +1,29 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128" width="128" height="128" fill="none">
+  <defs>
+    <linearGradient id="dv-bg" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#18181b" />
+      <stop offset="100%" stop-color="#09090b" />
+    </linearGradient>
+    <linearGradient id="dv-accent" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#4f46e5" />
+      <stop offset="50%" stop-color="#6366f1" />
+      <stop offset="100%" stop-color="#8b5cf6" />
+    </linearGradient>
+    <filter id="dv-shadow" x="-10%" y="-10%" width="120%" height="120%">
+      <feDropShadow dx="0" dy="2" stdDeviation="3" flood-opacity="0.25" flood-color="#000000" />
+    </filter>
+  </defs>
+
+  <!-- Base Badge -->
+  <rect width="128" height="128" rx="28" fill="url(#dv-bg)" />
+  <rect x="1" y="1" width="126" height="126" rx="27" stroke="rgba(255, 255, 255, 0.14)" stroke-width="2" />
+
+  <!-- Monogram D -->
+  <path d="M36 34 H58 C72.5 34 84 45.5 84 60 C84 74.5 72.5 86 58 86 H36 V34 Z M48 46 V74 H58 C65.7 74 72 67.7 72 60 C72 52.3 65.7 46 58 46 H48 Z" fill="#ffffff" filter="url(#dv-shadow)" />
+
+  <!-- Monogram V -->
+  <path d="M72 58 L85.5 89 C86.3 90.8 88.7 90.8 89.5 89 L104 56 C104.6 54.6 103.6 53 102 53 H93.5 C92.5 53 91.6 53.6 91.2 54.5 L84 71 L78.8 59 C78 57.2 76.2 56 74 56 H69 C67.5 56 66.8 57.8 67.8 59 Z" fill="url(#dv-accent)" filter="url(#dv-shadow)" />
+
+  <!-- Subtle Accent Dot -->
+  <circle cx="86" cy="40" r="3.5" fill="#a5b4fc" opacity="0.9" />
+</svg>

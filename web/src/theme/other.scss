@@ -1,0 +1,39 @@
+/* wangeditor 富文本编辑器
+------------------------------- */
+.editor-container {
+	z-index: 10; // 用于 wangeditor 点击全屏时
+	.w-e-toolbar {
+		border: 1px solid var(--el-border-color-light, #ebeef5) !important;
+		border-bottom: 1px solid var(--el-border-color-light, #ebeef5) !important;
+		border-top-left-radius: 3px;
+		border-top-right-radius: 3px;
+		z-index: 2 !important;
+	}
+	.w-e-text-container {
+		border: 1px solid var(--el-border-color-light, #ebeef5) !important;
+		border-top: none !important;
+		border-bottom-left-radius: 3px;
+		border-bottom-right-radius: 3px;
+		z-index: 1 !important;
+	}
+}
+
+/* wangeditor 暗色：官方暗色变量不覆盖这个编辑器，但编辑器自己的一套 CSS 变量可以直接
+   指到令牌层。旧实现用的是 --el-color-white，而它以前被 dark.scss 改成了深色，语义是反的；
+   现在 --el-color-white 保持真正的白色，所以这里必须换成 --admin-surface。 */
+[data-theme='dark'] {
+	// textarea - css vars
+	--w-e-textarea-bg-color: var(--admin-surface) !important;
+	--w-e-textarea-color: var(--admin-text) !important;
+
+	// toolbar - css vars
+	--w-e-toolbar-color: var(--admin-text-secondary) !important;
+	--w-e-toolbar-bg-color: var(--admin-surface) !important;
+	--w-e-toolbar-active-color: var(--admin-text) !important;
+	--w-e-toolbar-active-bg-color: var(--admin-hover) !important;
+	--w-e-toolbar-border-color: var(--admin-border) !important;
+
+	// modal - css vars
+	--w-e-modal-button-bg-color: var(--el-color-primary) !important;
+	--w-e-modal-button-border-color: var(--el-color-primary) !important;
+}

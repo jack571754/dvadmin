@@ -1,0 +1,412 @@
+{
+  "date": "2026-10-24",
+  "build": {
+    "capturedAt": "2026-10-24T15:08:38.346Z",
+    "node": "v24.22.1",
+    "head": "e2e9c789ce7a2c32eab71aa89440049c64dcc41b",
+    "lockfileSha256": "15c9165ebf3de2152eb520c06015a10f65318de7681c1a9f4052ce4eb2475c16",
+    "vueFiles": 135,
+    "crudFiles": 27,
+    "javascript": {
+      "count": 293,
+      "bytes": 10101138,
+      "gzipBytes": 3215968,
+      "largest": [
+        {
+          "file": "index.BTAepRsN.js",
+          "bytes": 2589626,
+          "gzipBytes": 809356
+        },
+        {
+          "file": "jsoneditor.min.CqEJDRp1.js",
+          "bytes": 2091180,
+          "gzipBytes": 576931
+        },
+        {
+          "file": "echarts.DfIOIJIg.js",
+          "bytes": 1042936,
+          "gzipBytes": 346557
+        },
+        {
+          "file": "index-4d97297b.DZ-E7_m5.js",
+          "bytes": 809744,
+          "gzipBytes": 281871
+        },
+        {
+          "file": "uploader-alioss-4003d93a.rV5aaX4w.js",
+          "bytes": 691429,
+          "gzipBytes": 189050
+        },
+        {
+          "file": "index-64865240.D_yxcnLo.js",
+          "bytes": 433970,
+          "gzipBytes": 145784
+        },
+        {
+          "file": "index-61efc2d4.bj5jYk7g.js",
+          "bytes": 269399,
+          "gzipBytes": 80036
+        },
+        {
+          "file": "uploader-s3-77927a69.KN2ka6i2.js",
+          "bytes": 216075,
+          "gzipBytes": 68705
+        },
+        {
+          "file": "index.vue_vue_type_script_setup_true_lang.Bts6W_qE.js",
+          "bytes": 205216,
+          "gzipBytes": 74455
+        },
+        {
+          "file": "uploader-cos-e64b150f.CZdptEYE.js",
+          "bytes": 169572,
+          "gzipBytes": 49798
+        }
+      ]
+    },
+    "note": "All build assets, not first-screen transfer. Browser measurements are attached by the baseline project."
+  },
+  "browser": {
+    "samples": [
+      {
+        "coldMs": 617.7744,
+        "warmMs": 942.8647999999998,
+        "jsTransferBytes": 950389,
+        "jsRequests": 37
+      },
+      {
+        "coldMs": 579.6788999999994,
+        "warmMs": 918.2673000000004,
+        "jsTransferBytes": 950389,
+        "jsRequests": 37
+      },
+      {
+        "coldMs": 659.5634,
+        "warmMs": 923.2359000000006,
+        "jsTransferBytes": 950389,
+        "jsRequests": 37
+      },
+      {
+        "coldMs": 717.4334000000017,
+        "warmMs": 912.1634999999987,
+        "jsTransferBytes": 950389,
+        "jsRequests": 37
+      },
+      {
+        "coldMs": 601.2035999999989,
+        "warmMs": 916.6309000000001,
+        "jsTransferBytes": 950389,
+        "jsRequests": 37
+      },
+      {
+        "coldMs": 588.3703999999998,
+        "warmMs": 396.5475999999999,
+        "jsTransferBytes": 950389,
+        "jsRequests": 37
+      },
+      {
+        "coldMs": 572.9763000000021,
+        "warmMs": 934.9661999999989,
+        "jsTransferBytes": 950389,
+        "jsRequests": 37
+      },
+      {
+        "coldMs": 571.9478000000017,
+        "warmMs": 948.9245999999985,
+        "jsTransferBytes": 950389,
+        "jsRequests": 37
+      },
+      {
+        "coldMs": 562.4804000000004,
+        "warmMs": 917.2911999999997,
+        "jsTransferBytes": 950389,
+        "jsRequests": 37
+      },
+      {
+        "coldMs": 565.6166999999987,
+        "warmMs": 922.3895000000011,
+        "jsTransferBytes": 950389,
+        "jsRequests": 37
+      },
+      {
+        "coldMs": 585.5439000000006,
+        "warmMs": 939.203300000001,
+        "jsTransferBytes": 950389,
+        "jsRequests": 37
+      },
+      {
+        "coldMs": 593.8008999999984,
+        "warmMs": 910.445499999998,
+        "jsTransferBytes": 950389,
+        "jsRequests": 37
+      },
+      {
+        "coldMs": 593.7001000000018,
+        "warmMs": 912.0734999999986,
+        "jsTransferBytes": 950389,
+        "jsRequests": 37
+      },
+      {
+        "coldMs": 581.9463999999934,
+        "warmMs": 927.4337999999989,
+        "jsTransferBytes": 950389,
+        "jsRequests": 37
+      },
+      {
+        "coldMs": 598.2165999999997,
+        "warmMs": 933.5811000000031,
+        "jsTransferBytes": 950389,
+        "jsRequests": 37
+      },
+      {
+        "coldMs": 566.6242999999959,
+        "warmMs": 405.90819999999803,
+        "jsTransferBytes": 950389,
+        "jsRequests": 37
+      },
+      {
+        "coldMs": 587.4233999999997,
+        "warmMs": 933.6169000000009,
+        "jsTransferBytes": 950389,
+        "jsRequests": 37
+      },
+      {
+        "coldMs": 590.2496000000028,
+        "warmMs": 406.58350000000064,
+        "jsTransferBytes": 950389,
+        "jsRequests": 37
+      },
+      {
+        "coldMs": 562.4212999999945,
+        "warmMs": 930.8317999999999,
+        "jsTransferBytes": 950389,
+        "jsRequests": 37
+      },
+      {
+        "coldMs": 585.4498000000021,
+        "warmMs": 389.8130000000019,
+        "jsTransferBytes": 950389,
+        "jsRequests": 37
+      }
+    ],
+    "conditions": {
+      "browser": "147.0.7727.15",
+      "viewport": "1440x900",
+      "mode": "production preview",
+      "network": "loopback, no throttling",
+      "cpu": "host, no throttling",
+      "cold": "fresh browser context per sample",
+      "warm": "hash navigation home -> user in the same context",
+      "metric": "navigation until seeded user row is visible; includes API and automation overhead",
+      "compression": "Vite preview defaults; transfer bytes are not gzip bundle size"
+    },
+    "coldP75Ms": 593.8008999999984,
+    "warmP75Ms": 933.5811000000031
+  },
+  "contracts": [
+    {
+      "username": "e2e_admin",
+      "login": {
+        "code": 2000,
+        "fields": [
+          "username",
+          "name",
+          "userId",
+          "avatar",
+          "user_type",
+          "pwd_change_count",
+          "language",
+          "dept_info",
+          "role_info"
+        ]
+      },
+      "menu": {
+        "code": 2000,
+        "count": 27
+      },
+      "users": {
+        "code": 2000,
+        "page": 1,
+        "limit": 100,
+        "total": 5,
+        "sampleFields": [
+          "id",
+          "modifier_name",
+          "creator_name",
+          "create_datetime",
+          "update_datetime",
+          "dept_name",
+          "role_info",
+          "dept_name_all",
+          "last_login",
+          "is_superuser",
+          "first_name",
+          "last_name",
+          "is_staff",
+          "is_active",
+          "date_joined",
+          "description",
+          "modifier",
+          "dept_belong_id",
+          "username",
+          "email",
+          "mobile",
+          "avatar",
+          "name",
+          "gender",
+          "user_type",
+          "login_error_count",
+          "pwd_change_count",
+          "language",
+          "creator",
+          "current_role",
+          "dept",
+          "groups",
+          "user_permissions",
+          "post",
+          "role",
+          "manage_dept"
+        ]
+      }
+    },
+    {
+      "username": "e2e_reader",
+      "login": {
+        "code": 2000,
+        "fields": [
+          "username",
+          "name",
+          "userId",
+          "avatar",
+          "user_type",
+          "pwd_change_count",
+          "language",
+          "dept_info",
+          "role_info"
+        ]
+      },
+      "menu": {
+        "code": 2000,
+        "count": 2
+      },
+      "users": {
+        "code": 2000,
+        "page": 1,
+        "limit": 100,
+        "total": 5,
+        "sampleFields": [
+          "id",
+          "modifier_name",
+          "creator_name",
+          "create_datetime",
+          "update_datetime",
+          "dept_name",
+          "role_info",
+          "dept_name_all",
+          "last_login",
+          "is_superuser",
+          "first_name",
+          "last_name",
+          "is_staff",
+          "is_active",
+          "date_joined",
+          "description",
+          "modifier",
+          "dept_belong_id",
+          "username",
+          "email",
+          "mobile",
+          "avatar",
+          "name",
+          "gender",
+          "user_type",
+          "login_error_count",
+          "pwd_change_count",
+          "language",
+          "creator",
+          "current_role",
+          "dept",
+          "groups",
+          "user_permissions",
+          "post",
+          "role",
+          "manage_dept"
+        ]
+      }
+    },
+    {
+      "username": "e2e_scoped",
+      "login": {
+        "code": 2000,
+        "fields": [
+          "username",
+          "name",
+          "userId",
+          "avatar",
+          "user_type",
+          "pwd_change_count",
+          "language",
+          "dept_info",
+          "role_info"
+        ]
+      },
+      "menu": {
+        "code": 2000,
+        "count": 2
+      },
+      "users": {
+        "code": 2000,
+        "page": 1,
+        "limit": 100,
+        "total": 2,
+        "sampleFields": [
+          "id",
+          "modifier_name",
+          "creator_name",
+          "create_datetime",
+          "update_datetime",
+          "dept_name",
+          "role_info",
+          "dept_name_all",
+          "last_login",
+          "is_superuser",
+          "first_name",
+          "last_name",
+          "is_staff",
+          "is_active",
+          "date_joined",
+          "description",
+          "modifier",
+          "dept_belong_id",
+          "username",
+          "email",
+          "mobile",
+          "avatar",
+          "name",
+          "gender",
+          "user_type",
+          "login_error_count",
+          "pwd_change_count",
+          "language",
+          "creator",
+          "current_role",
+          "dept",
+          "groups",
+          "user_permissions",
+          "post",
+          "role",
+          "manage_dept"
+        ]
+      }
+    }
+  ],
+  "checks": {
+    "developmentPilot": "8 passed",
+    "productionPilotIncludingBaseline": "6 passed",
+    "toolingUnitTests": "3 passed",
+    "lint": "0 new errors; 514 legacy errors",
+    "scopedTypes": "passed",
+    "legacyTypes": "308 diagnostics; not passed",
+    "remoteCI": "not executed"
+  }
+}

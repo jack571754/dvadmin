@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+      <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, minimum-scale=1, user-scalable=no,viewport-fit=cover" />
+      <title>审批表单</title>
+      <script src="//cdn.kungfumars.com/kfm-code-qr-jump/vue.global.prod.js"></script>
+      <script src="//cdn.kungfumars.com/kfm-code-qr-jump/axios-1.3.6.min.js"></script>
+      <script src="/static/js/xe-utils.js"></script>
+      <script  src="/static/flow_h5/index.umd.js"></script>
+     <script  src="/static/js/vant4.min.js"></script>
+      <link rel="stylesheet" href="/static/css/vant4.css">
+      <link rel="stylesheet" href="/static/flow_h5/style.css">
+      <link rel="stylesheet" href="/static/css/public.css">
+</head>
+<body>
+    <div id="app">
+        <div id="h5preview">
+        <previewer v-if="is_authentication" v-model:form-items="formItems" v-model:form-rules="formRules" @submit-form="submitForm"></previewer>
+            <van-toast v-model:show="showDialog">
+              <template #message>
+                <div>
+                    <van-icon name="success" color="#67C23A" size="28" />
+                    <div style="font-size: 16px">提交成功</div>
+                </div>
+              </template>
+            </van-toast>
+        </div>
+        <div v-else>
+           <div>
+                ${errMsg}
+           </div>
+        </div>
+    </div>
+    <script>
+         const app = Vue.createApp({
+             delimiters: ['${', '}'],
+             data(){
+                 return {
+                     is_authentication:true,
+                     errMsg:'',
+                     formItems:[],
+                    formRules:{},
+                     showDialog:false,
+                 }
+             },
+             methods:{
+                getPageConfig(){
+                    const locat = XEUtils.locat()
+                    const searchQuery = locat.searchQuery
+                    const token = searchQuery.token || null
+                    const flow_info_id = searchQuery.flow_info_id || ''
+                    const domain = `${location.protocol}//${location.hostname}${location.port ? ':' : '/api'}${location.port}`;
+                    axios({
+                    url: `${domain}/api/dvadmin3_flow/app_flow_info/${flow_info_id}/get_formConfig/`,
+                    method: 'get',
+                    headers: {
+                      'Content-Type': 'application/json',
+                        'Authorization': `JWT ${token}`
+                    }
+                  }).then(res => {
+                      const {data} = res
+                       if(data.code===2000){
+                           this.formItems = data.data.formItems
+                       }else if(data.code===401){
+                           this.is_authentication = false
+                           this.errMsg = "未登录,请登录授权~"
+                       }else{
+                           this.is_authentication = false
+                           this.errMsg = data.msg
+                       }
+                  }).catch(err => {
+                      this.is_authentication =false
+                         this.errMsg = "网站错误,请联系网站管理员~"
+                  })
+                },
+                 // 提交
+                 submitForm(value){
+
+                       const locat = XEUtils.locat()
+                    const searchQuery = locat.searchQuery
+                    const token = searchQuery.token || null
+                    const flow_info_id = searchQuery.flow_info_id || ''
+                    const domain = `${location.protocol}//${location.hostname}${location.port ? ':' : '/api'}${location.port}`;
+                    axios({
+                    url: `${domain}/api/dvadmin3_flow/app_flow_data/${flow_info_id}/submit_flow_data/`,
+                    method: 'POST',
+                    data:{
+                     ...value
+                    },
+                    headers: {
+                      'Content-Type': 'application/json',
+                        'Authorization': `JWT ${token}`
+                    }
+                  }).then(res=>{
+                      const {data} = res
+                        if(data.code===2000){
+                            this.showDialog = true
+                            setTimeout(()=>{
+                                 window.location.href = `${domain}/api/dvadmin3_flow/flow_list_page/?token=${token}&tab_index=0`
+                            },1000)
+
+                        }else if(data.code===401){
+                           this.is_authentication = false
+                           this.errMsg = "未登录,请登录授权~"
+                       }else{
+                           this.is_authentication = false
+                           this.errMsg = data.msg
+                       }
+                    })
+                 }
+             },
+             mounted(){
+                this.getPageConfig()
+             },
+         })
+         app.use(vant).use(previewer).mount("#app");
+    </script>
+</body>
+</html>
+
+

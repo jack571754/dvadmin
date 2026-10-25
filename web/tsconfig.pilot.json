@@ -1,0 +1,35 @@
+{
+  "extends": "./tsconfig.refactor.json",
+  "compilerOptions": {
+    "baseUrl": ".",
+    "jsx": "preserve",
+    "paths": {
+      "/@/*": ["src/*"],
+      "@great-dream/*": ["node_modules/@great-dream/*"]
+    }
+  },
+  "include": [
+    "src/App.vue",
+    "src/shared/access/**/*.ts",
+    "src/shared/api/**/*.ts",
+    "src/shared/composables/**/*.ts",
+    "src/shared/ui/StartupError.vue",
+    "src/features/users/**/*.ts",
+    "src/features/users/**/*.vue",
+    "src/features/roles/**/*.ts",
+    "src/stores/btnPermission.ts",
+    "src/stores/dictionary.ts",
+    "src/stores/modules/dept.ts",
+    "src/stores/systemConfig.ts",
+    "src/stores/userInfo.ts",
+    "src/views/system/user/index.vue",
+    "src/views/system/user/crud.tsx",
+    "src/views/system/user/api.ts",
+    "src/views/system/role/index.vue",
+    "src/views/system/role/crud.tsx",
+    "src/views/system/role/api.ts",
+    "src/views/system/role/types.ts",
+    "src/router/index.ts",
+    "src/router/backEnd.ts"
+  ]
+}

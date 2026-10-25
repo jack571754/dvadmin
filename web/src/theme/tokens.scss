@@ -1,0 +1,135 @@
+/* First-frame fallback palettes: Mono light and Carbon dark.
+   Runtime palette source: shared/access/themePresets.ts; see docs/modern-theme-settings.md. */
+:root {
+  /* surfaces */
+  --admin-canvas: #ffffff;
+  --admin-surface: #ffffff;
+  --admin-surface-2: #e9eaed;
+  --admin-sidebar: #f7f7f8;
+  --admin-navigation: #f7f7f8;
+  --admin-hover: #e9eaed;
+
+  /* text */
+  --admin-text: #202124;
+  --admin-text-secondary: #4d5156;
+  --admin-muted: #6b7077;
+
+  /* lines */
+  --admin-border: #e8e9ec;
+  --admin-border-strong: #dadce0;
+  --admin-input: #e8e9ec;
+  --admin-ring: #6b7077;
+  --admin-focus-ring: 0 0 0 2px var(--admin-canvas), 0 0 0 4px var(--admin-ring);
+
+  /* primary / accent */
+  --admin-primary: #202124;
+  --admin-primary-foreground: #ffffff;
+  --admin-accent: var(--el-color-primary, #202124);
+  --admin-accent-soft: var(--el-color-primary-light-9, #e9eaed);
+  --admin-accent-fg: var(--admin-accent);
+  --admin-menu-text: var(--admin-text-secondary);
+  --admin-menu-active: var(--admin-hover);
+  --admin-menu-active-text: var(--admin-accent);
+
+  /* status */
+  --admin-success: #15803d;
+  --admin-success-bg: #f0fdf4;
+  --admin-warning: #92400e;
+  --admin-warning-bg: #fffbeb;
+  --admin-danger: #b91c1c;
+  --admin-danger-bg: #fef2f2;
+  --admin-success-foreground: #ffffff;
+  --admin-warning-foreground: #ffffff;
+  --admin-danger-foreground: #ffffff;
+
+  /* charts */
+  --admin-chart-1: #202124;
+  --admin-chart-2: #6b7077;
+  --admin-chart-3: #a3a3a3;
+  --admin-chart-4: #dadce0;
+  --admin-chart-5: #e8e9ec;
+
+  /* compact modern control and surface radii */
+  --admin-radius-xs: 4px;
+  --admin-radius-sm: 6px;
+  --admin-radius: 6px;
+  --admin-radius-lg: 8px;
+  --admin-radius-xl: 10px;
+  --admin-radius-full: 9999px;
+
+  /* elevation — subtle shadcn restraint */
+  --admin-shadow-xs: 0 1px 2px rgba(0, 0, 0, 0.05);
+  --admin-shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.08), 0 1px 2px -1px rgba(0, 0, 0, 0.08);
+  --admin-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.07), 0 2px 4px -2px rgba(0, 0, 0, 0.07);
+  --admin-shadow-md: 0 8px 20px rgba(0, 0, 0, 0.08);
+  --admin-shadow-lg: 0 20px 25px -5px rgba(0, 0, 0, 0.08), 0 8px 10px -6px rgba(0, 0, 0, 0.08);
+
+  /* type */
+  --admin-font-xs: 11px;
+  --admin-font-sm: 12px;
+  --admin-font: 13px;
+  --admin-font-md: 14px;
+  --admin-font-lg: 16px;
+  --admin-font-xl: 18px;
+  --admin-font-2xl: 24px;
+
+  /* spacing */
+  --admin-space-1: 4px;
+  --admin-space-2: 8px;
+  --admin-space-3: 12px;
+  --admin-space-4: 16px;
+  --admin-space-5: 20px;
+  --admin-space-6: 24px;
+  --admin-space-8: 32px;
+}
+
+[data-theme='dark'],
+html.dark {
+  --admin-canvas: #191a1d;
+  --admin-surface: #1d1e22;
+  --admin-surface-2: #1d1e22;
+  --admin-sidebar: #151619;
+  --admin-navigation: #1d1e22;
+  --admin-hover: #292d39;
+
+  --admin-text: #ebecef;
+  --admin-text-secondary: #b5b8c1;
+  --admin-muted: #979ca8;
+
+  --admin-border: #2e3037;
+  --admin-border-strong: #3b3e47;
+  --admin-input: #3b3e47;
+  --admin-ring: #979ca8;
+  --admin-focus-ring: 0 0 0 2px var(--admin-canvas), 0 0 0 4px var(--admin-ring);
+
+  --admin-primary: #b2c1ff;
+  --admin-primary-foreground: #191a1d;
+  --admin-accent: var(--el-color-primary, #b2c1ff);
+  --admin-accent-soft: #292d39;
+  --admin-accent-fg: var(--admin-accent);
+  --admin-menu-text: var(--admin-text-secondary);
+  --admin-menu-active: var(--admin-hover);
+  --admin-menu-active-text: var(--admin-accent);
+
+  --admin-success: #86efac;
+  --admin-success-bg: #16372a;
+  --admin-warning: #fcd34d;
+  --admin-warning-bg: #40351d;
+  --admin-danger: #fca5a5;
+  --admin-danger-bg: #43242d;
+  --admin-success-foreground: #191a1d;
+  --admin-warning-foreground: #191a1d;
+  --admin-danger-foreground: #191a1d;
+
+  --admin-chart-1: #b2c1ff;
+  --admin-chart-2: #979ca8;
+  --admin-chart-3: #a3a3a3;
+  --admin-chart-4: #525252;
+  --admin-chart-5: #292d39;
+
+  --admin-shadow-xs: 0 1px 2px rgba(0, 0, 0, 0.4);
+  --admin-shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.45), 0 1px 2px -1px rgba(0, 0, 0, 0.45);
+  --admin-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.45);
+  --admin-shadow-md: 0 8px 20px rgba(0, 0, 0, 0.5);
+  --admin-shadow-lg: 0 20px 25px -5px rgba(0, 0, 0, 0.55);
+}

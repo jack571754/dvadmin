@@ -1,0 +1,106 @@
+/* shadcn Tabs & Tags Skin */
+
+/* Tabs */
+.el-tabs {
+  &__header {
+    border-bottom: 1px solid var(--admin-border) !important;
+    margin-bottom: 16px !important;
+  }
+
+  &__nav-wrap::after {
+    display: none !important;
+  }
+
+  &__active-bar {
+    background-color: var(--admin-primary) !important;
+    height: 2px !important;
+    border-radius: 2px;
+  }
+
+  &__item {
+    font-size: 13px !important;
+    color: var(--admin-muted) !important;
+    font-weight: 450;
+    padding: 0 16px !important;
+    height: 38px !important;
+    line-height: 38px !important;
+    transition: color 0.12s ease;
+
+    &:hover {
+      color: var(--admin-text) !important;
+    }
+
+    &.is-active {
+      color: var(--admin-text) !important;
+      font-weight: 600 !important;
+    }
+  }
+
+  /* Segmented pill style tabs (card style override) */
+  &--card > &__header {
+    border: none !important;
+
+    .el-tabs__nav {
+      border: 1px solid var(--admin-border) !important;
+      border-radius: var(--admin-radius-sm, 6px) !important;
+      background: var(--admin-surface-2);
+      padding: 2px;
+      gap: 2px;
+    }
+
+    .el-tabs__item {
+      border: none !important;
+      border-radius: var(--admin-radius-xs, 4px) !important;
+      height: 28px !important;
+      line-height: 28px !important;
+      padding: 0 12px !important;
+
+      &.is-active {
+        background: var(--admin-surface) !important;
+        box-shadow: var(--admin-shadow-xs) !important;
+      }
+    }
+  }
+}
+
+/* Tag / Badge */
+.el-tag {
+  border-radius: var(--admin-radius-xs, 4px);
+  font-size: 11.5px;
+  font-weight: 500;
+  padding: 0 8px;
+  height: 22px;
+  line-height: 20px;
+  border-width: 1px;
+
+  &--info,
+  &:not([class*='el-tag--']) {
+    background-color: var(--admin-surface-2);
+    border-color: var(--admin-border);
+    color: var(--admin-muted);
+  }
+
+  &--success {
+    background-color: var(--admin-success-bg);
+    border-color: color-mix(in srgb, var(--admin-success) 30%, transparent);
+    color: var(--admin-success);
+  }
+
+  &--warning {
+    background-color: var(--admin-warning-bg);
+    border-color: color-mix(in srgb, var(--admin-warning) 30%, transparent);
+    color: var(--admin-warning);
+  }
+
+  &--danger {
+    background-color: var(--admin-danger-bg);
+    border-color: color-mix(in srgb, var(--admin-danger) 30%, transparent);
+    color: var(--admin-danger);
+  }
+
+  &--primary {
+    background-color: var(--admin-surface-2);
+    border-color: var(--admin-border-strong);
+    color: var(--admin-text);
+  }
+}

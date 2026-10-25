@@ -1,0 +1,301 @@
+/* Shared product surfaces — V3 shadcn/ui Inset Dashboard Theme.
+   Design tokens live in tokens.scss; Element variables live in element-vars.scss. */
+
+.layout-modern {
+  background: var(--admin-sidebar) !important;
+  width: 100%;
+  height: 100%;
+
+  /* 侧边栏 Aside */
+  .layout-aside {
+    background: var(--admin-sidebar) !important;
+    border-right: 1px solid var(--admin-border);
+    box-shadow: none;
+    transition: width 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+  }
+
+  .layout-aside-pc-228 {
+    width: 240px !important;
+  }
+
+  .layout-aside-pc-70 {
+    width: 64px !important;
+  }
+
+  /* 侧边栏 Logo */
+  .layout-logo {
+    height: 52px;
+    padding: 0 16px;
+    box-shadow: none;
+    border-bottom: 1px solid var(--admin-border);
+    background: transparent;
+    gap: 8px;
+    justify-content: flex-start;
+
+    &-medium-img {
+      width: 24px;
+      height: 24px;
+      margin: 0;
+    }
+
+    > span {
+      font-size: 14px !important;
+      font-weight: 600;
+      letter-spacing: -0.02em;
+      color: var(--admin-text);
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+  }
+
+  .layout-logo-size {
+    height: 52px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-bottom: 1px solid var(--admin-border);
+
+    &-img {
+      width: 24px;
+      height: 24px;
+    }
+  }
+
+  /* 侧边栏菜单 Navigation */
+  .layout-aside .el-menu {
+    padding: 8px 6px;
+    border: 0;
+    background: transparent !important;
+  }
+
+  .layout-aside .el-menu-item,
+  .layout-aside .el-sub-menu__title {
+    // Legacy menu rules use !important; keep the compact shell height authoritative.
+    height: 36px !important;
+    line-height: 36px !important;
+    border-radius: var(--admin-radius-sm, 6px);
+    margin: 2px 0;
+    padding: 0 10px !important;
+    color: var(--admin-menu-text) !important;
+    font-size: 13px;
+    font-weight: 450;
+    transition: background 0.12s ease, color 0.12s ease;
+
+    .el-icon,
+    .iconfont {
+      font-size: 15px !important;
+      margin-right: 8px;
+      color: inherit;
+      transition: color 0.12s ease;
+    }
+
+    &:hover {
+      background: var(--admin-hover) !important;
+      color: var(--admin-text) !important;
+
+      .el-icon,
+      .iconfont {
+        color: var(--admin-text);
+      }
+    }
+
+    &.is-active {
+      background: var(--admin-menu-active) !important;
+      color: var(--admin-menu-active-text) !important;
+      font-weight: 500;
+
+      .el-icon,
+      .iconfont {
+        color: inherit;
+      }
+    }
+  }
+
+  .layout-aside .el-sub-menu .el-menu {
+    padding: 2px 0 2px 14px;
+  }
+
+  .layout-aside .el-sub-menu .el-menu-item {
+    height: 32px !important;
+    line-height: 32px !important;
+    min-width: 0;
+    font-size: 12.5px;
+  }
+
+  // Collapsed leaf items have a tooltip wrapper; group titles do not.
+  // Center both icon containers instead of mixing their different default paddings.
+  .layout-aside .el-menu--collapse {
+    width: 100% !important;
+
+    > .el-menu-item,
+    > .el-sub-menu > .el-sub-menu__title {
+      padding: 0 !important;
+      justify-content: center;
+    }
+
+    > .el-menu-item > .el-menu-tooltip__trigger {
+      padding: 0;
+      justify-content: center;
+    }
+
+    > .el-menu-item > .el-menu-tooltip__trigger,
+    > .el-sub-menu > .el-sub-menu__title {
+      > .el-icon,
+      > .iconfont,
+      > .fa {
+        margin: 0;
+        flex-shrink: 0;
+      }
+    }
+  }
+
+  /* Continuous work surface; the sidebar divider provides the shell boundary. */
+  .layout-container-view {
+    margin: 0;
+    background: var(--admin-canvas) !important;
+    border: 0;
+    border-radius: 0;
+    box-shadow: none;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    min-width: 0;
+  }
+
+  .layout-header {
+    height: auto !important;
+    padding: 0;
+    background: var(--admin-navigation);
+  }
+
+  .layout-main {
+    background: var(--admin-canvas) !important;
+    padding: 0;
+    min-height: 0;
+  }
+
+  .layout-footer {
+    color: var(--admin-muted);
+    font-size: 11px;
+    border-top: 1px solid var(--admin-border);
+    background: var(--admin-surface);
+    height: 36px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+}
+
+/* 移动端降级处理 (<= 1000px) */
+@media (max-width: 1000px) {
+  .layout-modern {
+    .layout-container-view {
+      margin: 0 !important;
+      border: 0 !important;
+      border-radius: 0 !important;
+      box-shadow: none !important;
+    }
+  }
+}
+
+/* 通用页面与卡片规范 */
+.admin-workspace,
+.admin-users,
+.admin-role {
+  color: var(--admin-text);
+  padding: 20px 24px;
+}
+
+.admin-surface {
+  background: var(--admin-surface);
+  border: 1px solid var(--admin-border);
+  border-radius: var(--admin-radius-lg, 10px);
+  min-width: 0;
+  transition: background 0.15s ease, border-color 0.15s ease;
+}
+
+.layout-modern .el-card {
+  border-color: var(--admin-border);
+  box-shadow: var(--admin-shadow-xs);
+  border-radius: var(--admin-radius-lg, 10px);
+  background: var(--admin-surface);
+}
+
+.layout-modern .el-button {
+  font-weight: 500;
+  border-radius: var(--admin-radius-sm, 6px);
+  transition: all 0.12s ease;
+
+  &:active:not(.is-disabled) {
+    transform: translateY(1px);
+  }
+}
+
+/* 角色抽屉与弹窗样式 */
+.admin-permission-drawer {
+  background: var(--admin-surface);
+  color: var(--admin-text);
+
+  .el-drawer__header {
+    border-bottom: 1px solid var(--admin-border);
+    padding: 16px 20px;
+    margin-bottom: 0;
+  }
+
+  .el-drawer__body {
+    padding: 0;
+    overflow: hidden;
+  }
+
+  .splitpanes__pane {
+    background: var(--admin-surface);
+  }
+
+  .splitpanes__splitter {
+    background: var(--admin-border) !important;
+    width: 1px !important;
+    border: 0 !important;
+  }
+
+  .menu-form-alert {
+    background: var(--admin-surface-2);
+    color: var(--admin-text);
+    border-radius: var(--admin-radius-sm, 6px);
+  }
+}
+
+:where(.admin-workspace, .admin-users, .admin-role, .layout-modern) :is(button, a, [tabindex]):not(
+  .el-button,
+  .el-button *,
+  .el-input,
+  .el-input *,
+  .el-textarea,
+  .el-textarea *,
+  .el-select,
+  .el-select *,
+  .el-range-editor,
+  .el-range-editor *,
+  .el-dropdown,
+  .el-dropdown *,
+  .el-dropdown__popper,
+  .el-dropdown__popper *
+):focus-visible {
+  outline: 2px solid var(--admin-ring);
+  outline-offset: 2px;
+}
+
+@media (max-width: 767px) {
+  .admin-workspace,
+  .admin-users,
+  .admin-role {
+    padding: 14px 12px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .layout-modern * {
+    animation-duration: 0.01ms !important;
+    transition-duration: 0.01ms !important;
+  }
+}

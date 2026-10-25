@@ -1,0 +1,72 @@
+# DVAdmin 后端依赖清单（2026-10-24 校准，与当前运行环境一致）
+# 安装：pip install -r requirements.txt
+# 说明：本文件已按实际运行环境校正；如需完全可复现环境，请使用 requirements-lock.txt
+
+# ===== Web 框架 =====
+Django==5.2.18
+djangorestframework==3.18.2
+djangorestframework-simplejwt==5.5.1
+django-cors-headers==4.7.0
+django-filter==24.2
+drf-yasg==1.21.10
+django-comment-migrate==0.1.7
+django-ranged-response==0.2.0
+django-restql==0.15.4
+django-simple-captcha==0.6.0
+django-import-export==4.4.0
+whitenoise==6.7.0
+
+# ===== ASGI / 部署 =====
+channels==4.1.0
+channels-redis==4.3.0
+uvicorn==0.34.0
+gunicorn==25.1.0
+gevent==25.9.1
+
+# ===== 异步任务 =====
+celery==5.5.3
+django-celery-beat==2.9.0
+django-celery-results==2.6.0
+django-redis==6.0.0
+redis==6.2.0
+django-timezone-field==7.0
+tenant-schemas-celery==3.0.0
+
+# ===== 数据库驱动 =====
+psycopg2-binary==2.9.11
+mysqlclient==2.2.7
+
+# ===== 数据处理与文件 =====
+Pillow==13.0.0
+openpyxl==3.1.5
+pandas==2.3.0
+numpy==2.3.0
+lxml==6.1.0
+pypinyin==0.51.0
+
+# ===== 网络 / 工具 =====
+requests==2.33.0
+PyJWT==2.15.1
+cryptography==50.0.2
+sqlparse==0.6.0
+typing-extensions==4.15.0
+pyparsing==3.1.2
+tzlocal==5.2
+ua-parser==0.18.0
+user-agents==2.2.0
+
+# ===== 对象存储（可选） =====
+oss2==2.19.1
+cos-python-sdk-v5==1.9.41
+
+# ===== 说明 =====
+# 已移除（历史遗留、与本项目无直接依赖）：
+#   dvadmin3-celery      —— 需锁定 django-celery-beat==2.7.0，与 Django 5.2 冲突；
+#                            Celery 配置已由 application/settings.py 手动完成
+#   pyinstaller / Faker  —— 开发工具，见 requirements-dev.txt
+#   six                  —— 未使用
+#   psycopg2             —— 已使用 psycopg2-binary
+#
+# 已知待处理：
+#   dvadmin3-celery 仍被 application/settings.py 第 442 行 import，暂保留于环境中；
+#   待迁移其 CACHES/Celery 配置到项目内后在 P2 阶段移除。

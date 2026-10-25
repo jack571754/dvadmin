@@ -1,0 +1,148 @@
+/* shadcn Button Skin */
+.el-button {
+  font-weight: 500;
+  font-size: 13px;
+  height: 32px;
+  padding: 0 12px;
+  border-radius: var(--admin-radius-sm, 6px);
+  border: 1px solid var(--admin-border);
+  background-color: var(--admin-surface);
+  color: var(--admin-text);
+  box-shadow: var(--admin-shadow-xs);
+  transition: all 0.12s cubic-bezier(0.16, 1, 0.3, 1);
+
+  &:hover {
+    background-color: var(--admin-hover);
+    color: var(--admin-text);
+    border-color: var(--admin-border-strong);
+  }
+
+  &:active:not(.is-disabled) {
+    transform: translateY(1px);
+    box-shadow: none;
+  }
+
+  &:focus-visible {
+    outline: none;
+    box-shadow: var(--admin-focus-ring);
+  }
+
+  /* Primary Button (Near-black in light mode, near-white in dark mode) */
+  &--primary {
+    background-color: var(--admin-primary) !important;
+    border-color: var(--admin-primary) !important;
+    color: var(--admin-primary-foreground) !important;
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.08);
+
+    &:hover {
+      opacity: 0.92;
+      background-color: var(--admin-primary) !important;
+      border-color: var(--admin-primary) !important;
+      color: var(--admin-primary-foreground) !important;
+    }
+
+    &.is-plain {
+      background-color: transparent !important;
+      border-color: var(--admin-border) !important;
+      color: var(--admin-text) !important;
+      box-shadow: var(--admin-shadow-xs);
+
+      &:hover {
+        background-color: var(--admin-hover) !important;
+        border-color: var(--admin-border-strong) !important;
+      }
+    }
+  }
+
+  &--primary.is-text,
+  &--primary.is-link {
+    background-color: transparent !important;
+    border-color: transparent !important;
+    color: var(--admin-accent-fg) !important;
+    box-shadow: none;
+
+    &:hover { background-color: var(--admin-accent-soft) !important; }
+  }
+
+  /* Success Button */
+  &--success {
+    background-color: var(--admin-success) !important;
+    border-color: var(--admin-success) !important;
+    color: var(--admin-success-foreground) !important;
+
+    &.is-plain {
+      background-color: var(--admin-success-bg) !important;
+      border-color: color-mix(in srgb, var(--admin-success) 40%, transparent) !important;
+      color: var(--admin-success) !important;
+
+      &:hover {
+        background-color: color-mix(in srgb, var(--admin-success) 15%, var(--admin-surface)) !important;
+      }
+    }
+  }
+
+  /* Danger Button */
+  &--danger {
+    background-color: var(--admin-danger) !important;
+    border-color: var(--admin-danger) !important;
+    color: var(--admin-danger-foreground) !important;
+
+    &.is-plain {
+      background-color: var(--admin-danger-bg) !important;
+      border-color: color-mix(in srgb, var(--admin-danger) 40%, transparent) !important;
+      color: var(--admin-danger) !important;
+
+      &:hover {
+        background-color: color-mix(in srgb, var(--admin-danger) 15%, var(--admin-surface)) !important;
+      }
+    }
+  }
+
+  &--warning {
+    background-color: var(--admin-warning) !important;
+    border-color: var(--admin-warning) !important;
+    color: var(--admin-warning-foreground) !important;
+    &.is-plain {
+      background-color: var(--admin-warning-bg) !important;
+      color: var(--admin-warning) !important;
+    }
+  }
+
+  /* Small button sizing */
+  &--small {
+    height: 28px;
+    padding: 0 9px;
+    font-size: 12px;
+  }
+
+  /* Large button sizing */
+  &--large {
+    height: 38px;
+    padding: 0 16px;
+    font-size: 14px;
+  }
+
+  /* Text & Link Button (Ghost) */
+  &.is-text,
+  &.is-link {
+    border-color: transparent;
+    background: transparent;
+    box-shadow: none;
+
+    &:hover {
+      background-color: var(--admin-hover);
+    }
+  }
+
+  /* Disabled state */
+  &.is-disabled,
+  &.is-disabled:hover {
+    opacity: 0.5;
+    cursor: not-allowed;
+    background-color: var(--admin-surface-2) !important;
+    border-color: var(--admin-border) !important;
+    color: var(--admin-muted) !important;
+    box-shadow: none;
+    transform: none;
+  }
+}

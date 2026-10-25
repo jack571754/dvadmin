@@ -1,0 +1,270 @@
+/* shadcn Popper, Tooltip, Popover, Dropdown, Dialog, Drawer Skin */
+
+/* Tooltip (Default effect="dark" in Element Plus) */
+.el-popper.is-dark {
+  background: var(--admin-primary) !important;
+  color: var(--admin-primary-foreground) !important;
+  border: 1px solid var(--admin-primary) !important;
+  border-radius: var(--admin-radius-sm, 6px) !important;
+  font-size: 12px !important;
+  font-weight: 500 !important;
+  line-height: 1.25 !important;
+  padding: 5px 9px !important;
+  box-shadow: var(--admin-shadow-sm) !important;
+  z-index: 99999;
+
+  .el-popper__arrow::before {
+    background: var(--admin-primary) !important;
+    border-color: var(--admin-primary) !important;
+  }
+}
+
+/* Tooltip (effect="light") */
+.el-popper.is-light:not(.el-dropdown__popper):not(.el-select__popper):not(.el-popover):not(.el-picker__popper):not(.el-cascader__dropdown):not(:has(.el-menu--popup)):not(:has(.el-menu--popup-container)) {
+  background: var(--admin-surface) !important;
+  color: var(--admin-text) !important;
+  border: 1px solid var(--admin-border) !important;
+  border-radius: var(--admin-radius-sm, 6px) !important;
+  font-size: 12px !important;
+  font-weight: 500 !important;
+  line-height: 1.25 !important;
+  padding: 5px 9px !important;
+  box-shadow: var(--admin-shadow-sm) !important;
+
+  .el-popper__arrow::before {
+    background: var(--admin-surface) !important;
+    border-color: var(--admin-border) !important;
+  }
+}
+
+/* Horizontal & Submenu Popup */
+.el-popper:has(.el-menu--popup),
+.el-popper:has(.el-menu--popup-container) {
+  padding: 4px !important;
+  border-radius: var(--admin-radius, 8px) !important;
+  background: var(--admin-surface) !important;
+  border: 1px solid var(--admin-border) !important;
+  box-shadow: var(--admin-shadow-md) !important;
+
+  .el-popper__arrow::before {
+    background: var(--admin-surface) !important;
+    border-color: var(--admin-border) !important;
+  }
+}
+
+.el-menu--popup {
+  background: transparent !important;
+  padding: 4px 0 !important;
+  border-radius: var(--admin-radius, 8px) !important;
+
+  .el-menu-item,
+  .el-sub-menu__title {
+    height: 36px !important;
+    line-height: 36px !important;
+    padding: 0 14px !important;
+    font-size: 13px !important;
+    color: var(--admin-text) !important;
+    border-radius: var(--admin-radius-sm, 6px) !important;
+    margin: 2px 4px !important;
+    transition: all 0.15s ease !important;
+
+    &:hover {
+      background-color: var(--admin-hover) !important;
+      color: var(--admin-text) !important;
+    }
+
+    &.is-active {
+      background-color: var(--admin-active, rgba(255, 255, 255, 0.08)) !important;
+      color: var(--el-color-primary) !important;
+    }
+  }
+}
+
+/* Popover & Popconfirm */
+.el-popover.el-popper {
+  background: var(--admin-surface) !important;
+  color: var(--admin-text) !important;
+  border: 1px solid var(--admin-border) !important;
+  border-radius: var(--admin-radius, 8px) !important;
+  box-shadow: var(--admin-shadow-md) !important;
+  padding: 12px 14px !important;
+  font-size: 13px !important;
+
+  .el-popper__arrow::before {
+    background: var(--admin-surface) !important;
+    border-color: var(--admin-border) !important;
+  }
+
+  .el-popover__title {
+    color: var(--admin-text) !important;
+    font-weight: 600;
+    font-size: 14px;
+    margin-bottom: 6px;
+  }
+}
+
+/* Dropdown Menu & Select Dropdown Container */
+.el-dropdown__popper.el-popper,
+.el-select__popper.el-popper,
+.el-autocomplete__popper.el-popper,
+.el-picker__popper.el-popper,
+.el-cascader__dropdown.el-popper {
+  background: var(--admin-surface) !important;
+  border: 1px solid var(--admin-border) !important;
+  border-radius: var(--admin-radius, 8px) !important;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08) !important;
+  padding: 4px !important;
+
+  .el-popper__arrow::before {
+    background: var(--admin-surface) !important;
+    border-color: var(--admin-border) !important;
+  }
+}
+
+.el-dropdown-menu,
+.el-select-dropdown {
+  background: transparent !important;
+  border: none !important;
+  padding: 0 !important;
+  box-shadow: none !important;
+
+  .el-dropdown-menu__item,
+  .el-select-dropdown__item {
+    font-size: 13px;
+    height: 32px;
+    line-height: 32px;
+    padding: 0 10px;
+    border-radius: var(--admin-radius-sm, 6px);
+    color: var(--admin-text);
+    margin: 1px 0;
+    transition: background 0.1s ease;
+
+    &:hover,
+    &.is-hovering {
+      background-color: var(--admin-hover) !important;
+      color: var(--admin-text) !important;
+    }
+
+    &.is-selected {
+      background-color: var(--admin-surface-2) !important;
+      color: var(--admin-text) !important;
+      font-weight: 550;
+    }
+
+    &.is-disabled {
+      color: var(--admin-muted) !important;
+      background-color: transparent !important;
+    }
+  }
+
+  .el-dropdown-menu__item--divided {
+    border-top: 1px solid var(--admin-border) !important;
+    margin: 4px 0 !important;
+  }
+}
+
+/* 菜单项在悬浮与键盘聚焦时统一使用背景高亮，不额外绘制焦点边框。 */
+.el-dropdown-menu .el-dropdown-menu__item {
+  &:focus,
+  &:focus-visible {
+    outline: none;
+    outline-offset: 0;
+    box-shadow: none;
+  }
+
+  &:not(.is-disabled):focus {
+    background-color: var(--admin-hover) !important;
+    color: var(--admin-text) !important;
+  }
+}
+
+/* 键盘切换焦点后，停留在旧位置的鼠标不应让另一项同时高亮。 */
+.el-dropdown-menu:focus-within .el-dropdown-menu__item:not(:focus):hover {
+  background-color: transparent !important;
+}
+
+/* Dialog */
+.el-dialog {
+  background: var(--admin-surface) !important;
+  border: 1px solid var(--admin-border);
+  border-radius: var(--admin-radius-lg, 10px) !important;
+  box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04) !important;
+  padding: 0 !important;
+  overflow: hidden;
+
+  &__header {
+    padding: 16px 20px !important;
+    margin-right: 0 !important;
+    border-bottom: 1px solid var(--admin-border);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+
+    .el-dialog__title {
+      font-size: 15px;
+      font-weight: 600;
+      color: var(--admin-text);
+      letter-spacing: -0.01em;
+    }
+
+    .el-dialog__headerbtn {
+      position: static;
+      width: 24px;
+      height: 24px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: var(--admin-muted);
+
+      &:hover {
+        color: var(--admin-text);
+      }
+    }
+  }
+
+  &__body {
+    padding: 20px !important;
+    color: var(--admin-text);
+    font-size: 13px;
+  }
+
+  &__footer {
+    padding: 12px 20px !important;
+    border-top: 1px solid var(--admin-border);
+    background: var(--admin-surface-2);
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    gap: 8px;
+  }
+}
+
+/* Drawer */
+.el-drawer {
+  background: var(--admin-surface) !important;
+  box-shadow: -4px 0 24px rgba(0, 0, 0, 0.1) !important;
+
+  &__header {
+    padding: 16px 20px !important;
+    margin-bottom: 0 !important;
+    border-bottom: 1px solid var(--admin-border);
+    color: var(--admin-text);
+
+    .el-drawer__title {
+      font-size: 15px;
+      font-weight: 600;
+      color: var(--admin-text);
+    }
+  }
+
+  &__body {
+    padding: 20px;
+    color: var(--admin-text);
+  }
+
+  &__footer {
+    padding: 12px 20px;
+    border-top: 1px solid var(--admin-border);
+    background: var(--admin-surface-2);
+  }
+}

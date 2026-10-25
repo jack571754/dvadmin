@@ -1,0 +1,341 @@
+/* 初始化样式
+------------------------------- */
+*,
+*::before,
+*::after {
+	margin: 0;
+	padding: 0;
+	box-sizing: border-box;
+}
+
+:focus-visible {
+	outline: 2px solid var(--admin-accent);
+	outline-offset: 2px;
+}
+
+/* 表单控件内部原生 input/textarea/select 不使用默认外轮廓，由外层包装容器统一承载 focus 状态 */
+.el-input__inner,
+.el-textarea__inner,
+.el-range-input,
+.el-select__input {
+	outline: none !important;
+
+	&:focus,
+	&:focus-visible {
+		outline: none !important;
+	}
+}
+
+:root {
+	/* 旧命名别名：这些名字早于 V2 令牌层，现在全部指向对应的 --admin-* 语义令牌，
+	   避免新旧两套色值各自漂移（旧的 --next-color-primary-lighter 是淡蓝色，
+	   与低饱和紫主色不一致，这是按钮/标签底色看起来不统一的主要原因）。 */
+	--next-color-white: var(--admin-surface);
+	--next-bg-main-color: var(--admin-canvas);
+	--next-bg-color: var(--admin-accent-soft);
+	--next-border-color-light: var(--admin-border);
+	--next-color-primary-lighter: var(--admin-accent-soft);
+	--next-color-success-lighter: var(--admin-success-bg);
+	--next-color-warning-lighter: var(--admin-warning-bg);
+	--next-color-danger-lighter: var(--admin-danger-bg);
+	--next-color-menu-hover: var(--admin-hover);
+	--next-color-user-hover: var(--admin-hover);
+	/* 布局配置抽屉里的预览缩略图配色，由 setings.vue 读取，暗色在 dark.scss 中改写 */
+	--next-color-dark-hover: #0000001a;
+	--next-color-seting-main: #e9eef3;
+	--next-color-seting-aside: #d3dce6;
+	--next-color-seting-header: #b3c0d1;
+}
+
+html,
+body,
+#app {
+	margin: 0;
+	padding: 0;
+	width: 100%;
+	height: 100%;
+	font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'PingFang SC', 'Microsoft YaHei', sans-serif;
+	font-weight: 400;
+	-webkit-font-smoothing: antialiased;
+	-webkit-tap-highlight-color: transparent;
+	background-color: var(--next-bg-main-color);
+	/* html.dark 由 Element Plus 官方暗色层加了 color-scheme: dark，浏览器默认文字色会变成纯白，
+	   于是没显式设色的元素在暗色下会自动反白。这里钉死成语义令牌，两种模式都由令牌决定。 */
+	color: var(--admin-text);
+	font-size: 14px;
+	overflow: hidden;
+	position: relative;
+}
+
+/* 主布局样式
+------------------------------- */
+.layout-container {
+	width: 100%;
+	height: 100%;
+	.layout-pd {
+		padding: 15px !important;
+	}
+	.layout-flex {
+		display: flex;
+		flex-direction: column;
+		flex: 1;
+	}
+	.layout-aside {
+		background: var(--next-bg-menuBar);
+		box-shadow: 2px 0 6px rgb(0 21 41 / 1%);
+		height: inherit;
+		position: relative;
+		z-index: 1;
+		display: flex;
+		flex-direction: column;
+		overflow-x: hidden !important;
+		.el-scrollbar__view {
+			overflow: hidden;
+		}
+	}
+	.layout-header {
+		padding: 0 !important;
+		height: auto !important;
+	}
+	.layout-main {
+		padding: 0 !important;
+		overflow: hidden;
+		width: 100%;
+		background-color: var(--next-bg-main-color);
+		display: flex;
+		flex-direction: column;
+		// 内层 el-scrollbar样式，用于界面高度自适应（main.vue）
+		.layout-main-scroll {
+			@extend .layout-flex;
+			.layout-parent {
+				@extend .layout-flex;
+				position: relative;
+			}
+		}
+	}
+	// 用于界面高度自适应
+	.layout-padding {
+		@extend .layout-pd;
+		position: absolute;
+		left: 0;
+		top: 0;
+		height: 100%;
+		overflow: hidden;
+		@extend .layout-flex;
+		&-auto {
+			height: inherit;
+			@extend .layout-flex;
+		}
+		&-view {
+			background: var(--admin-surface);
+			width: 100%;
+			height: 100%;
+			border-radius: 4px;
+			border: 1px solid var(--admin-border);
+			overflow: hidden;
+		}
+	}
+	// 用于界面高度自适应，主视图区 main 的内边距，用于 iframe
+	.layout-padding-unset {
+		padding: 0 !important;
+		&-view {
+			border-radius: 0 !important;
+			border: none !important;
+		}
+	}
+	// 用于设置 iframe loading 时的高度（loading 垂直居中显示）
+	.layout-iframe {
+		.el-loading-parent--relative {
+			height: 100%;
+		}
+	}
+	.el-scrollbar {
+		width: 100%;
+	}
+	.layout-el-aside-br-color {
+		border-right: 1px solid var(--admin-border);
+	}
+	// pc端左侧导航样式（V2：展开 228px / 收起 70px）
+	.layout-aside-pc-228 {
+		width: 228px !important;
+		transition: width 0.3s ease;
+	}
+	.layout-aside-pc-70 {
+		width: 70px !important;
+		transition: width 0.3s ease;
+	}
+	// 手机端左侧导航样式
+	.layout-aside-mobile {
+		position: fixed;
+		top: 0;
+		left: -228px;
+		width: 228px;
+		z-index: 9999999;
+	}
+	.layout-aside-mobile-close {
+		left: -228px;
+		transition: all 0.3s cubic-bezier(0.39, 0.58, 0.57, 1);
+	}
+	.layout-aside-mobile-open {
+		left: 0;
+		transition: all 0.3s cubic-bezier(0.22, 0.61, 0.36, 1);
+	}
+	.layout-aside-mobile-mode {
+		position: fixed;
+		top: 0;
+		right: 0;
+		bottom: 0;
+		left: 0;
+		height: 100%;
+		background-color: rgba(0, 0, 0, 0.5);
+		z-index: 9999998;
+		animation: error-img 0.3s;
+	}
+	.layout-mian-height-50 {
+		height: calc(100vh - 50px);
+	}
+	.layout-hide {
+		display: none;
+	}
+}
+
+/* element plus 全局样式
+------------------------------- */
+.layout-breadcrumb-seting {
+	.el-divider {
+		background-color: rgb(230, 230, 230);
+	}
+}
+
+/* nprogress 进度条跟随主题颜色
+------------------------------- */
+#nprogress {
+	.bar {
+		background: var(--el-color-primary) !important;
+		z-index: 9999999 !important;
+	}
+}
+
+/* flex 弹性布局
+------------------------------- */
+.flex {
+	display: flex;
+}
+.flex-auto {
+	flex: 1;
+	overflow: hidden;
+}
+.flex-center {
+	@extend .flex;
+	flex-direction: column;
+	width: 100%;
+	overflow: hidden;
+}
+.flex-margin {
+	margin: auto;
+}
+.flex-warp {
+	display: flex;
+	flex-wrap: wrap;
+	align-content: flex-start;
+	margin: 0 -5px;
+	.flex-warp-item {
+		padding: 5px;
+		.flex-warp-item-box {
+			width: 100%;
+			height: 100%;
+		}
+	}
+}
+
+/* cursor 鼠标形状
+------------------------------- */
+// 默认
+.cursor-default {
+	cursor: default !important;
+}
+// 帮助
+.cursor-help {
+	cursor: help !important;
+}
+// 手指
+.cursor-pointer {
+	cursor: pointer !important;
+}
+// 移动
+.cursor-move {
+	cursor: move !important;
+}
+
+/* 宽高 100%
+------------------------------- */
+.w100 {
+	width: 100% !important;
+}
+.h100 {
+	height: 100% !important;
+}
+.vh100 {
+	height: 100vh !important;
+}
+.max100vh {
+	max-height: 100vh !important;
+}
+.min100vh {
+	min-height: 100vh !important;
+}
+
+/* 颜色值
+------------------------------- */
+.color-primary {
+	color: var(--el-color-primary);
+}
+.color-success {
+	color: var(--el-color-success);
+}
+.color-warning {
+	color: var(--el-color-warning);
+}
+.color-danger {
+	color: var(--el-color-danger);
+}
+.color-info {
+	color: var(--el-color-info);
+}
+
+/* 字体大小全局样式
+------------------------------- */
+@for $i from 10 through 32 {
+	.font#{$i} {
+		font-size: #{$i}px !important;
+	}
+}
+
+/* 外边距、内边距全局样式
+------------------------------- */
+@for $i from 1 through 35 {
+	.mt#{$i} {
+		margin-top: #{$i}px !important;
+	}
+	.mr#{$i} {
+		margin-right: #{$i}px !important;
+	}
+	.mb#{$i} {
+		margin-bottom: #{$i}px !important;
+	}
+	.ml#{$i} {
+		margin-left: #{$i}px !important;
+	}
+	.pt#{$i} {
+		padding-top: #{$i}px !important;
+	}
+	.pr#{$i} {
+		padding-right: #{$i}px !important;
+	}
+	.pb#{$i} {
+		padding-bottom: #{$i}px !important;
+	}
+	.pl#{$i} {
+		padding-left: #{$i}px !important;
+	}
+}
