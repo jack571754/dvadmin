@@ -31,6 +31,7 @@ import StartupError from '/@/shared/ui/StartupError.vue';
 import { migrateThemeVersion, migrateThemeConfig } from './shared/access/preferences';
 import { applyTheme } from './shared/access/theme';
 import { staticRoutes } from './router/route';
+import { SystemConfigStore } from './stores/systemConfig';
 
 // 引入组件
 const LockScreen = defineAsyncComponent(() => import('/@/layout/lockScreen/index.vue'));
@@ -43,10 +44,12 @@ import { useCore } from '/@/utils/cores';
 const { messages, locale } = useI18n();
 const setingsRef = ref();
 const route = useRoute();
-const isStaticPage = computed(() => staticRoutes.some(record => record.path === route.path));
+const isStaticPage = computed(() => route.matched.some(record => staticRoutes.some(page => page.name === record.name)));
 const stores = useTagsViewRoutes();
 const storesThemeConfig = useThemeConfig();
 const { themeConfig } = storeToRefs(storesThemeConfig);
+const systemConfigStore = SystemConfigStore();
+watch(() => systemConfigStore.systemConfig['login.site_logo'], () => other.useFavicon(), { immediate: true });
 // Resolve preferences before rendering children; stale cssText never overrides a new palette.
 migrateThemeVersion(window.localStorage, '1.0.0');
 const storedThemeConfig = migrateThemeConfig(window.localStorage, themeConfig.value);
@@ -95,8 +98,6 @@ onMounted(() => {
 		if (Session.get('isTagsViewCurrenFull')) {
 			stores.setCurrenFullscreen(Session.get('isTagsViewCurrenFull'));
 		}
-		// 初始化 favicon 一次，避免每次切路由时以时间戳重刷
-		other.useFavicon();
 	});
 });
 // 监听路由的变化，设置网站标题

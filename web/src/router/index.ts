@@ -146,7 +146,10 @@ router.beforeEach(async (to, from, next) => {
     if (to.meta.title) NProgress.start();
     const token = Session.get('token');
     const whitelist = ['/login'];
-    if (whitelist.includes(to.path) && !token) {
+    if (to.meta.allowAnonymous) {
+        next();
+        NProgress.done();
+    } else if (whitelist.includes(to.path) && !token) {
         next();
         NProgress.done();
     } else {

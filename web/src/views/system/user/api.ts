@@ -70,3 +70,18 @@ export function resetToDefaultPassword(id:any){
         method: 'put'
     })
 }
+
+export function GetPlatformPermissions(id: number) {
+    return request({
+        url: `${apiPrefix}${id}/platform_permissions/`,
+        method: 'get',
+    });
+}
+
+export function UpdatePlatformPermissions(id: number, permissions: Array<{ platform: string; scope: string }>) {
+    return request({
+        url: `${apiPrefix}${id}/update_platform_permissions/`,
+        method: 'put',
+        data: { permissions },
+    });
+}

@@ -26,16 +26,11 @@
 							class="ml5 layout-navbars-tagsview-ul-li-refresh"
 							@click.stop="refreshCurrentTagsView($route.fullPath)"
 						/>
-						<SvgIcon
-							name="ele-Close"
-							class="layout-navbars-tagsview-ul-li-icon layout-icon-active"
-							v-if="!v.meta.isAffix"
-							@click.stop="closeCurrentTagsView(getThemeConfig.isShareTagsView ? v.path : v.url)"
-						/>
 					</template>
 					<SvgIcon
 						name="ele-Close"
-						class="layout-navbars-tagsview-ul-li-icon layout-icon-three"
+						class="layout-navbars-tagsview-ul-li-icon"
+						:class="isActive(v) && !['tags-style-four', 'tags-style-five'].includes(setTagsStyle) ? 'layout-icon-active' : 'layout-icon-three'"
 						v-if="!v.meta.isAffix"
 						@click.stop="closeCurrentTagsView(getThemeConfig.isShareTagsView ? v.path : v.url)"
 					/>

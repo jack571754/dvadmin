@@ -7,6 +7,7 @@ export type UserStatusMutation = ReturnType<typeof useRowMutation>;
 
 /** Everything the user CRUD table needs from the page; required so the table cannot silently bypass it. */
 export interface UserPageContext {
+  openPlatformPermissions: (row: any) => void;
   listRequest: (query: PageQuery) => Promise<unknown>;
   i18n: { t: (key: string) => string };
   statusMutation: UserStatusMutation;

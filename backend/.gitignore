@@ -99,3 +99,6 @@ __pypackages__/
 package-lock.json
 gunicorn.pid
 !plugins/__init__.py
+
+# 保留设计工单既有数据库的完整迁移历史。
+!dvadmin/design_order/migrations/*.py

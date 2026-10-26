@@ -64,6 +64,10 @@ SQLite 下另有 WAL + `busy_timeout` 调优（`settings.py:119-128`）。
 **`/healthz` 和 `/readiness` 不在 urls.py**，由 `dvadmin/utils/middleware.py:105-157` 的
 `HealthCheckMiddleware` 拦截（必须排在 MIDDLEWARE 第一位）。
 
+## 设计工单恢复接入
+
+`dvadmin.design_order` 已注册，接口前缀 `/api/design_order/`，恢复来源为 `d4e92e74606fb69ae9d268b5207fdf8d489c4341`。完整保留 0001–0025 迁移与平台权限过滤。`seed_design_order_support` 仅幂等补种三组店铺字典和两个平台授权按钮，不授予角色新权限。外部 Icon 存储通过 `ICON_MINIO_*`、源库通过 `DS_ALL_DB_*` 环境变量配置；缺失时相关操作明确报错。业务库不得运行 `init` 或测试。
+
 ## 中间件
 
 `settings.py:70-83` 中有三个项目自有中间件：

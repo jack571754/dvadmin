@@ -47,6 +47,7 @@
       </el-col>
     </el-row>
 
+    <PlatformPermissionDialog ref="platformDialog" />
   </fs-page>
 </template>
 
@@ -63,6 +64,21 @@ import {getBaseURL} from '/@/utils/baseUrl';
 import { i18n } from '/@/i18n/index';
 import { useThemeConfig } from '/@/stores/themeConfig';
 import { storeToRefs } from 'pinia';
+import { useI18n } from 'vue-i18n';
+import PlatformPermissionDialog from './components/PlatformPermissionDialog.vue';
+import type { UserPageContext } from './context';
+import { useRowMutation } from '/@/shared/composables/rowMutation';
+import { createUserFormSession } from '/@/features/users/formSession';
+import { prepareUserPayload } from '/@/features/users/payload';
+import { deriveUserFormKeys } from '/@/features/users/formKeys';
+import { normalizeFieldPolicy, applyFieldPolicy, type FieldPolicy } from '/@/shared/api/fieldPolicy';
+import { auth } from '/@/utils/authFunction';
+import { captureSession } from '/@/shared/access/sessionEvents';
+const { t } = useI18n();
+const platformDialog = ref<InstanceType<typeof PlatformPermissionDialog>>();
+const fieldPolicy = ref<FieldPolicy>({});
+const formSession = createUserFormSession(() => '保存用户失败');
+
 
 const { themeConfig } = storeToRefs(useThemeConfig());
 
@@ -122,7 +138,33 @@ const crudBinding = ref();
 // 暴露的方法
 const {crudExpose} = useExpose({crudRef, crudBinding});
 // 你的crud配置
-const {crudOptions} = createCrudOptions({crudExpose, context: {} as any});
+const userContext: UserPageContext = {
+  i18n: { t }, statusMutation: useRowMutation(), formSession,
+  listRequest: query => api.GetList(query),
+  openPlatformPermissions: row => { void platformDialog.value?.open(row); },
+  onExportTask: () => {}, startForm: () => formSession.clear(),
+  focusFormError: () => {},
+  assertFormAccess: mode => {
+    if (!auth(mode === 'add' ? 'user:Create' : 'user:Update')) throw new Error('用户权限已变更');
+  },
+  canUpdateField: key => fieldPolicy.value[key]?.is_update !== false,
+  statusPayload: row => ({ id: row.id, is_active: row.is_active }),
+  openUserForm: async (mode, row, index) => {
+    userContext.assertFormAccess(mode);
+    if (mode === 'add') await crudExpose.openAdd({});
+    else await crudExpose.openEdit({ row, index });
+  },
+  submitUser: async (mode, form, id) => {
+    userContext.assertFormAccess(mode);
+    const assertCurrent = captureSession();
+    const permission = await api.GetPermission();
+    assertCurrent(); userContext.assertFormAccess(mode);
+    fieldPolicy.value = normalizeFieldPolicy(permission.data);
+    const payload = prepareUserPayload(form, mode, fieldPolicy.value, deriveUserFormKeys(crudOptions.columns as Record<string, any>), id);
+    return mode === 'add' ? api.AddObj(payload as any) : api.UpdateObj(payload as any);
+  },
+};
+const {crudOptions} = createCrudOptions({crudExpose, context: userContext});
 // 初始化crud配置
 const {resetCrudOptions} = useCrud({crudExpose, crudOptions});
 
@@ -135,9 +177,12 @@ watch(
 );
 
 // 页面打开后获取列表数据
-onMounted(() => {
+onMounted(async () => {
   getData();
-  crudExpose.doRefresh();
+  const permission = await api.GetPermission();
+  fieldPolicy.value = normalizeFieldPolicy(permission.data);
+  resetCrudOptions({ ...crudOptions, columns: applyFieldPolicy(crudOptions.columns as Record<string, any>, fieldPolicy.value) as any });
+  await crudExpose.doRefresh();
 });
 </script>
 

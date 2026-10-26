@@ -26,6 +26,7 @@
 
 DVAdmin 是基于 RBAC 的 Django + Vue 3 前后端分离后台框架。当前仓库保留：
 
+- **设计工单**：已从固定来源 `d4e92e74606fb69ae9d268b5207fdf8d489c4341` 恢复产品档案、店铺、规格提报/编辑器、模板和 Icon 库；后端 `backend/dvadmin/design_order/`、前端 `web/src/views/design_order/`，保留新版登录、主题和会话初始化。
 - **系统管理**：用户、角色、菜单/按钮/字段权限、部门、字典、地区、文件、下载中心、操作日志、登录日志、消息中心、系统配置、接口白名单。
 - **工作流审批插件**：`backend/plugins/dvadmin3_flow/`，后端路由前缀为 `/api/dvadmin3_flow/`，前端页面位于 `web/src/views/plugins/dvadmin3-flow-web/`。
 - **Celery 任务管理**：前端页面位于 `web/src/views/celery/`；后端 Celery 配置位于 `backend/application/settings.py`，`dvadmin3_celery` 由该文件导入（见“已知限制”）。
@@ -35,7 +36,7 @@ DVAdmin 是基于 RBAC 的 Django + Vue 3 前后端分离后台框架。当前�
 以下模块/目录在当前仓库中**不存在**，不应再作为现存功能引用：
 
 - `django-vue3-admin-master/` 子目录、`dvadmin_approval/`、`backend/dvadmin/book/`、`backend/dvadmin/blog/`、`backend/docs_architecture/`。
-- 设计工单、产品档案/规格、作品集、测试应用、博客、图书等定制业务模块（以 `README.zh.md`、`docs/dvadmin-core-ui-plan.md` 和 git 历史为准）。
+- 作品集、测试应用、博客、图书等定制业务模块（以 `README.zh.md`、`docs/dvadmin-core-ui-plan.md` 和 git 历史为准）。
 
 ---
 

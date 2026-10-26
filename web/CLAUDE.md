@@ -41,6 +41,10 @@ pnpm build                         # 生产构建
 `App.vue` 负责启动期偏好迁移与主题恢复，渲染子组件前从配置调用 `applyTheme()` 生成完整色板；不再恢复旧 `themeConfigStyle`。四套方案及验证说明见 [modern-theme-settings.md](../docs/modern-theme-settings.md)。
 **首帧暗色**由 `index.html` 内联脚本设置，新安装默认深灰，已有偏好由迁移器保留。
 
+## 设计工单恢复接入
+
+业务页面位于 `src/views/design_order/`，请求位于 `src/api/design_order/`。Univer 的七个直接依赖固定为 0.25.1；规格书编辑器使用隐藏路由 `/product_spec`，匿名分享使用 `/share/product-spec/:shareCode`。恢复保留现有登录、主题、会话 bootstrap 和公共请求。隔离浏览器验证见 `tests/smoke/design-order.spec.ts`，来源规格书单测可运行 `node --test tests/product-spec-*.test.mjs`。
+
 ## 路由：后端菜单驱动
 
 `src/router/`：

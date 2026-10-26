@@ -19,6 +19,7 @@ from dvadmin.system.models import (
 assert Path(connection.settings_dict["NAME"]).resolve() == (backend / ".e2e/db.sqlite3").resolve()
 call_command("migrate", interactive=False, run_syncdb=True, verbosity=0, skip_checks=True)
 call_command("init", verbosity=0)
+call_command("seed_design_order_support", verbosity=0)
 
 with transaction.atomic():
     # The installed Celery fixture and local wrappers share routes; retain one

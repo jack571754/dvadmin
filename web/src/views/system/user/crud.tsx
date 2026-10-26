@@ -168,6 +168,11 @@ export const createCrudOptions = function ({ crudExpose, context }: CreateCrudOp
                             () => confirm(t('message.pages.user.dialog.deleteConfirm'), t('message.pages.user.buttons.delete')),
                             async () => { await api.DelObj(row.id); successMessage(t('message.pages.user.messages.deleteSuccess')); await crudExpose.doRefresh(); }),
                     },
+                    platformPermission: {
+                        text: "平台权限", type: "text", iconRight: "Key",
+                        show: computed(() => auth("user:PlatformPermission")),
+                        click: ({ row }) => page.openPlatformPermissions(row),
+                    },
                     resetDefaultPwd: {
                         text: t('message.pages.user.buttons.resetPassword'),
                         type: 'text',
