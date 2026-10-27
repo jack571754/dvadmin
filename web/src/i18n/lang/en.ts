@@ -8,7 +8,7 @@ export default {
       quickNavigationTool: 'Quick Navigation Tools',
     },
     footer: {
-      copyright: ' ❤️❤️',
+      copyright: ' ❤️ Powered by DVAdmin Copyright © DVAdmin Team ❤️',
     },
     router: {
       home: 'Home',
