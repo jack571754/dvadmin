@@ -72,6 +72,7 @@ import { createUserFormSession } from '/@/features/users/formSession';
 import { prepareUserPayload } from '/@/features/users/payload';
 import { deriveUserFormKeys } from '/@/features/users/formKeys';
 import { normalizeFieldPolicy, applyFieldPolicy, type FieldPolicy } from '/@/shared/api/fieldPolicy';
+import { focusFirstError } from '/@/shared/ui/formFocus';
 import { auth } from '/@/utils/authFunction';
 import { captureSession } from '/@/shared/access/sessionEvents';
 const { t } = useI18n();
@@ -143,7 +144,10 @@ const userContext: UserPageContext = {
   listRequest: query => api.GetList(query),
   openPlatformPermissions: row => { void platformDialog.value?.open(row); },
   onExportTask: () => {}, startForm: () => formSession.clear(),
-  focusFormError: () => {},
+  // 提交失败后把用户带到第一个出错字段；首字段名由 formSession 算好
+  focusFormError: (field?: string) => {
+    void focusFirstError(crudExpose.getFormRef()?.formRef, field);
+  },
   assertFormAccess: mode => {
     if (!auth(mode === 'add' ? 'user:Create' : 'user:Update')) throw new Error('用户权限已变更');
   },

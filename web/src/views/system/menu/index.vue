@@ -45,7 +45,7 @@
 					<span>{{ $t('message.pages.menu.dialog.menuConfig') }}</span>
 					<div>
 						<el-button @click="handleDrawerClose" size="small">{{ $t('message.pages.menu.buttons.cancel') }}</el-button>
-						<el-button type="primary" @click="handleSaveMenu" size="small" :loading="menuBtnLoading">{{ $t('message.pages.menu.buttons.save') }}</el-button>
+						<el-button type="primary" @click="handleSaveMenu" size="small" :loading="menuFormComRef?.menuBtnLoading">{{ $t('message.pages.menu.buttons.save') }}</el-button>
 					</div>
 				</div>
 			</template>
@@ -65,7 +65,8 @@
 <script lang="ts" setup name="menuPages">
 import { ref, onMounted, nextTick } from 'vue';
 import XEUtils from 'xe-utils';
-import { ElMessageBox, ElMessage } from 'element-plus';
+import { ElMessage } from 'element-plus';
+import { confirmDelete } from '/@/shared/ui/confirm';
 import MenuTreeCom from './components/MenuTreeCom/index.vue';
 import MenuButtonCom from './components/MenuButtonCom/index.vue';
 import MenuFormCom from './components/MenuFormCom/index.vue';
@@ -73,7 +74,6 @@ import MenuFieldCom from './components/MenuFieldCom/index.vue';
 import ScanModal from './components/ScanModal/index.vue';
 import { GetList, DelObj } from './api';
 import { successNotification } from '/@/utils/message';
-import { i18n } from '/@/i18n/index';
 import { APIResponseData, MenuTreeItemType } from './types';
 
 let menuTreeData = ref([]);
@@ -87,7 +87,6 @@ let selectedMenuId = ref<number | null>(null);
 let scanModalVisible = ref(false);
 let scanModalRef = ref<any>(null);
 let menuFormComRef = ref<InstanceType<typeof MenuFormCom> | null>(null);
-let menuBtnLoading = ref(false);
 const getData = () => {
 	GetList({}).then((ret: APIResponseData) => {
 		const responseData = ret.data;
@@ -152,17 +151,19 @@ const handleScanSuccess = () => {
 /**
  * 部门的删除事件
  */
-const handleDeleteMenu = (id: string, callback: Function) => {
-	ElMessageBox.confirm(i18n.global.t('message.pages.menu.dialog.deleteMenuConfirm'), '删除确认', {
-		confirmButtonText: i18n.global.t('message.pages.menu.buttons.confirm'),
-		cancelButtonText: i18n.global.t('message.pages.menu.buttons.cancel'),
-		type: 'warning',
-	}).then(async () => {
-		const res: APIResponseData = await DelObj(id);
-		callback();
-		if (res?.code === 2000) {
-			successNotification(res.msg as string);
-			getData();
+const handleDeleteMenu = (id: string, callback: Function, name?: string) => {
+	confirmDelete(name ?? '').then(async (confirmed) => {
+		if (!confirmed) return;
+		try {
+			const res: APIResponseData = await DelObj(id);
+			// 删除失败时不要清空选中项、不要刷新列表
+			if (res?.code === 2000) {
+				callback();
+				successNotification(res.msg as string);
+				getData();
+			}
+		} catch {
+			// 请求层已经统一提示过错误
 		}
 	});
 };

@@ -104,6 +104,7 @@ export default {
             delete: '删除',
             deleteTitle: '删除「{name}」',
             deleteCountTitle: '批量删除 {count} 项',
+            downloadBlocked: '下载窗口被浏览器拦截，请允许弹窗后重试',
             networkTimeout: '网络超时',
             networkError: '网络连接错误',
             endpointNotFound: '接口路径找不到',

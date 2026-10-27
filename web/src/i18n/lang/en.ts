@@ -101,6 +101,7 @@ export default {
       delete: 'Delete',
       deleteTitle: 'Delete "{name}"',
       deleteCountTitle: 'Delete {count} selected',
+      downloadBlocked: 'The download window was blocked. Allow pop-ups and try again.',
       networkTimeout: 'Network timeout',
       networkError: 'Network connection error',
       endpointNotFound: 'Endpoint not found',

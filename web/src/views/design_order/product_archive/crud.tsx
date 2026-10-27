@@ -112,6 +112,8 @@ export const createCrudOptions = function ({ crudExpose }: CreateCrudOptionsProp
 						align: 'center',
 						width: '50px',
 						columnSetDisabled: true,
+						// 配合 table.rowKey：翻页后前面勾过的行不会丢
+						reserveSelection: true,
 					},
 				},
 				_index: {

@@ -26,7 +26,7 @@
 					<span>{{ $t('message.pages.dept.dialog.deptConfig') }}</span>
 					<div>
 						<el-button @click="handleDrawerClose" size="small">{{ $t('message.pages.dept.buttons.cancel') }}</el-button>
-						<el-button type="primary" @click="handleSubmit" size="small" :loading="deptBtnLoading">{{ $t('message.pages.dept.buttons.save') }}</el-button>
+						<el-button type="primary" @click="handleSubmit" size="small" :loading="deptFormRef?.deptBtnLoading">{{ $t('message.pages.dept.buttons.save') }}</el-button>
 					</div>
 				</div>
 			</template>
@@ -60,7 +60,6 @@ let drawerFormData = ref<Partial<TreeItemType>>({});
 let deptUserRef = ref<InstanceType<typeof DeptUserCom> | null>(null);
 let deptTreeRef = ref<InstanceType<typeof DeptTreeCom> | null>(null);
 let deptFormRef = ref<InstanceType<typeof DeptFormCom> | null>(null);
-let deptBtnLoading = ref(false);
 
 const getData = async () => {
 	let res: APIResponseData = await GetList({});
@@ -89,12 +88,17 @@ const handleTreeClick = (record: TreeItemType) => {
 const handleDeleteMenu = (id: string, callback: Function, name?: string) => {
 	confirmDelete(name ?? '').then(async (confirmed) => {
 		if (!confirmed) return;
-		const res: APIResponseData = await DelObj(id);
-		callback();
-		if (res?.code === 2000) {
-			successNotification(res.msg as string);
-			getData();
-			deptUserRef.value?.handleDoRefreshUser('');
+		try {
+			const res: APIResponseData = await DelObj(id);
+			// 删除失败时不要清空右侧面板、不要刷新列表——保留了现场，用户才知道没删掉
+			if (res?.code === 2000) {
+				callback();
+				successNotification(res.msg as string);
+				getData();
+				deptUserRef.value?.handleDoRefreshUser('');
+			}
+		} catch {
+			// 请求层已经统一提示过错误，这里不再重复喊一遍
 		}
 	});
 };

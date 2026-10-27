@@ -101,6 +101,7 @@ export default {
       delete: '刪除',
       deleteTitle: '刪除「{name}」',
       deleteCountTitle: '批量刪除 {count} 項',
+      downloadBlocked: '下載視窗被瀏覽器攔截，請允許彈出視窗後重試',
       networkTimeout: '網路超時',
       networkError: '網路連接錯誤',
       endpointNotFound: '接口路徑找不到',

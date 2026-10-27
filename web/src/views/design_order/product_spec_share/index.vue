@@ -8,7 +8,10 @@
 			<el-tag v-if="statusText" type="info" effect="plain">{{ statusText }}</el-tag>
 		</header>
 
-		<el-alert v-if="errorMessage" :title="errorMessage" type="error" show-icon :closable="false" class="share-alert" />
+		<!-- 出错时给一条能走的路：说明发生了什么 + 重试 -->
+		<div v-if="errorMessage" class="share-alert">
+			<EmptyState variant="error" :description="errorMessage" action-text="重试" @action="loadShare" />
+		</div>
 
 		<main class="share-main">
 			<div v-loading="loading" class="sheet-wrapper">
@@ -31,6 +34,7 @@ import '@univerjs/sheets-ui/lib/index.css';
 import '@univerjs/preset-sheets-core/lib/index.css';
 import '@univerjs/preset-sheets-drawing/lib/index.css';
 import { GetSharedSpec } from '/@/api/design_order/product_spec_share';
+import EmptyState from '/@/shared/ui/EmptyState.vue';
 import { buildStylesDict } from '/@/views/design_order/product_spec/constants';
 import { normalizeIconRefs, type IconRef } from '/@/views/design_order/product_spec/iconRefs';
 import {

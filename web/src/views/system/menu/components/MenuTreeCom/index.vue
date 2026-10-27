@@ -175,7 +175,7 @@ const handleDeleteMenu = () => {
 	}
 	emit('deleteDept', treeSelectMenu.value.id, () => {
 		treeSelectMenu.value = {};
-	});
+	}, treeSelectMenu.value.name);
 };
 
 /**

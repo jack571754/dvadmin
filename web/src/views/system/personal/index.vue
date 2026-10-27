@@ -84,7 +84,7 @@
                       </el-button>
                   </template>
                   <template v-else>
-                    <el-button type="primary" @click="submitForm" class="submit-button">
+                    <el-button type="primary" @click="submitForm" :loading="isSubmitting" class="submit-button">
                       提交
                     </el-button>
                     <el-button @click="isEditing = false" class="cancel-button">
@@ -160,7 +160,7 @@
 			</el-form>
 			<template #footer>
 				<span class="dialog-footer">
-					<el-button type="primary" @click="settingPassword"> <i class="fa fa-check"></i>{{ $t('message.pages.personal.button.submit') }} </el-button>
+					<el-button type="primary" :loading="isChangingPassword" @click="settingPassword"> <i class="fa fa-check"></i>{{ $t('message.pages.personal.button.submit') }} </el-button>
 				</span>
 			</template>
 		</el-dialog>
@@ -237,6 +237,8 @@ const headerTextColor = computed(() => {
 });
 const userInfoFormRef = ref();
 const isEditing = ref(false);
+const isSubmitting = ref(false);
+const isChangingPassword = ref(false);
 const rules = reactive({
 	name: [{ required: true, validator: (rule: any, value: any, callback: any) => {
 		if (!value) callback(new Error(t('message.pages.personal.validation.nicknameRequired')));
@@ -317,18 +319,22 @@ const getUserInfo = function () {
  * @param formEl
  */
 const submitForm = async () => {
-	if (!userInfoFormRef.value) return;
-	await userInfoFormRef.value.validate((valid: boolean, fields: any) => {
-		if (valid) {
-			api.updateUserInfo(state.personalForm).then((res: any) => {
-				ElMessage.success(t('message.pages.personal.messages.updateSuccess'));
-				getUserInfo();
-				isEditing.value = false;
-			});
-		} else {
-			ElMessage.error(t('message.pages.personal.validation.formValidationFailed'));
-		}
-	});
+	if (!userInfoFormRef.value || isSubmitting.value) return;
+	try {
+		await userInfoFormRef.value.validate();
+	} catch {
+		ElMessage.error(t('message.pages.personal.validation.formValidationFailed'));
+		return;
+	}
+	isSubmitting.value = true;
+	try {
+		await api.updateUserInfo(state.personalForm);
+		ElMessage.success(t('message.pages.personal.messages.updateSuccess'));
+		getUserInfo();
+		isEditing.value = false;
+	} finally {
+		isSubmitting.value = false;
+	}
 };
 
 /**
@@ -429,22 +435,25 @@ const passwordRules = reactive({
 /**
  * 重新设置密码
  */
-const settingPassword = () => {
-	userPasswordFormRef.value.validate((valid: boolean) => {
-		if (valid) {
-			api.UpdatePassword(userPasswordInfo).then((res: any) => {
-				ElMessage.success(t('message.pages.personal.messages.passwordChangeSuccess'));
-				setTimeout(() => {
-					Session.remove('token');
-					router.push('/login');
-				}, 1000);
-			});
-		} else {
-			// 校验失败
-			// 登录表单校验失败
-			ElMessage.error(t('message.pages.personal.messages.formValidationFailed'));
-		}
-	});
+const settingPassword = async () => {
+	if (isChangingPassword.value) return;
+	try {
+		await userPasswordFormRef.value.validate();
+	} catch {
+		ElMessage.error(t('message.pages.personal.messages.formValidationFailed'));
+		return;
+	}
+	isChangingPassword.value = true;
+	try {
+		await api.UpdatePassword(userPasswordInfo);
+		ElMessage.success(t('message.pages.personal.messages.passwordChangeSuccess'));
+		setTimeout(() => {
+			Session.remove('token');
+			router.push('/login');
+		}, 1000);
+	} finally {
+		isChangingPassword.value = false;
+	}
 };
 
 const uploadImg = (data: any) => {

@@ -295,7 +295,9 @@ const handleSubmit = () => {
 };
 
 defineExpose({
-	handleSubmit
+	handleSubmit,
+	// 保存按钮在父组件里，需要真实的提交中状态
+	menuBtnLoading,
 });
 
 const handleCancel = (type: string = '') => {

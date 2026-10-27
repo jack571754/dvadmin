@@ -149,12 +149,21 @@ const taskLogs = (item: any) => {
 };
 
 const setTaskStatus = (item: any) => {
-    item.enabled = !item.enabled;
-    UpdateTask({ enabled: item.enabled, id: item.id }).then((res: any) => {
-        if (res.code === 2000) {
-            successMessage(res.msg as string);
-        }
-    });
+    const previous = item.enabled;
+    item.enabled = !previous;
+    UpdateTask({ enabled: item.enabled, id: item.id })
+        .then((res: any) => {
+            if (res.code === 2000) {
+                successMessage(res.msg as string);
+            } else {
+                // 业务失败要把标签翻回去，否则界面在骗人
+                item.enabled = previous;
+            }
+        })
+        .catch(() => {
+            // 请求层已经统一提示过错误，这里只负责回滚
+            item.enabled = previous;
+        });
 };
 
 function crontabFill(value: any) {

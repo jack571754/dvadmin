@@ -16,9 +16,11 @@ import { auth } from '/@/utils/authFunction';
 import { shallowRef } from 'vue';
 import { useI18n } from 'vue-i18n';
 import tableSelector from '/@/components/tableSelector/index.vue';
+import { useRowMutation } from '/@/shared/composables/rowMutation';
 
 export const createCrudOptions = function ({ crudExpose }: CreateCrudOptionsProps): CreateCrudOptionsRet {
     const { t } = useI18n();
+    const statusMutation = useRowMutation();
 	const pageRequest = async (query: UserPageQuery) => {
 		return await api.GetList(query);
 	};
@@ -195,13 +197,16 @@ export const createCrudOptions = function ({ crudExpose }: CreateCrudOptionsProp
 							activeText: '',
 							inactiveText: '',
 							style: '--el-switch-on-color: var(--admin-accent); --el-switch-off-color: var(--admin-border-strong)',
-							onChange: compute((context) => {
-								return () => {
-									api.UpdateObj(context.row).then((res: APIResponseData) => {
-										successMessage(res.msg as string);
-									});
-								};
-							}),
+							disabled: compute((context) => statusMutation.pending.has(context.row.id)),
+							loading: compute((context) => statusMutation.pending.has(context.row.id)),
+							// 用 beforeChange 而不是 onChange：失败时返回 false，开关自己回滚，
+							// 不会停在"看起来改成功了"的位置
+							beforeChange: compute((context) => () =>
+								statusMutation.run(context.row.id, async () => {
+									const res: APIResponseData = await api.UpdateObj(context.row);
+									successMessage(res.msg as string);
+								}),
+							),
 						},
 					},
 					dict: dict({

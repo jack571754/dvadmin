@@ -1,7 +1,7 @@
 import { CrudOptions, AddReq, DelReq, EditReq, dict, CrudExpose, compute } from '@fast-crud/fast-crud';
 import * as api from './api';
 import { dictionary } from '/@/utils/dictionary';
-import { successMessage } from '../../../utils/message';
+import { warningMessage } from '../../../utils/message';
 import { getBaseURL } from '/@/utils/baseUrl';
 import { useI18n } from 'vue-i18n';
 
@@ -68,7 +68,11 @@ export const createCrudOptions = function ({ crudExpose }: { crudExpose: CrudExp
                         show: compute(ctx => ctx.row.task_status === 2),
                         text: t('message.pages.downloadCenter.buttons.downloadFile'),
                         type: 'primary',
-                        click: (ctx) => window.open(getBaseURL(ctx.row.url), '_blank')
+                        click: (ctx: any) => {
+                            // window.open 被弹窗拦截时会返回 null，界面看起来就是"点了没反应"
+                            const opened = window.open(getBaseURL(ctx.row.url), '_blank');
+                            if (!opened) warningMessage('message.common.downloadBlocked');
+                        }
                     }
                 },
             },

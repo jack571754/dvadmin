@@ -76,11 +76,12 @@
 						</el-input>
 					</div>
 
+					<span v-if="savedAtText" class="spec-saved-hint">已保存 {{ savedAtText }}</span>
 					<el-button v-if="canEditSubmission" type="primary" size="small" :icon="Plus" @click="handleQuickAdd">新增产品</el-button>
 					<el-button v-if="canEditSubmission" type="info" size="small" :icon="CopyDocument" @click="openBatchApplyDialog">批量应用</el-button>
 					<el-button v-if="canEditSubmission && lastBatchApplyUndo?.cells.length" size="small" :icon="RefreshLeft" @click="undoLastBatchApply">撤销批量</el-button>
 					<el-button v-if="canEditSubmission" type="success" size="small" :icon="FolderChecked" :loading="isSaving" @click="saveWorkbookData('draft')">保存草稿</el-button>
-					<el-button v-if="canEditSubmission && submissionStatus === 'draft' && submissionId" type="danger" size="small" :icon="Checked" @click="submitWorkbookData">正式提交</el-button>
+					<el-button v-if="canEditSubmission && submissionStatus === 'draft' && submissionId" type="danger" size="small" :icon="Checked" :loading="isSaving" @click="submitWorkbookData">正式提交</el-button>
 					<el-button v-if="canShareSubmission" type="primary" size="small" :icon="Link" :loading="isSharing" @click="handleShareLink">分享链接</el-button>
 					<el-button type="warning" size="small" :icon="Download" @click="exportToCSV">导出数据</el-button>
 				</div>
@@ -493,7 +494,7 @@
 
 <script lang="ts" setup name="productSpec">
 import { ref, computed, watch, onMounted, onBeforeUnmount, nextTick } from 'vue';
-import { useRoute, useRouter } from 'vue-router';
+import { onBeforeRouteLeave, useRoute, useRouter } from 'vue-router';
 import { request } from '/@/utils/service';
 import { ElMessage, ElMessageBox } from 'element-plus';
 import { Plus, FolderChecked, Download, Search, ArrowLeft, Checked, CircleCloseFilled, WarningFilled, Link, Delete, CopyDocument, RefreshLeft, FullScreen, ScaleToOriginal } from '@element-plus/icons-vue';
@@ -547,6 +548,7 @@ import {
 	setCaretPosition,
 } from './utils';
 import { normalizeProductName, resolveProductDisplayName } from './productDisplay';
+import { needsLeaveConfirm } from './leaveGuard';
 import {
 	MAIN_PRODUCT_SEPARATOR,
 	createMainProductRefParser,
@@ -3707,7 +3709,7 @@ const appendNewProductColumn = (announce = true) => {
 
 // ========== 保存入库 ==========
 // ========== 保存入库 ==========
-const saveWorkbookData = async (statusVal: string = 'draft') => {
+const saveWorkbookData = async (statusVal: string = 'draft', options: { silent?: boolean } = {}) => {
 	if (!ensureEditableSubmission()) return;
 	if (isSaving.value) return;
 	isSaving.value = true;
@@ -3834,7 +3836,8 @@ const saveWorkbookData = async (statusVal: string = 'draft') => {
 	}
 
 	try {
-		ElMessage.info('正在保存提报数据...');
+		// 自动保存不喊：工具栏的「已保存 HH:mm」就是它的回声
+		if (!options.silent) ElMessage.info('正在保存提报数据...');
 		const result = await request({
 			url: '/api/design_order/product_archives/save_spec/',
 			method: 'post',
@@ -3868,7 +3871,9 @@ const saveWorkbookData = async (statusVal: string = 'draft') => {
 				});
 			}
 
-			ElMessage.success(persistedStatus === 'submitted' ? '活动提报已正式提交归档并锁定编辑！' : '提报草稿已成功保存入库！');
+			if (!options.silent) {
+				ElMessage.success(persistedStatus === 'submitted' ? '活动提报已正式提交归档并锁定编辑！' : '提报草稿已成功保存入库！');
+			}
 				if (editRevision === savingRevision) isDirty.value = false;
 				else resetAutoSaveTimer();
 				lastSavedAt.value = new Date();
@@ -3954,6 +3959,12 @@ const copyShareUrl = async (shareUrl: string) => {
 		return date.toLocaleTimeString('zh-CN', { hour: '2-digit', minute: '2-digit', second: '2-digit' });
 	};
 
+	// 工具栏常驻的保存回声，替代每次自动保存都弹一次 toast
+	const savedAtText = computed(() => {
+		if (!lastSavedAt.value) return '';
+		return lastSavedAt.value.toLocaleTimeString('zh-CN', { hour: '2-digit', minute: '2-digit' });
+	});
+
 	const markDirty = () => {
 		if (!canEditSubmission.value) return;
 		lastBatchApplyUndo.value = null;
@@ -3969,7 +3980,7 @@ const copyShareUrl = async (shareUrl: string) => {
 
 	const autoSave = async () => {
 		if (!isDirty.value || isSaving.value || !canEditSubmission.value) return;
-		await saveWorkbookData('draft');
+		await saveWorkbookData('draft', { silent: true });
 	};
 
 	const handleBeforeUnload = (event: BeforeUnloadEvent) => {
@@ -4048,8 +4059,27 @@ const copyShareUrl = async (shareUrl: string) => {
 		confirmAndSubmit();
 	};;
 
+// 有未保存改动时拦一道，返回 true 表示可以离开
+const confirmLeave = async (): Promise<boolean> => {
+	if (!needsLeaveConfirm({ isDirty: isDirty.value, canEdit: canEditSubmission.value, isSaving: isSaving.value })) return true;
+	try {
+		await ElMessageBox.confirm('当前有未保存的修改，离开后这些修改会丢失。', '离开此页', {
+			confirmButtonText: '放弃修改并离开',
+			cancelButtonText: '继续编辑',
+			type: 'warning',
+		});
+		return true;
+	} catch {
+		return false;
+	}
+};
+
+// 浏览器后退、菜单跳转都走这里，不只是点返回按钮
+onBeforeRouteLeave(async () => await confirmLeave());
+
 // 返回历史列表页
-const goBackToList = () => {
+const goBackToList = async () => {
+	if (!(await confirmLeave())) return;
 	router.push('/product_spec_submission');
 };
 
