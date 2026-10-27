@@ -16,6 +16,8 @@ import { Session } from '/@/utils/storage';
 import {FsExtendsEditor, FsExtendsUploader } from '@fast-crud/fast-extends';
 import '@fast-crud/fast-extends/dist/style.css';
 import {feedback} from '/@/shared/ui/feedback';
+import {h} from 'vue';
+import EmptyState from '/@/shared/ui/EmptyState.vue';
 import XEUtils from "xe-utils";
 export default {
     async install(app: any, options: any) {
@@ -72,6 +74,14 @@ export default {
                         stripe: false,
                         border: false,
                         bordered: false,
+                        // 全局空态，替换 Element 默认的裸"暂无数据"。
+                        // el-table 的 empty 插槽不带作用域，拿不到搜索条件，所以全局只给
+                        // variant='empty'，且不给按钮（这里接不到新增动作，放个按钮就是点了没反应）。
+                        // 页面已知筛选/出错/无权限时，用自己的 table.slots.empty 覆盖即可：
+                        //   slots: { empty: () => h(EmptyState, { variant: 'filtered', onAction: clearFilters }) }
+                        slots: {
+                            empty: () => h(EmptyState, { variant: 'empty', actionText: '' }),
+                        },
                     },
                     // 分页：去掉背景块与快速跳转，靠右对齐由 theme/fastCrud.scss 负责。
                     // 默认 layout 含 jumper，在每页 20 条的规模下是多余的。
