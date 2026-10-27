@@ -1,5 +1,5 @@
 import { ElMessageBox } from 'element-plus';
-import type { Router } from 'vue-router';
+import { isNavigationFailure, type Router } from 'vue-router';
 import { Local, Session } from '/@/utils/storage';
 import { successMessage } from '/@/utils/message';
 import { runLogout } from './logoutCore';
@@ -48,7 +48,10 @@ export function logout(router: Router): Promise<void> {
 			Local.remove('token');
 			Local.remove('routesList');
 		},
-		replaceRoute: path => router.replace(path),
+		// router.replace 被守卫取消时 resolve 一个 NavigationFailure 而不是 reject，
+		// 所以这里必须显式判断，否则"没走成"会被当成"走成了"
+		replaceRoute: async path => !isNavigationFailure(await router.replace(path)),
 		notify: key => successMessage(key),
+		hardRedirect: path => window.location.replace(path),
 	});
 }
