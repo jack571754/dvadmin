@@ -4078,9 +4078,9 @@ const confirmLeave = async (): Promise<boolean> => {
 // 浏览器后退、菜单跳转都走这里，不只是点返回按钮
 onBeforeRouteLeave(async () => await confirmLeave());
 
-// 返回历史列表页
-const goBackToList = async () => {
-	if (!(await confirmLeave())) return;
+// 返回历史列表页：只负责跳转，确认交给上面的路由守卫。
+// 这里如果再自己调一次 confirmLeave，router.push 会再触发守卫，用户得连点两次"放弃修改"。
+const goBackToList = () => {
 	router.push('/product_spec_submission');
 };
 
