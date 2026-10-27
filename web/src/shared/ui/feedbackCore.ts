@@ -94,8 +94,12 @@ export function createFeedback(emit: FeedbackEmitter, translate: Translate, now:
     if (!options.dedupeKey) return false;
     const at = now();
     const last = lastSeen.get(options.dedupeKey);
+    // 抑制期内不刷新时间戳：窗口比的是"上次真的提示过"的时刻。
+    // 若在这里刷新，持续失败（用户每隔一秒点一次刷新）会一直把窗口往后推，
+    // 变成永远静音——按钮看起来像失灵，比响几次更糟。
+    if (last !== undefined && at - last < FEEDBACK_DEDUPE_WINDOW_MS) return true;
     lastSeen.set(options.dedupeKey, at);
-    return last !== undefined && at - last < FEEDBACK_DEDUPE_WINDOW_MS;
+    return false;
   }
 
   function feedback(options: FeedbackOptions): void | Promise<boolean> {

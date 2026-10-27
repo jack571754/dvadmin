@@ -41,6 +41,25 @@ test('相同 dedupeKey 在窗口内只响一次，窗口过后可再响', () => 
   assert.equal(f.calls.length, 2);
 });
 
+test('持续失败不会被去重永久静音', () => {
+  // 断网后用户每隔 1s 点一次刷新：每次都在窗口内，但窗口从"上次真的提示过"起算，
+  // 所以最多 1.5s 后必须再响一次。滑动窗口（每次失败都刷新时间戳）会让它永远不响。
+  const f = fixture();
+  const fail = () => f.feedback({ level: 'toast', tone: 'error', message: 'network', dedupeKey: 'http:network' });
+  fail();
+  f.tick(1000);
+  fail();
+  assert.equal(f.calls.length, 1, '窗口内应当合并');
+  f.tick(600);
+  fail();
+  assert.equal(f.calls.length, 2, '超过窗口后持续失败应再次提示');
+  f.tick(1000);
+  fail();
+  f.tick(600);
+  fail();
+  assert.equal(f.calls.length, 3, '之后仍按固定窗口节流，而不是彻底静音');
+});
+
 test('不同 dedupeKey 互不影响', () => {
   const f = fixture();
   f.feedback({ level: 'toast', message: 'a', dedupeKey: 'http:network' });
