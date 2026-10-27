@@ -56,7 +56,7 @@ import { createCrudOptions } from './crud';
 import { BatchDelete, getModelList } from './api';
 import { Close, Delete } from '@element-plus/icons-vue';
 import { MenuTreeItemType } from '/@/views/system/menu/types';
-import { successMessage, successNotification, warningNotification } from '/@/utils/message';
+import { infoMessage, successMessage, successNotification, warningNotification } from '/@/utils/message';
 import { automatchColumnsData } from '/@/views/system/columns/components/ColumnsTableCom/api';
 import XEUtils from 'xe-utils';
 import { useThemeConfig } from '/@/stores/themeConfig';
@@ -65,7 +65,6 @@ import { storeToRefs } from 'pinia';
 const { themeConfig } = storeToRefs(useThemeConfig());
 
 const { t } = useI18n();
-import { ElMessage } from 'element-plus';
 import { confirmDelete } from '/@/shared/ui/confirm';
 // 当前选择的菜单信息
 let selectOptions: any = ref({ name: null });
@@ -141,7 +140,7 @@ const selectedRowsCount = computed(() => {
 const handleBatchDelete = async () => {
 	if (!(await confirmDelete(selectedRows.value.length))) return;
 	await BatchDelete(XEUtils.pluck(selectedRows.value, 'id'));
-	ElMessage.info(t('message.pages.menu.messages.deleteSuccess'));
+	infoMessage(t('message.pages.menu.messages.deleteSuccess'));
 	selectedRows.value = [];
 	await crudExpose.doRefresh();
 };

@@ -333,7 +333,7 @@
 
 <script setup lang="ts" name="layoutBreadcrumbSeting">
 import { nextTick, onUnmounted, onMounted, computed, reactive } from 'vue';
-import { ElMessage } from 'element-plus';
+import { warningMessage } from '/@/utils/message';
 import { useI18n } from 'vue-i18n';
 import { storeToRefs } from 'pinia';
 import { useThemeConfig } from '/@/stores/themeConfig';
@@ -379,7 +379,7 @@ const onSelectPresetTheme = (preset: ThemePreset) => {
 
 // 1、全局主题
 const onColorPickerChange = () => {
-	if (!getThemeConfig.value.primary) return ElMessage.warning('全局主题 primary 颜色值不能为空');
+	if (!getThemeConfig.value.primary) return warningMessage('全局主题 primary 颜色值不能为空');
 	setDispatchThemeConfig();
 };
 // 2、菜单 / 顶栏

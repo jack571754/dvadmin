@@ -172,13 +172,12 @@ import { reactive, computed, onMounted, ref, defineAsyncComponent, nextTick, wat
 import { useI18n } from 'vue-i18n';
 import { formatAxis } from '/@/utils/formatTime';
 import * as api from './api';
-import { ElMessage } from 'element-plus';
 import { getBaseURL } from '/@/utils/baseUrl';
 import { Session } from '/@/utils/storage';
 import { useRouter } from 'vue-router';
 import { useUserInfo } from '/@/stores/userInfo';
 import { useThemeConfig } from '/@/stores/themeConfig';
-import { successMessage } from '/@/utils/message';
+import { errorMessage, successMessage } from '/@/utils/message';
 import { dictionary } from '/@/utils/dictionary';
 import { Md5 } from 'ts-md5';
 import { Edit, Position } from '@element-plus/icons-vue';
@@ -323,13 +322,13 @@ const submitForm = async () => {
 	try {
 		await userInfoFormRef.value.validate();
 	} catch {
-		ElMessage.error(t('message.pages.personal.validation.formValidationFailed'));
+		errorMessage(t('message.pages.personal.validation.formValidationFailed'));
 		return;
 	}
 	isSubmitting.value = true;
 	try {
 		await api.updateUserInfo(state.personalForm);
-		ElMessage.success(t('message.pages.personal.messages.updateSuccess'));
+		successMessage(t('message.pages.personal.messages.updateSuccess'));
 		getUserInfo();
 		isEditing.value = false;
 	} finally {
@@ -440,13 +439,13 @@ const settingPassword = async () => {
 	try {
 		await userPasswordFormRef.value.validate();
 	} catch {
-		ElMessage.error(t('message.pages.personal.messages.formValidationFailed'));
+		errorMessage(t('message.pages.personal.messages.formValidationFailed'));
 		return;
 	}
 	isChangingPassword.value = true;
 	try {
 		await api.UpdatePassword(userPasswordInfo);
-		ElMessage.success(t('message.pages.personal.messages.passwordChangeSuccess'));
+		successMessage(t('message.pages.personal.messages.passwordChangeSuccess'));
 		setTimeout(() => {
 			Session.remove('token');
 			router.push('/login');

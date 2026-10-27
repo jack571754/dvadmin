@@ -55,7 +55,7 @@
 
 <script lang="ts" setup>
 import { computed, nextTick, ref, watch } from 'vue';
-import { ElMessage } from 'element-plus';
+import { warningMessage } from '/@/utils/message';
 import {
 	buildRichTextSegments,
 	type RichTextFormatChange,
@@ -163,7 +163,7 @@ const blockTextMutation = (event: KeyboardEvent) => {
 const emitStyle = (style: RichTextStyle) => {
 	captureSelection();
 	if (selectionStart.value === selectionEnd.value) {
-		ElMessage.warning('请先选中需要设置样式的文字');
+		warningMessage('请先选中需要设置样式的文字');
 		return;
 	}
 	emit('apply', {

@@ -8,8 +8,8 @@ import {
 	compute,
 	dict,
 } from '@fast-crud/fast-crud';
-import { ElMessage, ElMessageBox } from 'element-plus';
-
+import { successMessage } from '/@/utils/message';
+import { ElMessageBox } from 'element-plus';
 import * as api from '/@/api/design_order/store';
 import { auth } from '/@/utils/authFunction';
 import { dictionary } from '/@/utils/dictionary';
@@ -123,7 +123,7 @@ async function changeStoreStatus(crudExpose: any, row: any, status: boolean) {
 		type: 'warning',
 	});
 	await api.SetStatus(row.id, status);
-	ElMessage.success(`店铺已${actionText}`);
+	successMessage(`店铺已${actionText}`);
 	crudExpose.doRefresh();
 }
 

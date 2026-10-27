@@ -155,30 +155,30 @@ body,
 	.layout-el-aside-br-color {
 		border-right: 1px solid var(--admin-border);
 	}
-	// pc端左侧导航样式（V2：展开 228px / 收起 70px）
-	.layout-aside-pc-228 {
-		width: 228px !important;
-		transition: width 0.3s ease;
+	// pc端左侧导航样式（V2：展开 240px / 收起 64px，尺寸与节奏都取令牌）
+	.layout-aside-pc-expanded {
+		width: var(--admin-sidebar-width) !important;
+		transition: width var(--admin-duration-base) var(--admin-ease-out);
 	}
-	.layout-aside-pc-70 {
-		width: 70px !important;
-		transition: width 0.3s ease;
+	.layout-aside-pc-collapsed {
+		width: var(--admin-sidebar-width-collapsed) !important;
+		transition: width var(--admin-duration-base) var(--admin-ease-out);
 	}
 	// 手机端左侧导航样式
 	.layout-aside-mobile {
 		position: fixed;
 		top: 0;
-		left: -228px;
-		width: 228px;
+		left: calc(var(--admin-sidebar-width) * -1);
+		width: var(--admin-sidebar-width);
 		z-index: 9999999;
 	}
 	.layout-aside-mobile-close {
-		left: -228px;
-		transition: all 0.3s cubic-bezier(0.39, 0.58, 0.57, 1);
+		left: calc(var(--admin-sidebar-width) * -1);
+		transition: all var(--admin-duration-base) var(--admin-ease-out);
 	}
 	.layout-aside-mobile-open {
 		left: 0;
-		transition: all 0.3s cubic-bezier(0.22, 0.61, 0.36, 1);
+		transition: all var(--admin-duration-base) var(--admin-ease-out);
 	}
 	.layout-aside-mobile-mode {
 		position: fixed;

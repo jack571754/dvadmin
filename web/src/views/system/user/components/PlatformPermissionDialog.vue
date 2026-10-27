@@ -23,7 +23,7 @@
 </template>
 <script setup lang="ts">
 import { computed, onBeforeUnmount, ref } from 'vue';
-import { ElMessage } from 'element-plus';
+import { successMessage } from '/@/utils/message';
 import { GetPlatformPermissions, UpdatePlatformPermissions } from '../api';
 import { auth } from '/@/utils/authFunction';
 import { captureSession, onSessionChanged } from '/@/shared/access/sessionEvents';
@@ -57,7 +57,7 @@ async function save() {
   try {
     await UpdatePlatformPermissions(targetId.value, rows.value.filter(row => row.enabled).map(({ platform, scope }) => ({ platform, scope })));
     assertCurrent(); if (current !== generation) return;
-    visible.value = false; ElMessage.success('平台权限保存成功');
+    visible.value = false; successMessage('平台权限保存成功');
   } catch (failure) { if (current === generation) error.value = failure instanceof Error ? failure.message : '平台权限保存失败'; }
   finally { saving.value = false; }
 }

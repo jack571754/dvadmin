@@ -298,6 +298,7 @@
 
 <script lang="ts" setup name="config">
 import { useI18n } from 'vue-i18n';
+import { errorMessage, successMessage } from '/@/utils/message';
 import { Edit, FolderAdd, Delete, Key, Upload } from '@element-plus/icons-vue';
 import * as api from './api';
 import addTabs from './components/addTabs.vue';
@@ -306,7 +307,6 @@ import { ref, onMounted, watch, computed } from 'vue';
 import { storeToRefs } from 'pinia';
 import pinia from '/@/stores/index';
 import { useThemeConfig } from '/@/stores/themeConfig';
-import { ElMessage } from 'element-plus';
 import { confirmDelete } from '/@/shared/ui/confirm';
 import { getBaseURL } from '/@/utils/baseUrl';
 import { Session } from '/@/utils/storage';
@@ -321,9 +321,9 @@ const handleUploadSuccess = (response: any) => {
 	if (code === 2000 && data && data.url) {
 		const fullUrl = data.url.startsWith('http') ? data.url : getBaseURL() + data.url;
 		editingValue.value = fullUrl;
-		ElMessage.success('图片上传成功！');
+		successMessage('图片上传成功！');
 	} else {
-		ElMessage.error('上传失败：' + (msg || '未知错误'));
+		errorMessage('上传失败：' + (msg || '未知错误'));
 	}
 };
 
@@ -335,14 +335,14 @@ const handleImgsUploadSuccess = (response: any) => {
 			editingValue.value = [];
 		}
 		editingValue.value.push(fullUrl);
-		ElMessage.success('图片上传成功！');
+		successMessage('图片上传成功！');
 	} else {
-		ElMessage.error('上传失败：' + (msg || '未知错误'));
+		errorMessage('上传失败：' + (msg || '未知错误'));
 	}
 };
 
 const handleUploadError = () => {
-	ElMessage.error('图片上传失败，请重试');
+	errorMessage('图片上传失败，请重试');
 };
 
 let tabsDrawer = ref(false);
@@ -474,11 +474,11 @@ const handleConfigChange = async (item: any) => {
 			id: item.id,
 			value: formData.value[item.key]
 		});
-		ElMessage.success(t('message.pages.config.messages.updateSuccess'));
+		successMessage(t('message.pages.config.messages.updateSuccess'));
 	} catch (error) {
 		// 重新获取数据以恢复原值
 		getFormList();
-		ElMessage.error(t('message.pages.config.messages.updateFailed'));
+		errorMessage(t('message.pages.config.messages.updateFailed'));
 	}
 };
 
@@ -558,7 +558,7 @@ const handleConfirmEdit = async (item: any) => {
 			} else {
 				const numValue = Number(editingValue.value);
 				if (isNaN(numValue)) {
-					ElMessage.error('请输入有效的数字');
+					errorMessage('请输入有效的数字');
 					return;
 				}
 				valueToSave = numValue;
@@ -578,12 +578,12 @@ const handleConfirmEdit = async (item: any) => {
 			value: valueToSave
 		});
 		formData.value[item.key] = valueToSave;
-		ElMessage.success(t('message.pages.config.messages.updateSuccess'));
+		successMessage(t('message.pages.config.messages.updateSuccess'));
 		editingItem.value = null;
 		editingValue.value = '';
 		dictOptions.value = [];
 	} catch (error) {
-		ElMessage.error(t('message.pages.config.messages.updateFailed'));
+		errorMessage(t('message.pages.config.messages.updateFailed'));
 	}
 };
 
@@ -628,10 +628,10 @@ const handleDelete = (item: any) => {
 		if (!confirmed) return;
 		try {
 			await api.DelObj(item.id);
-			ElMessage.success(t('message.pages.config.messages.deleteSuccess'));
+			successMessage(t('message.pages.config.messages.deleteSuccess'));
 			getFormList();
 		} catch {
-			ElMessage.error(t('message.pages.config.messages.deleteFailed'));
+			errorMessage(t('message.pages.config.messages.deleteFailed'));
 		}
 	});
 };
@@ -653,14 +653,14 @@ const handleDeleteGroup = async () => {
 	// 先定位分组，再问用户——确认框里要写出删的是哪个分组
 	const currentGroup = editableTabs.value.find((tab: any) => tab.key === editableTabsValue.value);
 	if (!currentGroup) {
-		ElMessage.error(t('message.pages.config.messages.groupNotFound'));
+		errorMessage(t('message.pages.config.messages.groupNotFound'));
 		return;
 	}
 	if (!(await confirmDelete(currentGroup.title_i18n || currentGroup.title || ''))) return;
 
 	try {
 		await api.DelObj(currentGroup.id);
-		ElMessage.success(t('message.pages.config.messages.deleteGroupSuccess'));
+		successMessage(t('message.pages.config.messages.deleteGroupSuccess'));
 
 		// 重新获取分组列表
 		await getTabs();
@@ -670,7 +670,7 @@ const handleDeleteGroup = async () => {
 			editableTabsValue.value = editableTabs.value[0].key;
 		}
 	} catch {
-		ElMessage.error(t('message.pages.config.messages.deleteGroupFailed'));
+		errorMessage(t('message.pages.config.messages.deleteGroupFailed'));
 	}
 };
 

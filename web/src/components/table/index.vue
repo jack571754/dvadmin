@@ -102,7 +102,7 @@
 
 <script setup lang="ts" name="netxTable">
 import { reactive, computed, nextTick, ref } from 'vue';
-import { ElMessage } from 'element-plus';
+import { warningMessage } from '/@/utils/message';
 import { useI18n } from 'vue-i18n';
 import table2excel from 'js-table2excel';
 import Sortable from 'sortablejs';
@@ -197,7 +197,7 @@ const pageReset = () => {
 };
 // 导出
 const onImportTable = () => {
-	if (state.selectlist.length <= 0) return ElMessage.warning(t('message.components.table.selectExportData'));
+	if (state.selectlist.length <= 0) return warningMessage(t('message.components.table.selectExportData'));
 	table2excel(props.header, state.selectlist, `${themeConfig.value.globalTitle} ${new Date().toLocaleString()}`);
 };
 // 刷新

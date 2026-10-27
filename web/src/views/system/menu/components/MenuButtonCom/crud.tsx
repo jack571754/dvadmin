@@ -1,8 +1,8 @@
 import {AddReq, DelReq, EditReq, dict, CreateCrudOptionsRet, CreateCrudOptionsProps} from '@fast-crud/fast-crud';
+import { errorMessage, successMessage, warningMessage } from '/@/utils/message';
 import * as api from './api';
 import {auth} from '/@/utils/authFunction'
 import {request} from '/@/utils/service';
-import { ElMessage } from 'element-plus';
 import { nextTick, ref } from 'vue';
 import XEUtils from 'xe-utils';
 import { useI18n } from 'vue-i18n';
@@ -86,15 +86,15 @@ export const createCrudOptions = function ({crudExpose, context}: CreateCrudOpti
 						text: t('message.pages.menu.validation.batchGenerate'),
 						click: async () => {
 							if (context!.selectOptions.value.id == undefined) {
-								ElMessage.error(t('message.pages.menu.buttons.selectMenuFirst'));
+								errorMessage(t('message.pages.menu.buttons.selectMenuFirst'));
 								return;
 							}
 							const result = await api.BatchAdd({ menu: context!.selectOptions.value.id });
 							if (result.code == 2000) {
-								ElMessage.success(result.msg);
+								successMessage(result.msg);
 								crudExpose.doRefresh();
 							} else {
-								ElMessage.error(result.msg);
+								errorMessage(result.msg);
 							}
 						},
 					},
@@ -103,7 +103,7 @@ export const createCrudOptions = function ({crudExpose, context}: CreateCrudOpti
 						text: t('message.pages.menu.scan.title'),
 						click: async () => {
 							if (context!.selectOptions.value.id == undefined) {
-								ElMessage.warning(t('message.pages.menu.messages.selectMenuFirst'));
+								warningMessage(t('message.pages.menu.messages.selectMenuFirst'));
 								return;
 							}
 							if (context!.handleScanClick) {

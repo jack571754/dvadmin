@@ -45,10 +45,9 @@
 import { computed } from 'vue';
 import { useRouter } from 'vue-router';
 import { storeToRefs } from 'pinia';
-import { ElMessageBox, ElMessage } from 'element-plus';
 import { useI18n } from 'vue-i18n';
 import { useUserInfo } from '/@/stores/userInfo';
-import { Session, Local } from '/@/utils/storage';
+import { confirmLogout, logout } from '/@/shared/access/logout';
 
 defineProps<{
 	isCollapse?: boolean;
@@ -75,39 +74,10 @@ const avatarFallback = computed(() => {
 	return name.slice(0, 1).toUpperCase();
 });
 
-const handleCommand = (command: string) => {
+const handleCommand = async (command: string) => {
 	if (command === 'logOut') {
-		ElMessageBox({
-			closeOnClickModal: false,
-			closeOnPressEscape: false,
-			title: t('message.user.logOutTitle') || '提示',
-			message: t('message.user.logOutMessage') || '确定要退出当前系统吗？',
-			showCancelButton: true,
-			confirmButtonText: t('message.user.logOutConfirm') || '退出',
-			cancelButtonText: t('message.user.logOutCancel') || '取消',
-			beforeClose: (action, instance, done) => {
-				if (action === 'confirm') {
-					instance.confirmButtonLoading = true;
-					instance.confirmButtonText = t('message.user.logOutExit') || '正在退出...';
-					setTimeout(() => {
-						done();
-						setTimeout(() => {
-							instance.confirmButtonLoading = false;
-						}, 300);
-					}, 500);
-				} else {
-					done();
-				}
-			},
-		}).then(async () => {
-			Session.clear();
-			Local.remove('token');
-			Local.remove('routesList');
-			ElMessage.success(t('message.user.logOutSuccess') || '退出成功');
-			setTimeout(() => {
-				window.location.href = '';
-			}, 300);
-		}).catch(() => {});
+		if (!(await confirmLogout(t))) return;
+		await logout(router);
 	} else if (command.startsWith('/')) {
 		router.push(command);
 	}

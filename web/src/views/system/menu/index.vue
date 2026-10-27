@@ -65,7 +65,6 @@
 <script lang="ts" setup name="menuPages">
 import { ref, onMounted, nextTick } from 'vue';
 import XEUtils from 'xe-utils';
-import { ElMessage } from 'element-plus';
 import { confirmDelete } from '/@/shared/ui/confirm';
 import MenuTreeCom from './components/MenuTreeCom/index.vue';
 import MenuButtonCom from './components/MenuButtonCom/index.vue';
@@ -73,7 +72,7 @@ import MenuFormCom from './components/MenuFormCom/index.vue';
 import MenuFieldCom from './components/MenuFieldCom/index.vue';
 import ScanModal from './components/ScanModal/index.vue';
 import { GetList, DelObj } from './api';
-import { successNotification } from '/@/utils/message';
+import { successNotification, warningMessage } from '/@/utils/message';
 import { APIResponseData, MenuTreeItemType } from './types';
 
 let menuTreeData = ref([]);
@@ -133,7 +132,7 @@ const handleSaveMenu = () => {
 
 const handleOpenScanModal = () => {
 	if (!selectedMenuId.value) {
-		ElMessage.warning('请先选择一个菜单');
+		warningMessage('请先选择一个菜单');
 		return;
 	}
 	scanModalVisible.value = true;

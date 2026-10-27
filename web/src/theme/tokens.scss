@@ -82,6 +82,10 @@
   --admin-space-6: 24px;
   --admin-space-8: 32px;
 
+  /* 侧栏宽度：展开/收起只有这一份定义（app.scss 与 modern.scss 曾各写一套，228/70 与 240/64 并存） */
+  --admin-sidebar-width: 240px;
+  --admin-sidebar-width-collapsed: 64px;
+
   /* motion — 亮暗通用，applyTheme() 只覆盖颜色与尺寸，不会清掉时长 */
   --admin-duration-fast: 120ms;
   --admin-duration-base: 180ms;

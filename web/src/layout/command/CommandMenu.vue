@@ -1,7 +1,17 @@
 <template>
 	<transition name="command-fade">
 		<div v-if="isOpen" class="command-overlay" @click.self="close">
-			<div class="command-dialog" @keydown.down.prevent="navigateDown" @keydown.up.prevent="navigateUp" @keydown.enter.prevent="executeSelected">
+			<div
+				ref="dialogRef"
+				class="command-dialog"
+				role="dialog"
+				aria-modal="true"
+				:aria-label="$t('message.user.title2')"
+				@keydown.down.prevent="navigateDown"
+				@keydown.up.prevent="navigateUp"
+				@keydown.enter.prevent="executeSelected"
+				@keydown.tab="handleTab"
+			>
 				<!-- Search input header -->
 				<div class="command-header">
 					<svg class="command-search-icon" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
@@ -93,6 +103,7 @@ import { useThemeConfig } from '/@/stores/themeConfig';
 import { changeThemeMode } from '/@/shared/access/themePresets';
 import screenfull from 'screenfull';
 import mittBus from '/@/utils/mitt';
+import { FOCUSABLE_SELECTOR, wrapFocusIndex } from '/@/shared/ui/focusTrap';
 
 const { t } = useI18n();
 const router = useRouter();
@@ -106,6 +117,9 @@ const query = ref('');
 const selectedIndex = ref(0);
 const inputRef = ref<HTMLInputElement | null>(null);
 const bodyRef = ref<HTMLDivElement | null>(null);
+const dialogRef = ref<HTMLDivElement | null>(null);
+// 关闭时把焦点还给打开它的那个元素，键盘用户不会掉回页面顶部
+let restoreFocusTo: HTMLElement | null = null;
 
 interface FlatPage {
 	title: string;
@@ -212,6 +226,7 @@ watch(totalItems, () => {
 });
 
 const open = () => {
+	restoreFocusTo = document.activeElement as HTMLElement | null;
 	query.value = '';
 	selectedIndex.value = 0;
 	isOpen.value = true;
@@ -221,7 +236,24 @@ const open = () => {
 };
 
 const close = () => {
+	if (!isOpen.value) return;
 	isOpen.value = false;
+	restoreFocusTo?.focus?.();
+	restoreFocusTo = null;
+};
+
+// Tab 只在两端回环，中间交给浏览器（见 shared/ui/focusTrap.ts）
+const handleTab = (e: KeyboardEvent) => {
+	const items = dialogRef.value ? Array.from(dialogRef.value.querySelectorAll<HTMLElement>(FOCUSABLE_SELECTOR)) : [];
+	const target = wrapFocusIndex({
+		key: e.key,
+		shiftKey: e.shiftKey,
+		count: items.length,
+		currentIndex: items.indexOf(document.activeElement as HTMLElement),
+	});
+	if (target === null) return;
+	e.preventDefault();
+	items[target]?.focus();
 };
 
 const navigateDown = () => {
@@ -269,6 +301,10 @@ const handleKeyDown = (e: KeyboardEvent) => {
 		e.preventDefault();
 		if (isOpen.value) close();
 		else open();
+	} else if (e.key === 'Escape' && isOpen.value) {
+		// 焦点不在输入框时（例如 Tab 到别处）Esc 也要能关
+		e.preventDefault();
+		close();
 	} else if (e.key === '/' && !['INPUT', 'TEXTAREA'].includes((e.target as HTMLElement).tagName)) {
 		e.preventDefault();
 		open();

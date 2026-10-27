@@ -23,7 +23,7 @@ test('concurrent uploader batches keep one pending owner and respect the five-im
   const props = { modelValue: [{}, {}, {}] }, uploading = ref(false), events = [], queue = [];
   const { handleFiles } = execute(`${code}\nexports.handleFiles = handleFiles;`, {
     props, uploading, MAX_ICON_IMAGES: 5,
-    ElMessage: { warning() {}, error() {}, success() {} },
+    warningMessage() {}, errorMessage() {}, successMessage() {},
     emit: (event, value) => events.push([event, value]),
     update: value => { props.modelValue = value; },
     UploadImage: () => { const pending = deferred(); queue.push(pending); return pending.promise; },
@@ -56,7 +56,7 @@ test('delayed editor save retains edits made after the saved revision and schedu
       iconDrawingRenderer: { clear() {} }, remapSnapshotProductColumns: snapshot => snapshot,
       rowsPerBlock: () => 14, colsPerBlock: () => 6, storageColumnsPerBlock: () => 6,
       PRODUCT_COLUMN_SNAPSHOT_WIDTH: 200, renderIconDrawings: async () => {},
-      ElMessage: { info() {}, success() {}, error(error) { throw new Error(error); } },
+      infoMessage() {}, successMessage() {}, errorMessage(error) { throw new Error(error); },
       request: () => pending.promise, submissionId: ref(1), submissionName: ref('name'), submissionShop: ref('shop'),
       submissionPlatform: ref('京东'), currentTemplateType: ref('main_image'), submissionStatus: ref('draft'),
       canEditSubmission: ref(true), canShareSubmission: ref(true), lastSavedAt: ref(null), route: { path: '/product_spec', query: {} }, router: { replace() { navigations++; } },

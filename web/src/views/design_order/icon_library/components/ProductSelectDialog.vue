@@ -43,7 +43,8 @@
 
 <script setup lang="ts">
 import { nextTick, ref } from 'vue';
-import { ElMessage } from 'element-plus';
+import { warningMessage } from '/@/utils/message';
+
 
 import { GetProductOptions } from '/@/api/design_order/icon_library';
 import type { ProductItem } from '../types';
@@ -89,7 +90,7 @@ function handleSelection(selection: ProductItem[]) {
 function confirmSelection() {
 	const codes = selectedRows.value.map((item) => item.product_code);
 	if (!codes.length) {
-		ElMessage.warning('请至少选择一个商品');
+		warningMessage('请至少选择一个商品');
 		return;
 	}
 	emit('confirm', codes);

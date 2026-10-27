@@ -97,10 +97,10 @@
 
 <script lang="ts" setup name="iconLibrary">
 import { ref, reactive, computed, onMounted } from 'vue';
+import { successMessage, warningMessage } from '/@/utils/message';
 import { useFs } from '@fast-crud/fast-crud';
-import { ElMessage, ElMessageBox } from 'element-plus';
+import { ElMessageBox } from 'element-plus';
 import { Plus, ArrowDown, Loading } from '@element-plus/icons-vue';
-
 import * as iconApi from '/@/api/design_order/icon_library';
 import { ChangeStatus, BatchChangeStatus, BatchDelete, BatchAddProducts, BatchRemoveProducts } from '/@/api/design_order/icon_library';
 import { createCrudOptions } from './crud';
@@ -155,7 +155,7 @@ async function addSelectedProducts(codes: string[]) {
 	const iconId = productSelectorIconId.value;
 	if (!iconId) return;
 	await BatchAddProducts(iconId, codes);
-	ElMessage.success(`已添加 ${codes.length} 个商品`);
+	successMessage(`已添加 ${codes.length} 个商品`);
 	delete productCache[iconId];
 	await loadProducts({ id: iconId } as IconItem);
 	refresh();
@@ -176,14 +176,14 @@ async function changeStatus(row: IconItem) {
 		type: 'warning',
 	});
 	await ChangeStatus(row.id, target);
-	ElMessage.success(`Icon 已${label}`);
+	successMessage(`Icon 已${label}`);
 	refresh();
 }
 
 async function batchChangeStatus(target: 'enabled' | 'disabled') {
 	const rows = crudExpose.getBaseTableRef().getSelectionRows() as IconItem[];
 	if (!rows?.length) {
-		ElMessage.warning('请先勾选要操作的 Icon');
+		warningMessage('请先勾选要操作的 Icon');
 		return;
 	}
 	const label = target === 'enabled' ? '启用' : '停用';
@@ -191,7 +191,7 @@ async function batchChangeStatus(target: 'enabled' | 'disabled') {
 		type: 'warning',
 	});
 	await BatchChangeStatus(rows.map((r) => r.id), target);
-	ElMessage.success(`已批量${label} ${rows.length} 个 Icon`);
+	successMessage(`已批量${label} ${rows.length} 个 Icon`);
 	crudExpose.getBaseTableRef().clearSelection();
 	refresh();
 }
@@ -199,12 +199,12 @@ async function batchChangeStatus(target: 'enabled' | 'disabled') {
 async function batchRemove() {
 	const rows = crudExpose.getBaseTableRef().getSelectionRows() as IconItem[];
 	if (!rows?.length) {
-		ElMessage.warning('请先勾选要删除的 Icon');
+		warningMessage('请先勾选要删除的 Icon');
 		return;
 	}
 	const enabledRows = rows.filter((row) => row.status !== 'disabled');
 	if (enabledRows.length) {
-		ElMessage.warning('只有停用状态的 Icon 可以删除，请先停用后再操作');
+		warningMessage('只有停用状态的 Icon 可以删除，请先停用后再操作');
 		return;
 	}
 	await ElMessageBox.confirm(
@@ -213,7 +213,7 @@ async function batchRemove() {
 		{ type: 'error' }
 	);
 	await BatchDelete(rows.map((r) => r.id));
-	ElMessage.success(`已批量删除 ${rows.length} 个 Icon`);
+	successMessage(`已批量删除 ${rows.length} 个 Icon`);
 	crudExpose.getBaseTableRef().clearSelection();
 	refresh();
 }
@@ -237,7 +237,7 @@ async function removeExpandedProducts(row: IconItem) {
 		type: 'warning',
 	});
 	await BatchRemoveProducts(row.id, codes);
-	ElMessage.success('商品已移出');
+	successMessage('商品已移出');
 	delete productCache[row.id];
 	expandedSelected[row.id] = [];
 	await loadProducts(row);
@@ -249,7 +249,7 @@ async function removeOne(row: IconItem, product: any) {
 		type: 'warning',
 	});
 	await BatchRemoveProducts(row.id, [product.product_code]);
-	ElMessage.success('商品已移出');
+	successMessage('商品已移出');
 	delete productCache[row.id];
 	expandedSelected[row.id] = [];
 	await loadProducts(row);

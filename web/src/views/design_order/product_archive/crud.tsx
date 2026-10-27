@@ -1,5 +1,5 @@
 import { ref } from 'vue';
-import { ElMessage } from 'element-plus';
+import { errorMessage, successMessage, warningMessage } from '/@/utils/message';
 import { confirmDelete } from '/@/shared/ui/confirm';
 import * as api from '/@/api/design_order/product_archive';
 import {
@@ -60,18 +60,18 @@ export const createCrudOptions = function ({ crudExpose }: CreateCrudOptionsProp
 						show: auth('design_order:product_archive:Delete'),
 						click: async () => {
 							if (selectedRowKeys.value.length === 0) {
-								ElMessage.warning('请选择要删除的数据！');
+								warningMessage('请选择要删除的数据！');
 								return;
 							}
 							confirmDelete(selectedRowKeys.value.length).then(async (confirmed) => {
 								if (!confirmed) return;
 								const res = await api.BatchDelete(selectedRowKeys.value);
 								if (res.code === 2000) {
-									ElMessage.success('批量删除成功！');
+									successMessage('批量删除成功！');
 									selectedRowKeys.value = [];
 									crudExpose.doRefresh();
 								} else {
-									ElMessage.error(res.msg || '批量删除失败');
+									errorMessage(res.msg || '批量删除失败');
 								}
 							});
 						},

@@ -58,7 +58,7 @@ const setCollapseStyle = computed(() => {
 			return ['layout-aside-mobile', 'layout-aside-mobile-close'];
 		}
 	}
-	return [isCollapse ? 'layout-aside-pc-70' : 'layout-aside-pc-228'];
+	return [isCollapse ? 'layout-aside-pc-collapsed' : 'layout-aside-pc-expanded'];
 });
 
 // 设置显示/隐藏 logo（横向布局的 logo 在顶栏，不在侧栏）

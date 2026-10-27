@@ -149,8 +149,8 @@
 
 <script setup lang="ts">
 import { ref, computed } from 'vue';
+import { errorMessage, successMessage, warningMessage } from '/@/utils/message';
 import type { ElTable } from 'element-plus';
-import { ElMessage } from 'element-plus';
 import { scanGetApps, scanViewSet, scanBatchCreate } from '../../api';
 
 interface Button {
@@ -314,12 +314,12 @@ const handleScan = async () => {
     tableData.value = groups;
     expandedGroups.value = groups.map(g => g.viewset);
     if (groups.length === 0) {
-      ElMessage.warning('该 App 下未检测到 ViewSet 接口');
+      warningMessage('该 App 下未检测到 ViewSet 接口');
     } else {
       step.value = 2;
     }
   } catch (err: any) {
-    ElMessage.error(err?.message || '扫描失败');
+    errorMessage(err?.message || '扫描失败');
   } finally {
     scanning.value = false;
   }
@@ -327,7 +327,7 @@ const handleScan = async () => {
 
 const handleSubmit = async () => {
   if (!props.menuId) {
-    ElMessage.warning('未选中菜单');
+    warningMessage('未选中菜单');
     return;
   }
   const selected: any[] = [];
@@ -347,18 +347,18 @@ const handleSubmit = async () => {
   }
 
   if (selected.length === 0) {
-    ElMessage.warning('请至少选择一项');
+    warningMessage('请至少选择一项');
     return;
   }
 
   submitting.value = true;
   try {
     const res: any = await scanBatchCreate(props.menuId, selected);
-    ElMessage.success(res?.msg || `已创建 ${selected.length} 项`);
+    successMessage(res?.msg || `已创建 ${selected.length} 项`);
     emit('success');
     handleClose();
   } catch (err: any) {
-    ElMessage.error(err?.message || '创建失败');
+    errorMessage(err?.message || '创建失败');
   } finally {
     submitting.value = false;
   }

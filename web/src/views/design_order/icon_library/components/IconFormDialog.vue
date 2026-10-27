@@ -92,7 +92,8 @@
 
 <script setup lang="ts">
 import { nextTick, reactive, ref } from 'vue';
-import { ElMessage } from 'element-plus';
+import { successMessage, warningMessage } from '/@/utils/message';
+
 
 import * as api from '/@/api/design_order/icon_library';
 import { dictionary } from '/@/utils/dictionary';
@@ -164,15 +165,15 @@ function replaceProducts(codes: string[]) {
 async function validateProductCodes() {
 	const codes = splitProductCodes();
 	if (!form.brand) {
-		ElMessage.warning('请先选择品牌');
+		warningMessage('请先选择品牌');
 		return;
 	}
 	if (!codes.length) {
-		ElMessage.warning('请先填写商品编码');
+		warningMessage('请先填写商品编码');
 		return;
 	}
 	if (codes.length > MAX_BATCH_PRODUCTS) {
-		ElMessage.warning(`商品编码最多支持 ${MAX_BATCH_PRODUCTS} 条`);
+		warningMessage(`商品编码最多支持 ${MAX_BATCH_PRODUCTS} 条`);
 		return;
 	}
 	await validationDialogRef.value?.open(codes, form.brand);
@@ -197,11 +198,11 @@ async function submit() {
 	await formRef.value?.validate();
 	const productCodes = form.scope_type === 'selected' ? parseProductCodes() : [];
 	if (form.scope_type === 'selected' && !productCodes.length) {
-		ElMessage.warning('指定商品范围至少需要一个商品编码');
+		warningMessage('指定商品范围至少需要一个商品编码');
 		return;
 	}
 	if (productCodes.length > MAX_BATCH_PRODUCTS) {
-		ElMessage.warning(`商品编码最多支持 ${MAX_BATCH_PRODUCTS} 条`);
+		warningMessage(`商品编码最多支持 ${MAX_BATCH_PRODUCTS} 条`);
 		return;
 	}
 	saving.value = true;
@@ -211,7 +212,7 @@ async function submit() {
 			? await api.UpdateObj(payload)
 			: await api.AddObj(payload);
 		const savedIconId = form.id || Number(response?.data?.id) || undefined;
-		ElMessage.success('Icon 保存成功');
+		successMessage('Icon 保存成功');
 		visible.value = false;
 		emit('saved', savedIconId);
 	} finally {

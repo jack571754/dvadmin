@@ -494,9 +494,10 @@
 
 <script lang="ts" setup name="productSpec">
 import { ref, computed, watch, onMounted, onBeforeUnmount, nextTick } from 'vue';
+import { errorMessage, infoMessage, successMessage, warningMessage } from '/@/utils/message';
 import { onBeforeRouteLeave, useRoute, useRouter } from 'vue-router';
 import { request } from '/@/utils/service';
-import { ElMessage, ElMessageBox } from 'element-plus';
+import { ElMessageBox } from 'element-plus';
 import { Plus, FolderChecked, Download, Search, ArrowLeft, Checked, CircleCloseFilled, WarningFilled, Link, Delete, CopyDocument, RefreshLeft, FullScreen, ScaleToOriginal } from '@element-plus/icons-vue';
 import * as ElementPlusIconsVue from '@element-plus/icons-vue';
 import { CellValueType, createUniver, LocaleType } from '@univerjs/presets';
@@ -1444,7 +1445,7 @@ const blockUniverPaste = (event: Event) => {
 	if (!isUniverInteractionEvent(event)) return;
 	event.preventDefault();
 	event.stopPropagation();
-	ElMessage.warning('当前规格表禁用粘贴，请通过新增产品维护内容');
+	warningMessage('当前规格表禁用粘贴，请通过新增产品维护内容');
 };
 
 const handleUniverPaste = (event: ClipboardEvent) => {
@@ -1577,14 +1578,14 @@ const openRichTextFormatting = () => {
 	if (!ensureEditableSubmission()) return;
 	const target = formattingPointerCell.value || getActiveCellCoordinates();
 	if (!target || !isFormattingCell(target.row, target.col)) {
-		ElMessage.warning('请在可编辑的商品内容单元格上点击右键');
+		warningMessage('请在可编辑的商品内容单元格上点击右键');
 		return;
 	}
 	const range = workbook.getActiveSheet().getRange(target.row, target.col, 1, 1);
 	const richText = range.getRichTextValue();
 	const text = richText?.toPlainText() ?? String(range.getValue() ?? '');
 	if (!text) {
-		ElMessage.warning('当前单元格没有可设置样式的文字');
+		warningMessage('当前单元格没有可设置样式的文字');
 		return;
 	}
 	richTextTargetCell.value = target;
@@ -1614,7 +1615,7 @@ const commitSubmissionNameEdit = () => {
 	if (!isEditingSubmissionName.value) return;
 	const name = submissionNameDraft.value.trim();
 	if (!name) {
-		ElMessage.warning('提报名称不能为空');
+		warningMessage('提报名称不能为空');
 		nextTick(() => submissionNameInputRef.value?.focus());
 		return;
 	}
@@ -2001,9 +2002,9 @@ const copyEfficacyAssistant = async () => {
 	if (!formEfficacyAssistantText.value) return;
 	try {
 		await copyTextToClipboard(formEfficacyAssistantText.value);
-		ElMessage.success('产品档案功效辅助信息已复制');
+		successMessage('产品档案功效辅助信息已复制');
 	} catch {
-		ElMessage.error('复制失败，请手动选择复制');
+		errorMessage('复制失败，请手动选择复制');
 	}
 };
 
@@ -2111,7 +2112,7 @@ const selectMainProductFromDropdown = (prod: DBProductItem) => {
 
 const ensureMainProductName = () => {
 	if (formMainProducts.value.length > 0) return true;
-	ElMessage.warning('没有该产品请先维护');
+	warningMessage('没有该产品请先维护');
 	return false;
 };
 
@@ -2142,7 +2143,7 @@ const addSelectedTierGiftFromForm = (tierId: number) => {
 		(item) => getProductSelectionKey(item) === selectedKey
 	);
 	if (!product) {
-		ElMessage.warning('请先选择赠品商品');
+		warningMessage('请先选择赠品商品');
 		return;
 	}
 	addTierGiftFromForm(tierId, product);
@@ -2199,9 +2200,9 @@ const handleDialogCancel = () => {
 const ensureEditableSubmission = () => {
 	if (canEditSubmission.value) return true;
 	if (submissionStatus.value === 'submitted') {
-		ElMessage.warning('当前提报已正式提交归档锁定，仅支持查看与导出！');
+		warningMessage('当前提报已正式提交归档锁定，仅支持查看与导出！');
 	} else {
-		ElMessage.warning('当前工单为只读，您没有修改权限');
+		warningMessage('当前工单为只读，您没有修改权限');
 	}
 	return false;
 };
@@ -2217,7 +2218,7 @@ const ensureDialogCanWrite = () => {
 	if (!ensureMainProductName()) return false;
 	const targetIndex = isAddingNewProduct.value ? findFirstBlankColumnIndex() : currentColIndex.value;
 	if (targetIndex < 0) {
-		ElMessage.error('规格表未初始化，无法回显');
+		errorMessage('规格表未初始化，无法回显');
 		return false;
 	}
 	ensureProductColumnExists(targetIndex);
@@ -2275,7 +2276,7 @@ const handleDialogConfirm = () => {
 	commitColumnNameDraft();
 	isAddingNewProduct.value = false;
 	formDialogVisible.value = false;
-	ElMessage.success('已回显到规格表');
+	successMessage('已回显到规格表');
 };
 
 const handleDialogContinueAdd = () => {
@@ -2283,7 +2284,7 @@ const handleDialogContinueAdd = () => {
 	if (!writeDialogToSheet()) return;
 	commitColumnNameDraft();
 	prepareNextAddForm();
-	ElMessage.success('已回显，可继续新增');
+	successMessage('已回显，可继续新增');
 };
 
 const moveProductCardCells = (activeSheet: any, sourceIndex: number, targetIndex: number) => {
@@ -2720,7 +2721,7 @@ const duplicateProductCard = (sourceIndex: number) => {
 	const activeSheet = workbook?.getActiveSheet();
 	if (!activeSheet || formCount.value < 1) throw new Error('规格表尚未初始化');
 	if (!isProductCardPopulated(activeSheet, sourceIndex)) {
-		ElMessage.warning('空白商品提报不能复制');
+		warningMessage('空白商品提报不能复制');
 		return;
 	}
 
@@ -2756,7 +2757,7 @@ const duplicateProductCard = (sourceIndex: number) => {
 	try { activeSheet.autoResizeRows(getProductCoords(targetIndex, rowsPerBlock(), colsPerBlock()).blockStartRow, rowsPerBlock()); } catch { /* ignore */ }
 	window.dispatchEvent(new Event('resize'));
 	markDirty();
-	ElMessage.success(`已复制 ${getProductDisplayLabel(sourceIndex)}，生成 ${getProductDisplayLabel(targetIndex)}`);
+	successMessage(`已复制 ${getProductDisplayLabel(sourceIndex)}，生成 ${getProductDisplayLabel(targetIndex)}`);
 };
 
 // ========== 批量应用 ==========
@@ -2824,17 +2825,17 @@ const openBatchApplyDialog = () => {
 	if (!ensureEditableSubmission()) return;
 	const activeSheet = workbook?.getActiveSheet();
 	if (!activeSheet) {
-		ElMessage.error('规格表尚未初始化');
+		errorMessage('规格表尚未初始化');
 		return;
 	}
 	if (formCount.value < 2) {
-		ElMessage.warning('至少需要两个商品提报才能批量应用');
+		warningMessage('至少需要两个商品提报才能批量应用');
 		return;
 	}
 
 	const fields = listBatchApplyFields(batchApplyDeps);
 	if (!fields.length) {
-		ElMessage.warning('当前模板没有可批量应用的字段');
+		warningMessage('当前模板没有可批量应用的字段');
 		return;
 	}
 	batchApplyFields.value = fields;
@@ -2872,7 +2873,7 @@ const undoLastBatchApply = () => {
 	lastBatchApplyUndo.value = null;
 	syncUniverToForm();
 	markDirty();
-	ElMessage.success('已撤销上一次批量应用');
+	successMessage('已撤销上一次批量应用');
 };
 
 const refreshBatchDerivedContent = (
@@ -2942,7 +2943,7 @@ const handleBatchApply = (payload: {
 	if (!ensureEditableSubmission()) return;
 	const activeSheet = workbook?.getActiveSheet();
 	if (!activeSheet) {
-		ElMessage.error('规格表尚未初始化');
+		errorMessage('规格表尚未初始化');
 		return;
 	}
 
@@ -2966,7 +2967,7 @@ const handleBatchApply = (payload: {
 		resizeBatchTargetRows(activeSheet, payload.targetIndexes);
 	} catch (error) {
 		console.error('批量应用失败', error);
-		ElMessage.error(error instanceof Error ? error.message : '批量应用失败');
+		errorMessage(error instanceof Error ? error.message : '批量应用失败');
 		return;
 	} finally {
 		isHandlingEvent = false;
@@ -2980,12 +2981,12 @@ const handleBatchApply = (payload: {
 		efficacyItemsByCard: efficacyItemsBeforeApply,
 		iconRefsByCard: iconRefsBeforeApply,
 	};
-	ElMessage({
-		type: 'success',
-		duration: 6000,
-		showClose: true,
-		message: `已将 ${result.fieldCount} 个字段应用到${result.targetCount === formCount.value ? '全部 ' : '所选 '}${result.targetCount} 个商品（共 ${result.cellCount} 个单元格）`,
-	});
+	// 批量应用有撤销窗口，给足 6s 阅读时间（showClose 由门面统一，不再单独开）
+	successMessage(
+		`已将 ${result.fieldCount} 个字段应用到${result.targetCount === formCount.value ? '全部 ' : '所选 '}${result.targetCount} 个商品（共 ${result.cellCount} 个单元格）`,
+		undefined,
+		{ duration: 6000 },
+	);
 };
 
 const clearProductCardCells = (activeSheet: any, productIndex: number) => {
@@ -3085,7 +3086,7 @@ const handleDeleteCurrentProduct = async () => {
 	} catch (error) {
 		if (error === 'cancel' || error === 'close') return;
 		console.error('删除商品提报失败:', error);
-		ElMessage.error(error instanceof Error ? error.message : '删除商品提报失败');
+		errorMessage(error instanceof Error ? error.message : '删除商品提报失败');
 	} finally {
 		isDeletingProduct.value = false;
 	}
@@ -3702,7 +3703,7 @@ const appendNewProductColumn = (announce = true) => {
 	scheduleProductColumnWidthUpdate();
 	try { activeSheet.autoResizeRows(blockStartRow, rpb); } catch { /* ignore */ }
 	window.dispatchEvent(new Event('resize'));
-	if (announce) ElMessage.success(`已追加第 ${formCount.value} 列商品配置项`);
+	if (announce) successMessage(`已追加第 ${formCount.value} 列商品配置项`);
 	renderProductCopyIcons();
 	markDirty();
 };
@@ -3812,7 +3813,7 @@ const saveWorkbookData = async (statusVal: string = 'draft', options: { silent?:
 	}
 
 	if (productsList.length === 0 && statusVal === 'submitted') {
-		ElMessage.warning('当前没有已填写的有效产品卡片数据！');
+		warningMessage('当前没有已填写的有效产品卡片数据！');
 		isSaving.value = false;
 		return;
 	}
@@ -3837,7 +3838,7 @@ const saveWorkbookData = async (statusVal: string = 'draft', options: { silent?:
 
 	try {
 		// 自动保存不喊：工具栏的「已保存 HH:mm」就是它的回声
-		if (!options.silent) ElMessage.info('正在保存提报数据...');
+		if (!options.silent) infoMessage('正在保存提报数据...');
 		const result = await request({
 			url: '/api/design_order/product_archives/save_spec/',
 			method: 'post',
@@ -3872,7 +3873,7 @@ const saveWorkbookData = async (statusVal: string = 'draft', options: { silent?:
 			}
 
 			if (!options.silent) {
-				ElMessage.success(persistedStatus === 'submitted' ? '活动提报已正式提交归档并锁定编辑！' : '提报草稿已成功保存入库！');
+				successMessage(persistedStatus === 'submitted' ? '活动提报已正式提交归档并锁定编辑！' : '提报草稿已成功保存入库！');
 			}
 				if (editRevision === savingRevision) isDirty.value = false;
 				else resetAutoSaveTimer();
@@ -3881,7 +3882,7 @@ const saveWorkbookData = async (statusVal: string = 'draft', options: { silent?:
 			throw new Error(result.msg || '保存失败');
 		}
 	} catch (err: any) {
-		ElMessage.error(`保存失败: ${err.message || '网络连接错误'}`);
+		errorMessage(`保存失败: ${err.message || '网络连接错误'}`);
 		console.log('本地结构化备份数据:', productsList);
 	} finally {
 		isSaving.value = false;
@@ -3890,7 +3891,7 @@ const saveWorkbookData = async (statusVal: string = 'draft', options: { silent?:
 
 const handleShareLink = async () => {
 	if (!canShareSubmission.value) {
-		ElMessage.warning('当前用户没有该工单的分享权限');
+		warningMessage('当前用户没有该工单的分享权限');
 		return;
 	}
 	if (isSharing.value) return;
@@ -3929,7 +3930,7 @@ const createAndCopyShareLink = async () => {
 		if (!shareCode) throw new Error('后端未返回分享码');
 		const shareUrl = result.data?.shareUrl || BuildShareUrl(shareCode);
 		if (await copyShareUrl(shareUrl)) {
-			ElMessage.success('分享链接已复制');
+			successMessage('分享链接已复制');
 		}
 	} catch (error: any) {
 		ElMessageBox.alert(error?.message || error?.msg || '分享链接生成失败', '分享失败');
@@ -4086,7 +4087,7 @@ const goBackToList = async () => {
 // ========== 导出数据 (CSV) ==========
 const exportToCSV = () => {
 	if (!workbook?.getActiveSheet()) {
-		ElMessage.warning('表格尚未加载，无法导出');
+		warningMessage('表格尚未加载，无法导出');
 		return;
 	}
 
@@ -4100,7 +4101,7 @@ const exportToCSV = () => {
 		productLabel: (index) => getProductDisplayLabel(index),
 	});
 	downloadCsvFile(`商品活动提报配置表_${new Date().toLocaleDateString()}.csv`, csvContent);
-	ElMessage.success('成功导出提报对比数据！');
+	successMessage('成功导出提报对比数据！');
 };
 
 // ========== 搜索定位与匹配列高亮 ==========
@@ -4274,7 +4275,7 @@ onMounted(async () => {
 				storageColumnsPerBlock(),
 			);
 			initUniver(filteredSnapshot);
-			ElMessage.success(`成功加载提报“${submissionName.value}”的数据！`);
+			successMessage(`成功加载提报“${submissionName.value}”的数据！`);
 		} else {
 			submissionId.value = null;
 			submissionName.value = '';
@@ -4293,7 +4294,7 @@ onMounted(async () => {
 		}
 	} catch (err) {
 		console.error('加载规格提报或模板配置失败:', err);
-		ElMessage.error(err instanceof Error ? err.message : '加载规格提报或模板配置失败');
+		errorMessage(err instanceof Error ? err.message : '加载规格提报或模板配置失败');
 	}
 	observeProductColumnWidth();
 

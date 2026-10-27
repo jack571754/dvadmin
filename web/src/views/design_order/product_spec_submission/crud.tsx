@@ -1,8 +1,9 @@
 import * as api from '/@/api/design_order/product_spec_submission';
+import { errorMessage, successMessage } from '/@/utils/message';
 import { dict, useCompute, UserPageQuery, AddReq, DelReq, EditReq, CreateCrudOptionsProps, CreateCrudOptionsRet, CrudExpose } from '@fast-crud/fast-crud';
 import { auth } from '/@/utils/authFunction';
 import router from '/@/router/index';
-import { ElMessageBox, ElMessage } from 'element-plus';
+import { ElMessageBox } from 'element-plus';
 import { shallowRef } from 'vue';
 import { CreateShareLink } from '/@/api/design_order/product_spec_share';
 import { copyTextToClipboard } from '/@/utils/clipboard';
@@ -13,7 +14,7 @@ const { compute } = useCompute();
 
 const openProductSpec = async (submissionId: number, extraQuery: Record<string, string> = {}) => {
 	if (!submissionId) {
-		ElMessage.error('提报记录缺少 ID，无法查看详情');
+		errorMessage('提报记录缺少 ID，无法查看详情');
 		return;
 	}
 	ensureProductSpecEditorRoute();
@@ -24,7 +25,7 @@ const openProductSpec = async (submissionId: number, extraQuery: Record<string, 
 		});
 	} catch (error) {
 		console.error('打开规格提报详情失败', error);
-		ElMessage.error('打开规格提报详情失败，请刷新页面后重试');
+		errorMessage('打开规格提报详情失败，请刷新页面后重试');
 	}
 };
 
@@ -49,7 +50,7 @@ const handleShareSpec = async (row: any) => {
 		const shareUrl = result.data?.shareUrl;
 		if (!shareUrl) throw new Error(result.msg || '后端未返回分享链接');
 		if (await copyShareUrl(shareUrl)) {
-			ElMessage.success('分享链接已复制');
+			successMessage('分享链接已复制');
 		}
 	} catch (error: any) {
 		await ElMessageBox.alert(error?.message || error?.msg || '分享链接生成失败', '分享失败');
@@ -74,7 +75,7 @@ const openReuseForm = async (crudExpose: CrudExpose, row: any) => {
 		doSubmit: async ({ form }: any) => {
 			const res: any = await api.CopyObj(row.id, { name: form.name, shop: form.shop });
 			if (!res.data?.id) throw new Error(res.msg || '复用提报失败');
-			ElMessage.success('提报复用成功，正在进入新表格...');
+			successMessage('提报复用成功，正在进入新表格...');
 			await openProductSpec(res.data.id);
 			return res;
 		},
@@ -101,7 +102,7 @@ export const createCrudOptions = function ({ crudExpose }: CreateCrudOptionsProp
 		// 新建提报逻辑：新建成功后，自动重定向到表格编辑页
 		const res: any = await api.AddObj(form);
 		if (res.code === 2000 && res.data && res.data.id) {
-			ElMessage.success('提报历史创建成功，正在跳转到规格表编辑...');
+			successMessage('提报历史创建成功，正在跳转到规格表编辑...');
 			await openProductSpec(res.data.id, { entry: 'create' });
 		}
 		return res;

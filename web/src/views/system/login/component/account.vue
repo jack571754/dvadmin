@@ -69,7 +69,7 @@
 <script lang="ts">
 import { toRefs, reactive, defineComponent, computed, onMounted, ref } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
-import { ElMessage, FormRules } from 'element-plus';
+import { FormRules } from 'element-plus';
 import { useI18n } from 'vue-i18n';
 import Cookies from 'js-cookie';
 import { storeToRefs } from 'pinia';
@@ -83,7 +83,7 @@ import * as loginApi from '/@/views/system/login/api';
 import { useUserInfo } from '/@/stores/userInfo';
 import { SystemConfigStore } from '/@/stores/systemConfig';
 import { Md5 } from 'ts-md5';
-import { errorMessage } from '/@/utils/message';
+import { errorMessage, successMessage } from '/@/utils/message';
 import { getBaseURL } from '/@/utils/baseUrl';
 
 export default defineComponent({
@@ -218,7 +218,7 @@ export default defineComponent({
 				}
 				state.loading.signIn = false;
 				const signInText = t('message.pages.login.signInText');
-				ElMessage.success(`${currentTimeInfo}，${signInText}`);
+				successMessage(`${currentTimeInfo}，${signInText}`);
 			}
 			NextLoading.start();
 		};

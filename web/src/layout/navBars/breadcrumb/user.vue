@@ -107,8 +107,8 @@
 
 <script setup lang="ts" name="layoutBreadcrumbUser">
 import { defineAsyncComponent, ref, computed, reactive, onMounted } from 'vue';
+import { warningMessage } from '/@/utils/message';
 import { useRouter } from 'vue-router';
-import { ElMessageBox, ElMessage } from 'element-plus';
 import screenfull from 'screenfull';
 import { useI18n } from 'vue-i18n';
 import { storeToRefs } from 'pinia';
@@ -120,6 +120,7 @@ import { request } from '/@/utils/service';
 import other from '/@/utils/other';
 import mittBus from '/@/utils/mitt';
 import { Session, Local } from '/@/utils/storage';
+import { confirmLogout, logout } from '/@/shared/access/logout';
 
 // 引入组件
 const UserNews = defineAsyncComponent(() => import('/@/layout/navBars/breadcrumb/userNews.vue'));
@@ -165,7 +166,7 @@ const onToggleDarkMode = () => {
 // 全屏点击时
 const onScreenfullClick = () => {
 	if (!screenfull.isEnabled) {
-		ElMessage.warning(t('message.user.fullscreenNotSupported'));
+		warningMessage(t('message.user.fullscreenNotSupported'));
 		return false;
 	}
 	screenfull.toggle();
@@ -181,37 +182,10 @@ const onLayoutSetingClick = () => {
 };
 
 // 下拉菜单点击时
-const onHandleCommandClick = (path: string) => {
+const onHandleCommandClick = async (path: string) => {
 	if (path === 'logOut') {
-		ElMessageBox({
-			closeOnClickModal: false,
-			closeOnPressEscape: false,
-			title: t('message.user.logOutTitle'),
-			message: t('message.user.logOutMessage'),
-			showCancelButton: true,
-			confirmButtonText: t('message.user.logOutConfirm'),
-			cancelButtonText: t('message.user.logOutCancel'),
-			buttonSize: 'default',
-			beforeClose: (action, instance, done) => {
-				if (action === 'confirm') {
-					instance.confirmButtonLoading = true;
-					instance.confirmButtonText = t('message.user.logOutExit');
-					setTimeout(() => {
-						done();
-						setTimeout(() => {
-							instance.confirmButtonLoading = false;
-						}, 300);
-					}, 700);
-				} else {
-					done();
-				}
-			},
-		})
-			.then(async () => {
-				Session.clear();
-				await router.replace('/login');
-			})
-			.catch(() => {});
+		if (!(await confirmLogout(t))) return;
+		await logout(router);
 	} else if (path === 'wareHouse') {
 		window.open('https://gitee.com/huge-dream/django-vue3-admin');
 	} else if (path === '/versionUpgradeLog') {

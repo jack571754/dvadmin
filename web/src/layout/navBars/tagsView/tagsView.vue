@@ -45,9 +45,9 @@
 
 <script setup lang="ts" name="layoutTagsView">
 import { defineAsyncComponent, reactive, onMounted, computed, ref, nextTick, onBeforeUpdate, onBeforeMount, onUnmounted, watch } from 'vue';
+import { warningMessage } from '/@/utils/message';
 import { useRoute, useRouter, onBeforeRouteUpdate } from 'vue-router';
 import Sortable from 'sortablejs';
-import { ElMessage } from 'element-plus';
 import { storeToRefs } from 'pinia';
 import pinia from '/@/stores/index';
 import { useTagsViewRoutes } from '/@/stores/tagsViewRoutes';
@@ -407,7 +407,7 @@ const getCurrentRouteItem = (item: RouteItem): any => {
 // 当前项右键菜单点击
 const onCurrentContextmenuClick = async (item: RouteItem) => {
 	item.commonUrl = transUrlParams(item);
-	if (!getCurrentRouteItem(item)) return ElMessage({ type: 'warning', message: '请正确输入路径及完整参数（query、params）' });
+	if (!getCurrentRouteItem(item)) return warningMessage('请正确输入路径及完整参数（query、params）');
 	const { path, name, params, query, meta, url } = getCurrentRouteItem(item);
 	switch (item.contextMenuClickId) {
 		case 0:

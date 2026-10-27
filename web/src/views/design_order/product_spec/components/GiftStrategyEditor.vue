@@ -82,8 +82,9 @@
 
 <script lang="ts" setup>
 import { reactive } from 'vue';
+import { warningMessage } from '/@/utils/message';
 import { Close, Delete, Plus } from '@element-plus/icons-vue';
-import { ElMessage } from 'element-plus';
+
 
 import { getProductSelectionKey } from '../productSearch';
 import type { DBProductItem } from '../types';
@@ -148,7 +149,7 @@ const addGift = (strategyId: string) => {
 	const selectedKey = selectedProductKeys[strategyId];
 	const product = props.products.find((item) => getProductSelectionKey(item) === selectedKey);
 	if (!product) {
-		ElMessage.warning('请先选择赠品商品');
+		warningMessage('请先选择赠品商品');
 		return;
 	}
 	emit('update:modelValue', props.modelValue.map((strategy) => strategy.id === strategyId

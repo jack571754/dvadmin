@@ -30,11 +30,12 @@
 
 <script lang="ts" setup>
 import { ref, onMounted, reactive, computed, watch } from 'vue';
+import { successMessage } from '/@/utils/message';
 import { useI18n } from 'vue-i18n';
 import { useFs } from '@fast-crud/fast-crud';
 import { createCrudOptions } from './crud';
 import { MenuTreeItemType } from '../../types';
-import { ElMessage, ElMessageBox } from 'element-plus';
+import { ElMessageBox } from 'element-plus';
 import XEUtils from 'xe-utils';
 import { BatchDelete } from './api';
 import { Close, Delete } from '@element-plus/icons-vue';
@@ -82,7 +83,7 @@ const handleBatchDelete = async () => {
 	await BatchDelete(XEUtils.pluck(selectedRows.value, 'id'));
 	selectedRows.value = [];
 	await crudExpose.doRefresh();
-	ElMessage.success(t('message.pages.menu.messages.deleteSuccess'));
+	successMessage(t('message.pages.menu.messages.deleteSuccess'));
 };
 
 // 移除已选中的行

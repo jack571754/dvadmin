@@ -50,7 +50,7 @@
 
 <script setup lang="ts">
 import { ref, onMounted, onUnmounted } from 'vue';
-import { ElMessage } from 'element-plus';
+import { errorMessage, successMessage, warningMessage } from '/@/utils/message';
 import { Loading, Plus } from '@element-plus/icons-vue';
 
 import { UploadImage } from '/@/api/design_order/icon_library';
@@ -132,17 +132,17 @@ async function handleFiles(files: File[]) {
 	if (uploading.value) return;
 	const imageFiles = files.filter((f) => f.type.startsWith('image/'));
 	if (!imageFiles.length) {
-		ElMessage.warning('请选择图片文件');
+		warningMessage('请选择图片文件');
 		return;
 	}
 	const remaining = MAX_ICON_IMAGES - props.modelValue.length;
 	if (remaining <= 0) {
-		ElMessage.warning(`最多 ${MAX_ICON_IMAGES} 张图片`);
+		warningMessage(`最多 ${MAX_ICON_IMAGES} 张图片`);
 		return;
 	}
 	const toUpload = imageFiles.slice(0, remaining);
 	if (imageFiles.length > remaining) {
-		ElMessage.warning(`最多 ${MAX_ICON_IMAGES} 张，已截取前 ${remaining} 张`);
+		warningMessage(`最多 ${MAX_ICON_IMAGES} 张，已截取前 ${remaining} 张`);
 	}
 	uploading.value = true;
 	emit('uploading-change', true);
@@ -152,9 +152,9 @@ async function handleFiles(files: File[]) {
 			const response: any = await UploadImage(file);
 			update([...props.modelValue, response.data]);
 		}
-		ElMessage.success('图片上传成功');
+		successMessage('图片上传成功');
 	} catch {
-		ElMessage.error('图片上传失败');
+		errorMessage('图片上传失败');
 	} finally {
 		uploading.value = false;
 		emit('uploading-change', false);

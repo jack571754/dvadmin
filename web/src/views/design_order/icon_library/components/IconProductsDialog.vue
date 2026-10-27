@@ -70,8 +70,8 @@
 
 <script setup lang="ts">
 import { computed, ref } from 'vue';
-import { ElMessage, ElMessageBox } from 'element-plus';
-
+import { successMessage, warningMessage } from '/@/utils/message';
+import { ElMessageBox } from 'element-plus';
 import * as api from '/@/api/design_order/icon_library';
 import { auth } from '/@/utils/authFunction';
 import { PERMISSION_PREFIX } from '../constants';
@@ -130,7 +130,7 @@ async function addCodes(codes: string[]) {
 	const response: any = await api.BatchAddProducts(icon.value.id, codes);
 	const added = response.data?.added?.length || 0;
 	const existing = response.data?.existing?.length || 0;
-	ElMessage.success(`新增 ${added} 个，已关联 ${existing} 个`);
+	successMessage(`新增 ${added} 个，已关联 ${existing} 个`);
 	batchText.value = '';
 	await loadProducts();
 	emit('changed', icon.value.id);
@@ -139,7 +139,7 @@ async function addCodes(codes: string[]) {
 async function addByText() {
 	const codes = parseCodes(batchText.value);
 	if (!codes.length) {
-		ElMessage.warning('请填写商品编码');
+		warningMessage('请填写商品编码');
 		return;
 	}
 	await addCodes(codes);
@@ -151,7 +151,7 @@ async function removeCodes(codes: string[]) {
 		type: 'warning',
 	});
 	await api.BatchRemoveProducts(icon.value.id, codes);
-	ElMessage.success('商品已移出');
+	successMessage('商品已移出');
 	await loadProducts();
 	emit('changed', icon.value.id);
 }
@@ -159,7 +159,7 @@ async function removeCodes(codes: string[]) {
 async function removeSelected() {
 	const codes = selectedRows.value.map((item) => item.product_code);
 	if (!codes.length) {
-		ElMessage.warning('请选择要移出的商品');
+		warningMessage('请选择要移出的商品');
 		return;
 	}
 	await removeCodes(codes);
