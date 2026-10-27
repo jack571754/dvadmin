@@ -47,7 +47,7 @@ export default {
             quickNavigationTool: '快捷导航工具',
         },
         footer: {
-            copyright: ' ❤️ Powered by DVAdmin Copyright © 巨梦科技·DVAdmin团队 ❤️',
+            copyright: ' ❤️ ❤️',
         },
         router: {
             home: '首页',
@@ -91,6 +91,8 @@ export default {
         common: {
             logoutPrompt: '你已被登出，请重新登录',
             prompt: '提示',
+            ok: '确定',
+            cancel: '取消',
             networkTimeout: '网络超时',
             networkError: '网络连接错误',
             endpointNotFound: '接口路径找不到',

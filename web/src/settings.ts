@@ -15,7 +15,7 @@ import { Session } from '/@/utils/storage';
 //扩展包
 import {FsExtendsEditor, FsExtendsUploader } from '@fast-crud/fast-extends';
 import '@fast-crud/fast-extends/dist/style.css';
-import {successNotification} from '/@/utils/message';
+import {feedback} from '/@/shared/ui/feedback';
 import XEUtils from "xe-utils";
 export default {
     async install(app: any, options: any) {
@@ -58,10 +58,10 @@ export default {
                     form: {
                         afterSubmit(ctx: any) {
                             const {res} = ctx
-                            // 增加crud提示
+                            // 保存成功是"用户刚触发的动作"，走 toast 而不是占右上角通知位
                             if (res?.code == 2000) {
-                                successNotification(ctx.res.msg);
-                            }else{
+                                feedback({ level: 'toast', tone: 'success', message: ctx.res.msg });
+                            } else {
                                 return
                             }
                         },

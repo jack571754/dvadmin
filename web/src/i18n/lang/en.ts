@@ -8,7 +8,7 @@ export default {
       quickNavigationTool: 'Quick Navigation Tools',
     },
     footer: {
-      copyright: ' ❤️ Powered by DVAdmin Copyright © DVAdmin Team ❤️',
+      copyright: ' ❤️❤️',
     },
     router: {
       home: 'Home',
@@ -88,6 +88,8 @@ export default {
     common: {
       logoutPrompt: 'You have been logged out, please log in again',
       prompt: 'Prompt',
+      ok: 'Confirm',
+      cancel: 'Cancel',
       networkTimeout: 'Network timeout',
       networkError: 'Network connection error',
       endpointNotFound: 'Endpoint not found',

@@ -8,7 +8,7 @@ export default {
       quickNavigationTool: '快捷導航工具',
     },
     footer: {
-      copyright: ' ❤️ Powered by DVAdmin Copyright © 巨夢科技·DVAmin團隊 ❤️',
+      copyright: ' ❤️❤️',
     },
     router: {
       home: '首頁',
@@ -88,6 +88,8 @@ export default {
     common: {
       logoutPrompt: '你已被登出，請重新登錄',
       prompt: '提示',
+      ok: '確定',
+      cancel: '取消',
       networkTimeout: '網路超時',
       networkError: '網路連接錯誤',
       endpointNotFound: '接口路徑找不到',

@@ -1,42 +1,46 @@
-import { ElMessage, ElNotification, MessageOptions } from 'element-plus';
-import { i18n } from '/@/i18n/index';
+import { MessageOptions } from 'element-plus';
+import { feedback } from '/@/shared/ui/feedback';
+import type { FeedbackTone } from '/@/shared/ui/feedback';
 
-function resolveMessage(key: string, params?: Record<string, unknown>): string {
-	if (!key) return '';
-	// If the key contains Chinese characters, treat as raw string (backward compatibility)
-	// Otherwise treat as translation key
-	if (/[\u4e00-\u9fff]/.test(key)) return key;
-	return params ? (i18n.global.t(key, params) as string) : (i18n.global.t(key) as string);
+/**
+ * 兼容层：历史调用点保留原签名，内部一律转调 shared/ui/feedback 的反馈门面。
+ * 新代码请直接 import { feedback }；同一动作只回一次声，见 docs/frontend-refactor-design.md §5.2。
+ */
+function toast(key: string, tone: FeedbackTone, params?: Record<string, unknown>, option?: MessageOptions) {
+	feedback({ level: 'toast', tone, message: key, params, duration: option?.duration as number | undefined });
+}
+function notify(key: string, tone: FeedbackTone, params?: Record<string, unknown>) {
+	feedback({ level: 'notification', tone, message: key, params });
 }
 
 export function message(key: string, params?: Record<string, unknown>, option?: MessageOptions) {
-	ElMessage({ message: resolveMessage(key, params), ...option });
+	toast(key, 'info', params, option);
 }
 export function successMessage(key: string, params?: Record<string, unknown>, option?: MessageOptions) {
-	ElMessage({ message: resolveMessage(key, params), type: 'success', ...option });
+	toast(key, 'success', params, option);
 }
 export function warningMessage(key: string, params?: Record<string, unknown>, option?: MessageOptions) {
-	ElMessage({ message: resolveMessage(key, params), type: 'warning', ...option });
+	toast(key, 'warning', params, option);
 }
 export function errorMessage(key: string, params?: Record<string, unknown>, option?: MessageOptions) {
-	ElMessage({ message: resolveMessage(key, params), type: 'error', ...option });
+	toast(key, 'error', params, option);
 }
 export function infoMessage(key: string, params?: Record<string, unknown>, option?: MessageOptions) {
-	ElMessage({ message: resolveMessage(key, params), type: 'info', ...option });
+	toast(key, 'info', params, option);
 }
 
 export function notification(key: string, params?: Record<string, unknown>) {
-	ElNotification({ message: resolveMessage(key, params) });
+	notify(key, 'info', params);
 }
 export function successNotification(key: string, params?: Record<string, unknown>) {
-	ElNotification({ message: resolveMessage(key, params), type: 'success' });
+	notify(key, 'success', params);
 }
 export function warningNotification(key: string, params?: Record<string, unknown>) {
-	ElNotification({ message: resolveMessage(key, params), type: 'warning' });
+	notify(key, 'warning', params);
 }
 export function errorNotification(key: string, params?: Record<string, unknown>) {
-	ElNotification({ message: resolveMessage(key, params), type: 'error' });
+	notify(key, 'error', params);
 }
 export function infoNotification(key: string, params?: Record<string, unknown>) {
-	ElNotification({ message: resolveMessage(key, params), type: 'info' });
+	notify(key, 'info', params);
 }
