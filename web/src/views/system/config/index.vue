@@ -306,7 +306,8 @@ import { ref, onMounted, watch, computed } from 'vue';
 import { storeToRefs } from 'pinia';
 import pinia from '/@/stores/index';
 import { useThemeConfig } from '/@/stores/themeConfig';
-import { ElMessage, ElMessageBox } from 'element-plus';
+import { ElMessage } from 'element-plus';
+import { confirmDelete } from '/@/shared/ui/confirm';
 import { getBaseURL } from '/@/utils/baseUrl';
 import { Session } from '/@/utils/storage';
 
@@ -623,23 +624,16 @@ const handleNumberInput = (item: any) => {
 
 // 删除配置
 const handleDelete = (item: any) => {
-	ElMessageBox.confirm(
-		t('message.pages.config.messages.deleteConfirm'),
-		t('message.pages.config.buttons.delete'),
-		{
-			confirmButtonText: t('message.pages.config.buttons.confirm'),
-			cancelButtonText: t('message.pages.config.buttons.cancel'),
-			type: 'warning',
-		}
-	).then(async () => {
+	confirmDelete(item.title_i18n || item.title || '').then(async (confirmed) => {
+		if (!confirmed) return;
 		try {
 			await api.DelObj(item.id);
 			ElMessage.success(t('message.pages.config.messages.deleteSuccess'));
 			getFormList();
-		} catch (error) {
+		} catch {
 			ElMessage.error(t('message.pages.config.messages.deleteFailed'));
 		}
-	}).catch(() => {});
+	});
 };
 
 // Tab添加成功
@@ -655,38 +649,29 @@ const handleContentSuccess = () => {
 };
 
 // 删除当前分组
-const handleDeleteGroup = () => {
-	ElMessageBox.confirm(
-		t('message.pages.config.messages.deleteGroupConfirm'),
-		t('message.pages.config.buttons.deleteGroup'),
-		{
-			confirmButtonText: t('message.pages.config.buttons.confirm'),
-			cancelButtonText: t('message.pages.config.buttons.cancel'),
-			type: 'warning',
+const handleDeleteGroup = async () => {
+	// 先定位分组，再问用户——确认框里要写出删的是哪个分组
+	const currentGroup = editableTabs.value.find((tab: any) => tab.key === editableTabsValue.value);
+	if (!currentGroup) {
+		ElMessage.error(t('message.pages.config.messages.groupNotFound'));
+		return;
+	}
+	if (!(await confirmDelete(currentGroup.title_i18n || currentGroup.title || ''))) return;
+
+	try {
+		await api.DelObj(currentGroup.id);
+		ElMessage.success(t('message.pages.config.messages.deleteGroupSuccess'));
+
+		// 重新获取分组列表
+		await getTabs();
+
+		// 如果分组列表不为空,切换到第一个分组
+		if (editableTabs.value.length > 0) {
+			editableTabsValue.value = editableTabs.value[0].key;
 		}
-	).then(async () => {
-		try {
-			// 查找当前分组的ID
-			const currentGroup = editableTabs.value.find((tab: any) => tab.key === editableTabsValue.value);
-			if (!currentGroup) {
-				ElMessage.error(t('message.pages.config.messages.groupNotFound'));
-				return;
-			}
-			
-			await api.DelObj(currentGroup.id);
-			ElMessage.success(t('message.pages.config.messages.deleteGroupSuccess'));
-			
-			// 重新获取分组列表
-			await getTabs();
-			
-			// 如果分组列表不为空,切换到第一个分组
-			if (editableTabs.value.length > 0) {
-				editableTabsValue.value = editableTabs.value[0].key;
-			}
-		} catch (error) {
-			ElMessage.error(t('message.pages.config.messages.deleteGroupFailed'));
-		}
-	}).catch(() => {});
+	} catch {
+		ElMessage.error(t('message.pages.config.messages.deleteGroupFailed'));
+	}
 };
 
 onMounted(() => {

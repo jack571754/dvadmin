@@ -44,17 +44,14 @@
 
 <script lang="ts" setup name="dept">
 import { ref, onMounted } from 'vue';
-import { useI18n } from 'vue-i18n';
 import XEUtils from 'xe-utils';
-import { ElMessageBox } from 'element-plus';
+import { confirmDelete } from '/@/shared/ui/confirm';
 import DeptTreeCom from './components/DeptTreeCom/index.vue';
 import DeptFormCom from './components/DeptFormCom/index.vue';
 import DeptUserCom from './components/DeptUserCom/index.vue';
 import { GetList, DelObj } from './api';
 import { successNotification } from '../../../utils/message';
 import { APIResponseData, TreeItemType } from './types';
-
-const { t } = useI18n();
 
 let deptTreeData = ref([]);
 let deptTreeCacheData = ref<TreeItemType[]>([]);
@@ -89,16 +86,9 @@ const handleTreeClick = (record: TreeItemType) => {
 /**
  * 部门的删除事件
  */
-const handleDeleteMenu = (id: string, callback: Function) => {
-	ElMessageBox.confirm(
-		t('message.pages.dept.dialog.deleteConfirm'),
-		t('message.pages.config.dialog.addGroup'),
-		{
-			confirmButtonText: t('message.pages.dept.buttons.confirm'),
-			cancelButtonText: t('message.pages.dept.buttons.cancel'),
-			type: 'warning',
-		}
-	).then(async () => {
+const handleDeleteMenu = (id: string, callback: Function, name?: string) => {
+	confirmDelete(name ?? '').then(async (confirmed) => {
+		if (!confirmed) return;
 		const res: APIResponseData = await DelObj(id);
 		callback();
 		if (res?.code === 2000) {

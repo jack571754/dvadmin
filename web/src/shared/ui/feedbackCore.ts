@@ -54,6 +54,28 @@ export interface FeedbackApi {
   confirmFeedback(options: FeedbackOptions): Promise<boolean>;
 }
 
+/**
+ * 删除确认的唯一文案：标题带对象名（用户要知道删的是哪一个），
+ * 按钮是「删除/取消」而不是通用的「确定/取消」，warning 档。
+ */
+export function deleteConfirmOptions(target: string | number, translate: Translate): FeedbackOptions {
+  const label = typeof target === 'number' ? '' : (target ?? '').trim();
+  const title =
+    typeof target === 'number'
+      ? translate('message.common.deleteCountTitle', { count: target })
+      : label
+        ? translate('message.common.deleteTitle', { name: label })
+        : translate('message.common.delete');
+  return {
+    level: 'dialog',
+    tone: 'warning',
+    title,
+    message: translate('message.common.deleteConfirm'),
+    confirmText: translate('message.common.delete'),
+    cancelText: translate('message.common.cancel'),
+  };
+}
+
 export function createFeedback(emit: FeedbackEmitter, translate: Translate, now: () => number = () => Date.now()): FeedbackApi {
   const lastSeen = new Map<string, number>();
 

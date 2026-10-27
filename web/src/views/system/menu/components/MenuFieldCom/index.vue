@@ -65,7 +65,8 @@ import { storeToRefs } from 'pinia';
 const { themeConfig } = storeToRefs(useThemeConfig());
 
 const { t } = useI18n();
-import { ElMessage, ElMessageBox } from 'element-plus';
+import { ElMessage } from 'element-plus';
+import { confirmDelete } from '/@/shared/ui/confirm';
 // 当前选择的菜单信息
 let selectOptions: any = ref({ name: null });
 
@@ -138,12 +139,7 @@ const selectedRowsCount = computed(() => {
 
 // 批量删除
 const handleBatchDelete = async () => {
-	await ElMessageBox.confirm(`确定要批量删除这${selectedRows.value.length}条记录吗`, '确认', {
-		distinguishCancelAndClose: true,
-		confirmButtonText: '确定',
-		cancelButtonText: '取消',
-		closeOnClickModal: false,
-	});
+	if (!(await confirmDelete(selectedRows.value.length))) return;
 	await BatchDelete(XEUtils.pluck(selectedRows.value, 'id'));
 	ElMessage.info(t('message.pages.menu.messages.deleteSuccess'));
 	selectedRows.value = [];

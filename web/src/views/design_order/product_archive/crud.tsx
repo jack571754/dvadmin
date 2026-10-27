@@ -1,5 +1,6 @@
 import { ref } from 'vue';
-import { ElMessage, ElMessageBox } from 'element-plus';
+import { ElMessage } from 'element-plus';
+import { confirmDelete } from '/@/shared/ui/confirm';
 import * as api from '/@/api/design_order/product_archive';
 import {
 	AddReq,
@@ -62,15 +63,8 @@ export const createCrudOptions = function ({ crudExpose }: CreateCrudOptionsProp
 								ElMessage.warning('请选择要删除的数据！');
 								return;
 							}
-							ElMessageBox.confirm(
-								`确定要批量删除已选中的 ${selectedRowKeys.value.length} 条数据吗？`,
-								'警告',
-								{
-									confirmButtonText: '确定',
-									cancelButtonText: '取消',
-									type: 'warning',
-								}
-							).then(async () => {
+							confirmDelete(selectedRowKeys.value.length).then(async (confirmed) => {
+								if (!confirmed) return;
 								const res = await api.BatchDelete(selectedRowKeys.value);
 								if (res.code === 2000) {
 									ElMessage.success('批量删除成功！');
@@ -79,7 +73,7 @@ export const createCrudOptions = function ({ crudExpose }: CreateCrudOptionsProp
 								} else {
 									ElMessage.error(res.msg || '批量删除失败');
 								}
-							}).catch(() => {});
+							});
 						},
 					},
 				},

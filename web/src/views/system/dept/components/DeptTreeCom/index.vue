@@ -168,7 +168,7 @@ const handleDeleteDept = () => {
 	}
 	emit('deleteDept', treeSelectDept.value.id, () => {
 		treeSelectDept.value = {};
-	});
+	}, treeSelectDept.value.name);
 };
 
 /**
