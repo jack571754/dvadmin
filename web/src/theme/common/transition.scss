@@ -1,22 +1,23 @@
 /* 页面切换动画
 ------------------------------- */
-// 极速 fade 过渡 (推荐用于 SPA 页面热切换，0.12s 避免白屏挂起)
+// 极速 fade 过渡 (推荐用于 SPA 页面热切换，fast 档避免白屏挂起)
 .fade-enter-active,
 .fade-leave-active {
-	transition: opacity 0.12s ease;
+	transition: opacity var(--admin-duration-fast) var(--admin-ease-standard);
 }
 .fade-enter-from,
 .fade-leave-to {
 	opacity: 0;
 }
 
-// 快速 slide-right / slide-left 过渡 (收紧至 0.18s)
+// 快速 slide-right / slide-left 过渡 (base 档)
 .slide-right-enter-active,
 .slide-right-leave-active,
 .slide-left-enter-active,
 .slide-left-leave-active {
 	will-change: transform, opacity;
-	transition: transform 0.18s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.18s ease;
+	transition: transform var(--admin-duration-base) var(--admin-ease-out),
+		opacity var(--admin-duration-base) var(--admin-ease-standard);
 }
 // slide-right
 .slide-right-enter-from {
@@ -38,7 +39,7 @@
 .opacitys-enter-active,
 .opacitys-leave-active {
 	will-change: opacity;
-	transition: opacity 0.15s ease;
+	transition: opacity var(--admin-duration-base) var(--admin-ease-standard);
 }
 .opacitys-enter-from,
 .opacitys-leave-to {
@@ -49,7 +50,7 @@
 ------------------------------- */
 .breadcrumb-enter-active,
 .breadcrumb-leave-active {
-	transition: all 0.2s ease;
+	transition: all var(--admin-duration-slow) var(--admin-ease-standard);
 }
 .breadcrumb-enter-from,
 .breadcrumb-leave-active {
@@ -153,5 +154,29 @@
 	}
 	100% {
 		left: -5px;
+	}
+}
+
+/* 减少动态效果偏好
+-------------------------------
+   只压应用态过渡与 Element 的过渡变量，不使用通配选择器：
+   Element 弹窗靠 transitionend 收尾，用 none/0s 会卡住关闭流程，所以统一压到 1ms。 */
+@media (prefers-reduced-motion: reduce) {
+	.fade-enter-active,
+	.fade-leave-active,
+	.slide-right-enter-active,
+	.slide-right-leave-active,
+	.slide-left-enter-active,
+	.slide-left-leave-active,
+	.opacitys-enter-active,
+	.opacitys-leave-active,
+	.breadcrumb-enter-active,
+	.breadcrumb-leave-active {
+		transition-duration: 1ms !important;
+	}
+
+	:root {
+		--el-transition-duration: 1ms;
+		--el-transition-duration-fast: 1ms;
 	}
 }

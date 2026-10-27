@@ -81,6 +81,13 @@
   --admin-space-5: 20px;
   --admin-space-6: 24px;
   --admin-space-8: 32px;
+
+  /* motion — 亮暗通用，applyTheme() 只覆盖颜色与尺寸，不会清掉时长 */
+  --admin-duration-fast: 120ms;
+  --admin-duration-base: 180ms;
+  --admin-duration-slow: 220ms;
+  --admin-ease-standard: cubic-bezier(0.2, 0, 0, 1);
+  --admin-ease-out: cubic-bezier(0.16, 1, 0.3, 1);
 }
 
 [data-theme='dark'],

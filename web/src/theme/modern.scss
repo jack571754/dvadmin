@@ -293,9 +293,5 @@
   }
 }
 
-@media (prefers-reduced-motion: reduce) {
-  .layout-modern * {
-    animation-duration: 0.01ms !important;
-    transition-duration: 0.01ms !important;
-  }
-}
+/* 减少动态效果偏好统一在 theme/common/transition.scss 处理；
+   本文件没有自己的动画，不要再加 .layout-modern * 这类通配规则。 */
