@@ -7,7 +7,14 @@ import type { FeedbackTone } from '/@/shared/ui/feedback';
  * 新代码请直接 import { feedback }；同一动作只回一次声，见 docs/frontend-refactor-design.md §5.2。
  */
 function toast(key: string, tone: FeedbackTone, params?: Record<string, unknown>, option?: MessageOptions) {
-	feedback({ level: 'toast', tone, message: key, params, duration: option?.duration as number | undefined });
+	feedback({
+		level: 'toast',
+		tone,
+		message: key,
+		params,
+		duration: option?.duration as number | undefined,
+		showClose: option?.showClose,
+	});
 }
 function notify(key: string, tone: FeedbackTone, params?: Record<string, unknown>) {
 	feedback({ level: 'notification', tone, message: key, params });

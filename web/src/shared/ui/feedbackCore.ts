@@ -19,6 +19,8 @@ export interface FeedbackOptions {
   text?: string;
   params?: Record<string, unknown>;
   duration?: number;
+  /** 只有显式拉长到数秒的 toast 才需要手动关闭，默认不带关闭按钮 */
+  showClose?: boolean;
   /** 相同 dedupeKey 在窗口内只响一次，用于抑制并发请求刷屏 */
   dedupeKey?: string;
   title?: string;
@@ -30,6 +32,7 @@ export interface FeedbackPayload {
   message: string;
   tone: FeedbackTone;
   duration: number;
+  showClose?: boolean;
   title?: string;
   confirmText?: string;
   cancelText?: string;
@@ -105,6 +108,7 @@ export function createFeedback(emit: FeedbackEmitter, translate: Translate, now:
       message: resolveText(options),
       tone: options.tone ?? 'info',
       duration: options.duration ?? (level === 'notification' ? FEEDBACK_DURATIONS.notification : FEEDBACK_DURATIONS.toast),
+      showClose: options.showClose,
       title: options.title,
       confirmText: options.confirmText,
       cancelText: options.cancelText,

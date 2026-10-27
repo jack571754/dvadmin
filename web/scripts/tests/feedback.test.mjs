@@ -68,3 +68,12 @@ test('text 优先于 message 原样输出', () => {
   f.feedback({ level: 'toast', text: '超时，请重试', message: 'common.timeout' });
   assert.equal(f.calls[0].message, '超时，请重试');
 });
+
+test('长时 toast 可要求关闭按钮，默认不带', () => {
+  const f = fixture();
+  f.feedback({ level: 'toast', message: '已应用到 12 个商品', duration: 6000, showClose: true });
+  f.feedback({ level: 'toast', message: 'ok' });
+  assert.equal(f.calls[0].showClose, true);
+  assert.equal(f.calls[0].duration, 6000);
+  assert.equal(f.calls[1].showClose, undefined);
+});

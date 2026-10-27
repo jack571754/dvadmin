@@ -11,6 +11,7 @@ function elementOptions(payload: FeedbackPayload) {
     message: payload.message,
     type: payload.tone,
     duration: payload.duration,
+    ...(payload.showClose ? { showClose: true } : {}),
     ...(payload.title ? { title: payload.title } : {}),
   };
 }

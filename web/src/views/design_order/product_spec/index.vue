@@ -2981,11 +2981,11 @@ const handleBatchApply = (payload: {
 		efficacyItemsByCard: efficacyItemsBeforeApply,
 		iconRefsByCard: iconRefsBeforeApply,
 	};
-	// 批量应用有撤销窗口，给足 6s 阅读时间（showClose 由门面统一，不再单独开）
+	// 批量应用的提示要读得完，给足 6s，并允许提前关掉
 	successMessage(
 		`已将 ${result.fieldCount} 个字段应用到${result.targetCount === formCount.value ? '全部 ' : '所选 '}${result.targetCount} 个商品（共 ${result.cellCount} 个单元格）`,
 		undefined,
-		{ duration: 6000 },
+		{ duration: 6000, showClose: true },
 	);
 };
 
