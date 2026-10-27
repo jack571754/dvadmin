@@ -239,10 +239,15 @@ export const createCrudOptions = function ({crudExpose}: CreateCrudOptionsProps)
                             style: '--el-switch-on-color: var(--admin-accent); --el-switch-off-color: var(--admin-border-strong)',
                             disabled: compute((context) => statusMutation.pending.has(context.row.id)),
                             loading: compute((context) => statusMutation.pending.has(context.row.id)),
-                            // 失败时返回 false，开关自动回滚，不会停在错的位置
+                            // 失败时返回 false，开关自动回滚，不会停在错的位置。
+                            // beforeChange 在 v-model 回写之前触发，context.row 里还是旧值，
+                            // 必须自己取反再提交，否则后端收到的是原状态。
                             beforeChange: compute((context) => () =>
                                 statusMutation.run(context.row.id, async () => {
-                                    const res: APIResponseData = await api.UpdateObj(context.row);
+                                    const res: APIResponseData = await api.UpdateObj({
+                                        ...context.row,
+                                        enable_datasource: !context.row.enable_datasource,
+                                    });
                                     successMessage(res.msg as string);
                                 }),
                             ),

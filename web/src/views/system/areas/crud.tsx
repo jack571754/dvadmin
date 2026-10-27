@@ -200,10 +200,12 @@ export const createCrudOptions = function ({ crudExpose }: CreateCrudOptionsProp
 							disabled: compute((context) => statusMutation.pending.has(context.row.id)),
 							loading: compute((context) => statusMutation.pending.has(context.row.id)),
 							// 用 beforeChange 而不是 onChange：失败时返回 false，开关自己回滚，
-							// 不会停在"看起来改成功了"的位置
+							// 不会停在"看起来改成功了"的位置。
+							// beforeChange 在 v-model 回写之前触发，context.row 里还是旧值，
+							// 必须自己取反再提交，否则后端收到的是原状态。
 							beforeChange: compute((context) => () =>
 								statusMutation.run(context.row.id, async () => {
-									const res: APIResponseData = await api.UpdateObj(context.row);
+									const res: APIResponseData = await api.UpdateObj({ ...context.row, enable: !context.row.enable });
 									successMessage(res.msg as string);
 								}),
 							),
