@@ -179,4 +179,16 @@
 		--el-transition-duration: 1ms;
 		--el-transition-duration-fast: 1ms;
 	}
+
+	/* 动画（与过渡不同）：无限循环的装饰动画对"减少动态效果"用户是直接干扰，
+	   按类名点名关掉。不恢复通配选择器——noticeBar 靠 animationend 切换下一段动画，
+	   把时长压到 1ms 会让它在两组动画之间高速来回；关成 none 则保持静止。 */
+	.layout-link-icon::after,
+	.loading-next .loading-next-box-item,
+	.el-icon.is-loading,
+	.el-loading-spinner .circular,
+	.el-loading-spinner .path,
+	.text-container:hover {
+		animation: none !important;
+	}
 }

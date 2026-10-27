@@ -53,3 +53,13 @@ test('reduced-motion falls back to 1ms without a universal selector', () => {
   assert.doesNotMatch(block, /\*\s*\{/, '降级块不应使用通配选择器');
   assert.doesNotMatch(block, /transition\s*:\s*none/, '不能用 transition:none（过渡事件不再触发）');
 });
+
+test('reduced-motion also stops the infinite decorative animations', () => {
+  // 只压过渡会留下无限循环的动画（外链页流光、加载方块、Element spinner），
+  // 那是 reduced-motion 用户最先要关掉的东西。
+  const block = reducedMotionBlock();
+  for (const selector of ['.layout-link-icon::after', '.loading-next-box-item', '.el-icon.is-loading', '.el-loading-spinner .circular', '.text-container:hover']) {
+    assert.ok(block.includes(selector), `降级块没有关掉 ${selector} 的动画`);
+  }
+  assert.match(block, /animation\s*:\s*none\s*!important/, '无限动画应直接关闭');
+});
