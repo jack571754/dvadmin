@@ -26,7 +26,8 @@
 | 5 | fast-crud `style.css` | `settings.ts:6`（经 `main.ts:16` 加载） | **在 #4 之后**，所以 CRUD 覆盖样式必须从 `settings.ts` 里引入 |
 | 6 | `assets/style/reset.scss` | `main.ts:33` | 晚于主题，会反向覆盖部分表格/placeholder 样式 |
 
-`index.scss` 内部的 `@use` 顺序：`tokens → app → common/transition → other → element → media/media → waves → dark → fa → modern`。
+`index.scss` 内部的 `@use` 顺序：`tokens → element-vars → app → common/transition → other → element → media/media → dark → fa → modern → skin/*`。
+（`waves.scss` 已随 v-waves 指令一并删除，不要再 `@use` 它。）
 
 ## 令牌分层
 
