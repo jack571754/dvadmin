@@ -7,7 +7,7 @@ from django_restql.fields import DynamicSerializerMethodField
 from rest_framework import serializers
 from rest_framework.decorators import action
 from rest_framework.permissions import IsAuthenticated
-from django.db import connection, transaction
+from django.db import connection
 from django.db.models import Q
 from application import dispatch
 from dvadmin.system.models import Users, Role, Dept

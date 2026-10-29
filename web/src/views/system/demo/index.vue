@@ -12,7 +12,7 @@
 import { ref, onMounted, watch } from 'vue';
 import { useFs } from '@fast-crud/fast-crud';
 import { createCrudOptions } from './crud';
-import * as echarts from "echarts";
+import echarts from '/@/utils/echarts';
 import { useThemeConfig } from '/@/stores/themeConfig';
 import { storeToRefs } from 'pinia';
 

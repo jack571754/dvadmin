@@ -99,8 +99,8 @@ import { storeToRefs } from 'pinia';
 import { Md5 } from 'ts-md5';
 import { createCrudOptions } from './crud';
 import importExcel from '/@/components/importExcel/index.vue';
-import * as echarts from 'echarts';
-import { ECharts, EChartsOption, init } from 'echarts';
+import echarts, { type ECharts, type EChartsOption, init } from '/@/utils/echarts';
+
 import { getDeptInfoById, resetPwd } from './api';
 import { warningNotification, successNotification } from '/@/utils/message';
 import { HeadDeptInfoType } from '../../types';

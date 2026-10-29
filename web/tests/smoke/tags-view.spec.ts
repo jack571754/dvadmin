@@ -4,11 +4,11 @@ test('each closable tab renders one close control and keeps the previous page wh
   const { page } = authenticatedPage;
   await page.goto('/#/user');
   await expect(page.locator('.el-table')).toBeVisible();
-  await page.goto('/#/icon_library');
+  await page.goto('/#/dictionary');
   await expect(page.locator('.el-table')).toBeVisible();
 
   const active = page.locator('.layout-navbars-tagsview-ul-li.is-active');
-  await expect(active).toContainText('Icon');
+  await expect(active).toContainText('字典管理');
   await expect(active.locator('.layout-navbars-tagsview-ul-li-icon')).toHaveCount(1);
   await expect(active.locator('.layout-navbars-tagsview-ul-li-refresh')).toHaveCount(1);
   for (const style of ['tags-style-shadcn', 'tags-style-one', 'tags-style-four', 'tags-style-five']) {

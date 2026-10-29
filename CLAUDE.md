@@ -14,6 +14,7 @@
 
 | 日期 | 变更 |
 |------|------|
+| 2026-10-29 | **首次性能优化**：`web/src/utils/echarts.ts` 按需注册（echarts 懒加载 chunk 1019KB→556KB）；`vite.config.ts` 新增 `purgeOutDir()` 插件（本机 `fs.rmSync` 静默失效导致 `dist` 堆积到 276MB，改用 `unlinkSync` 递归清理）并明确 vendor 分包策略；`tests/smoke/tags-view.spec.ts` 改用 `/dictionary` 页面。实测首屏 JS+CSS gzip 约 968KB。smoke 套件另有 **14 个与本次改动无关的既有失败**（users-pilot / user-form / bootstrap / core，均为未改动的 spec 与页面）。 |
 | 2026-10-29 | **移除设计工单板块**：删除后端 `dvadmin.design_order`（9 模型、25 迁移、9 张表）、前端页面与两条路由、用户页「平台权限」弹窗与两个接口、7 条菜单 + 45 个按钮 + 3 组字典、9 个测试文件与两份模块文档；`boto3` 依赖移除。备份与业务数据导出见 `scratch/backup/design-order-removal/`。 |
 | 2026-10-26 | **增量更新（第 2 次运行）**：新增 **3 份模块级 `CLAUDE.md`**（`backend/dvadmin/design_order`、`web/src/views/design_order`、`web/src/views/plugins/dvadmin3-flow-web`），模块文档由 9 份增至 **12 份**；补记根 `scripts/`、`AGENTS.md`、`_bmad/`、`_bmad-output/`、`.agents/skills/` 的性质；校正仓库根路径为 `D:\project\01-自研项目\dvadmin`；补 Univer 0.25.1、design_order 测试入口、迁移漂移和 Icon/源库配置等已知限制。 |
 | 2026-10-25 | 新增 **9 份模块级 `CLAUDE.md`**（backend、system、utils、dvadmin3_flow、web、theme、shared、views/system、docker_env），确立"根级简明 + 模块级详尽"的双层文档结构；根文档补模块索引表与模块文档 Mermaid 图；模块文档统一带导航面包屑。 |
@@ -74,13 +75,13 @@ dvadmin/                          # 仓库根，直接包含前后端
 │   │   │   └── plugins/
 │   │   │       └── dvadmin3-flow-web/  # 工作流前端（113 文件）  📄 CLAUDE.md
 │   │   ├── stores/               # Pinia 状态
-│   │   ├── router/               # 路由（含 bootstrap.ts、productSpec 隐藏路由）
+│   │   ├── router/               # 路由（含 bootstrap.ts）
 │   │   ├── i18n/                 # 国际化
 │   │   ├── theme/                # 设计令牌、Element 覆盖、暗色  📄 CLAUDE.md
 │   │   ├── shared/               # 会话/权限/请求/公共 UI  📄 CLAUDE.md
 │   │   └── utils/                # 请求、WebSocket 等
 │   ├── scripts/                  # check-lint、capture-baseline、e2e-server、test-environment、tests/
-│   ├── tests/                    # Playwright smoke/i18n/parity/baseline + product-spec Node 单测
+│   ├── tests/                    # Playwright smoke/i18n/parity/baseline
 │   ├── package.json              # scripts、engines、packageManager
 │   ├── pnpm-lock.yaml            # pnpm 锁文件
 │   ├── .node-version             # 24.22.1
@@ -125,7 +126,7 @@ dvadmin/                          # 仓库根，直接包含前后端
 | 模块 | 文档 | 主要读者场景 |
 |------|------|--------------|
 | 后端总览 | [backend/CLAUDE.md](./backend/CLAUDE.md) | 配置加载链、路由总览、中间件顺序、认证与测试 |
-| 系统管理 | [backend/dvadmin/system/CLAUDE.md](./backend/dvadmin/system/CLAUDE.md) | 18 个模型、ViewSet 与 action 清单、`init` 初始化、密码哈希坑、平台授权入口 |
+| 系统管理 | [backend/dvadmin/system/CLAUDE.md](./backend/dvadmin/system/CLAUDE.md) | 18 个模型、ViewSet 与 action 清单、`init` 初始化、密码哈希坑 |
 | 通用层 | [backend/dvadmin/utils/CLAUDE.md](./backend/dvadmin/utils/CLAUDE.md) | `CustomModelViewSet` 白拿的能力、权限判定顺序、数据权限合并、过滤语法 |
 | 工作流插件 | [backend/plugins/dvadmin3_flow/CLAUDE.md](./backend/plugins/dvadmin3_flow/CLAUDE.md) | 引擎入口、节点类型、已知缺陷清单 |
 | 前端总览 | [web/CLAUDE.md](./web/CLAUDE.md) | CSS 加载顺序、路由映射、fast-crud 配置、请求封装、测试脚本 |
@@ -163,7 +164,7 @@ dvadmin/                          # 仓库根，直接包含前后端
 | 路径 | 说明 |
 |------|------|
 | [backend/manage.py](./backend/manage.py) | Django 管理命令入口 |
-| [backend/application/settings.py](./backend/application/settings.py) | 主配置、插件导入、数据库/Celery/DRF/Icon 存储配置 |
+| [backend/application/settings.py](./backend/application/settings.py) | 主配置、插件导入、数据库/Celery/DRF 配置 |
 | [backend/application/urls.py](./backend/application/urls.py) | 系统 API、Swagger、SSE、插件路由 |
 | [backend/application/asgi.py](./backend/application/asgi.py) | ASGI/Channels WebSocket 入口 |
 | [backend/conf/env.example.py](./backend/conf/env.example.py) | 本地环境配置示例（不要提交实际 `env.py`） |
@@ -190,7 +191,7 @@ dvadmin/                          # 仓库根，直接包含前后端
 | [web/src/theme/](./web/src/theme/) | 主题与布局样式 |
 | [web/src/router/](./web/src/router/) | 路由配置 |
 | [web/src/stores/](./web/src/stores/) | Pinia 状态 |
-| [web/scripts/tests/](./web/scripts/tests/) | Node 单元测试（14 个文件） |
+| [web/scripts/tests/](./web/scripts/tests/) | Node 单元测试（21 个文件） |
 | [web/tests/](./web/tests/) | Playwright 测试（smoke / i18n / parity / baseline） |
 
 ---
@@ -331,7 +332,6 @@ graph LR
 | 状态管理 | Pinia ^2.0.28 |
 | UI | Element Plus ^2.8.0 |
 | CRUD | @fast-crud/fast-crud ^1.21.2、ui-element ^1.21.2 |
-| 表格引擎 | `@univerjs/presets`、`preset-sheets-core`、`preset-sheets-drawing`、`preset-sheets-data-validation`、`sheets-ui`、`sheets-data-validation`、`ui-adapter-vue3` 全部固定 **0.25.1** |
 | 构建 | Vite ^5.4.1 |
 | 语言/类型 | TypeScript 5.9.3、vue-tsc 3.1.5 |
 | 检查 | ESLint 9.39.5、Prettier ^2.8.1 |
@@ -481,7 +481,7 @@ pnpm dev
 | `pnpm lint:fix` | ESLint 自动修复 |
 | `pnpm typecheck` | `vue-tsc --noEmit -p tsconfig.refactor.json` |
 | `pnpm typecheck:legacy` | `vue-tsc --noEmit -p tsconfig.json` |
-| `pnpm test:unit` | `node --test scripts/tests/*.test.mjs tests/product-spec-*.test.mjs`（21 个文件） |
+| `pnpm test:unit` | `node --test scripts/tests/*.test.mjs`（21 个文件） |
 | `pnpm test:e2e` | Playwright smoke 项目（11 个 spec） |
 | `pnpm test:i18n` | Playwright i18n 项目（17 个 spec） |
 | `pnpm test:parity` | Playwright parity 项目（菜单路由对等） |
@@ -498,14 +498,13 @@ pnpm dev
 2. 在 `cmd.exe` 中执行 `pnpm.cmd test:unit` 时，`cmd.exe` 不会展开通配符，`node` 收到字面路径，命令退出码为 1。
 3. 在 Bash 中手动展开通配符后，Node `v20.20.2` 的运行结果为 **3 通过、3 失败**；失败原因是测试直接导入 `.ts` 文件（例如 `../../src/shared/access/bootstrap.ts`），Node 20 不支持这种导入方式。
 4. 未修改 `web/package.json` 或测试代码。2026-10-26 的交付记录：在 Node 24 + pnpm 11.25 下，标准 `test:unit`（含规格书单测）为 **91 项通过**，结论记录在 `_bmad-output/implementation-artifacts/design-order-unit-final.log`（该日志中的规格书单测已于 2026-10-29 随设计工单移除）。
-5. 2026-10-29 复跑：同一 Node 24 + pnpm 11.25 环境下，`pnpm test:unit` 为 **121 项全部通过**（14 个测试文件）。
+5. 2026-10-29 复跑：同一 Node 24 + pnpm 11.25 环境下，`pnpm test:unit` 为 **121 项全部通过**（21 个测试文件）。
 
 前置条件：先切换到 Node 24.22.1（或满足 `engines` 的 Node 24.x），再运行测试。PowerShell 中可以显式展开文件路径：
 
 ```powershell
 cd web
 node --test (Get-ChildItem scripts/tests -Filter '*.test.mjs' | ForEach-Object { $_.FullName })
-node --test (Get-ChildItem tests -Filter 'product-spec-*.test.mjs' | ForEach-Object { $_.FullName })
 ```
 
 也可以逐个文件运行：
@@ -613,13 +612,15 @@ Get-ChildItem scripts/tests/*.test.mjs | ForEach-Object { node --test $_.FullNam
 1. **`dvadmin3_celery` 未列入 `requirements.txt`**：`backend/application/settings.py` 仍导入 `dvadmin3_celery.settings`；当前本机已安装该包，但全新环境按 `requirements.txt` 安装后可能缺少它。`requirements.txt` 文件内注释说明该依赖待迁移后再移除。
 2. **后端测试依赖未完全声明**：仓库有 `backend/pytest.ini`、`backend/conftest.py`、`backend/dvadmin/utils/tests/`，但 `requirements.txt` 未列出 `pytest`；且 `pytest.ini` 的 `testpaths` 只含 `dvadmin/utils/tests`，`system/tests_parity.py` 需显式传路径。
 3. **SQLite 无行锁**：涉及并发的保存/提交流程在 SQLite 上不生效；并发写入可能报 `database is locked`，生产环境需在支持行锁的库上另行验证。
-4. **Node 版本阻塞**：当前 shell 为 Node 20.20.2，`pnpm test:unit` 在 Windows 下的实际结果见上文；Node 24 的通过结论来自交付日志，本轮未复跑。
+4. **Node 版本**：本仓库要求 Node 24；2026-10-29 复核 shell 为 Node 24.11.1，`pnpm test:unit` 121/121 通过。旧文档里 Node 20.20.2 的失败记录已不适用。
 5. **`typecheck` 覆盖有限**：`tsconfig.refactor.json` 只含 shared/features/user/role；flow-web 靠 `pnpm build`、lint 与浏览器测试兜底。
 6. **工作流前端无自动化测试**：`web/tests/` 不覆盖 `dvadmin3-flow-web`；改动需手工走审批链路。
 7. **README 未同步**：根 `README.md`、`README.zh.md` 仍含旧路径和旧命令；以本文档与 `START.md` 为准。
 8. **Docker 未在本次验证**：`docker-compose.yml`、`docker_env/` 仅按文件内容说明；未启动容器，也未执行容器内初始化。
 9. **账号凭据**：本文档不记录默认账号、密码、API key 或令牌。
 10. **工作树状态**：仓库存在大量未提交改动；文档更新不还原、不暂存、不提交其他文件。
+11. **smoke 套件有 14 个既有失败**（2026-10-29 实测：46 通过 / 14 失败）：集中在 `users-pilot.spec.ts`、`user-form.spec.ts`、`bootstrap*.spec.ts`、`core*.spec.ts`、`user-actions*.spec.ts`。这些 spec 与对应页面在本次改动前后完全一致（`git status` 无改动），失败原因是 spec 期望的界面元素（如用户页的「搜索姓名或账号」输入框）在页面里已不存在，属于 spec 与实际 UI 脱节，不是回归。改这些页面时需要同步修正 spec。
+12. **本机 `fs.rmSync` 静默失效**：Node 24.11.1 + 本机安全软件环境下，`fs.rmSync` 会返回成功但不删除文件，Vite 内置 `emptyOutDir` 因此失效（`web/dist` 曾堆积到 276MB）。`web/vite.config.ts` 的 `purgeOutDir()` 插件已改用 `unlinkSync` 递归清理，**不要删除该插件**。
 
 ---
 
@@ -667,7 +668,7 @@ Get-ChildItem scripts/tests/*.test.mjs | ForEach-Object { node --test $_.FullNam
 - **文档版本**：v4.3.0
 - **更新时间**：2026-10-29 (+08:00)
 - **文档路径**：`D:\project\01-自研项目\dvadmin\CLAUDE.md`
-- **文档结构**：根文档（愿景 / 架构 / 跨模块规范）+ 12 份模块文档，每份模块文档首行是导航面包屑。
+- **文档结构**：根文档（愿景 / 架构 / 跨模块规范）+ 11 份模块文档，每份模块文档首行是导航面包屑。
 - **维护原则**：只记录能从仓库文件、配置或只读命令验证的信息；环境相关结果标注验证日期与机器；不记录凭据；不把已删除模块写成现存功能。
 - **新增模块时**：在模块目录建 `CLAUDE.md`，首行写面包屑 `> 导航：[仓库根](../CLAUDE.md) › **本模块**`（层级按目录深度调整），
   并回到本文件的「模块文档」表格与两张 Mermaid 图补节点。

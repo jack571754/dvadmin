@@ -25,8 +25,8 @@
 
 <script setup lang="ts" name="AreaTrendChart">
 import { ref, onMounted, onUnmounted, watch, nextTick } from 'vue';
-import * as echarts from 'echarts';
-import type { ECharts } from 'echarts';
+import echarts, { type ECharts, type EChartsOption } from '/@/utils/echarts';
+
 import { useThemeConfig } from '/@/stores/themeConfig';
 import { request } from '/@/utils/service';
 
@@ -87,7 +87,7 @@ const renderChart = (dates: string[], totalCounts: number[], uniqueCounts: numbe
 	const textColor = isDark ? '#a3a3a3' : '#737373';
 	const gridLineColor = isDark ? '#262626' : '#f0f0f0';
 
-	const option: echarts.EChartsOption = {
+	const option: EChartsOption = {
 		tooltip: {
 			trigger: 'axis',
 			backgroundColor: isDark ? '#171717' : '#ffffff',

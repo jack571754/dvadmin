@@ -23,6 +23,17 @@ pnpm build                         # 生产构建
 开发态**没有 `/api` 代理**（`vite.config.ts` 只代理 `/gitee`），前端直连 `VITE_API_URL`，
 所以后端必须允许该 Origin 跨域。
 
+### 构建产物策略（`vite.config.ts`）
+
+| 项 | 现状 | 别动它的原因 |
+|----|------|--------------|
+| `manualChunks` | 只单独切 `vue` / `element-plus` / `fast-crud` 三个 vendor chunk | 不要把 `@fast-crud/*` 整包归一：`fast-extends` 的存储适配器、`jsoneditor` 是**懒加载** chunk，并进首屏会从 2.1MB 涨到 4.8MB（实测） |
+| `purgeOutDir()` | 构建前用 `unlinkSync` 递归清空 `outDir` | 本机 `fs.rmSync` 静默失效，Vite 自带 `emptyOutDir` 不起作用（见「已知坑 10」） |
+| `src/utils/echarts.ts` | 按需注册 Line/Bar/Pie + 常用组件 | 全量 `import * as echarts from 'echarts'` 会让懒加载 chunk 从 556KB 涨到 1019KB |
+
+2026-10-29 实测：首屏 JS+CSS gzip ≈ 968KB（entry 177 / element-plus 343 / CSS 297 / fast-crud 95 / vue 53），
+`dist` 382 个文件 12MB。
+
 ## 入口与加载顺序（决定样式谁能覆盖谁）
 
 `src/main.ts` 是唯一的启动链，顺序不能随意调整：
@@ -69,7 +80,7 @@ pnpm build                         # 生产构建
 **已知限制**：带参数的动态路由由 `backEnd.ts` 的 `oneFlat` / `twoLevel` 转换处理。
 不要在前端硬编码菜单 —— 菜单与按钮权限都来自后端 `menu` 表。
 
-## fast-crud 配置（33 个 CRUD 页的公共层）
+## fast-crud 配置（27 个 CRUD 页的公共层）
 
 `src/settings.ts` 默认导出的就是 fast-crud 插件，`commonOptions` 是全局约定：
 
@@ -130,7 +141,7 @@ views/*/api.ts  →  utils/service.ts  →  utils/http.ts  →  shared/api/clien
 
 | 命令 | 内容 |
 |------|------|
-| `pnpm test:unit` | `node --test scripts/tests/*.test.mjs`，共 14 个文件（shared/features） |
+| `pnpm test:unit` | `node --test scripts/tests/*.test.mjs`，共 21 个文件（shared/features） |
 | `pnpm test:e2e` | Playwright smoke（`tests/smoke/` 11 个 spec） |
 | `pnpm test:i18n` | Playwright i18n（`tests/i18n/` 17 个 spec） |
 | `pnpm test:parity` | Playwright parity（`tests/parity/pages.spec.ts`，覆盖各菜单路由） |
@@ -163,3 +174,10 @@ E2E 用独立环境：Web `8210` / API `9010`，`test-environment.mjs` 会拒绝
    `tests/baseline/performance.spec.ts` 默认 skip。
 9. 工作流插件前端**没有专用测试**，`pnpm build` 是最有效的兜底，见
    [flow-web 文档](./src/views/plugins/dvadmin3-flow-web/CLAUDE.md)。
+10. **本机 `fs.rmSync` 静默失效**：Node 24.11.1 + 本机安全软件下它返回成功但不删文件，
+    Vite 内置 `emptyOutDir` 依赖它 → `dist` 里的旧哈希文件长期堆积（曾达 276MB）。
+    `vite.config.ts` 的 `purgeOutDir()` 用 `unlinkSync` 递归清理，构建日志里若看不到
+    旧 chunk 消失，先检查这个插件是否还在。
+11. **smoke 套件有 14 个既有失败**（2026-10-29：46 通过 / 14 失败），集中在
+    `users-pilot`、`user-form`、`bootstrap`、`core`、`user-actions`，原因是 spec 期望的
+    界面元素在页面里已不存在（如用户页搜索框），属 spec 与 UI 脱节，不是构建回归。
