@@ -52,15 +52,6 @@ sys.path.insert(0, os.path.join(PLUGINS_PATH))
 DEBUG = locals().get("DEBUG", True)
 ALLOWED_HOSTS = locals().get("ALLOWED_HOSTS", ["*"])
 
-# 设计工单外部资源仅从环境注入，缺失时由业务接口明确反馈。
-FRONTEND_BASE_URL = os.environ.get("FRONTEND_BASE_URL", "http://localhost:8200")
-ICON_MINIO_ENDPOINT_URL = os.environ.get("ICON_MINIO_ENDPOINT_URL", "")
-ICON_MINIO_ACCESS_KEY = os.environ.get("ICON_MINIO_ACCESS_KEY", "")
-ICON_MINIO_SECRET_KEY = os.environ.get("ICON_MINIO_SECRET_KEY", "")
-ICON_MINIO_BUCKET_NAME = os.environ.get("ICON_MINIO_BUCKET_NAME", "")
-ICON_MINIO_REGION_NAME = os.environ.get("ICON_MINIO_REGION_NAME", "us-east-1")
-ICON_MINIO_PUBLIC_BASE_URL = os.environ.get("ICON_MINIO_PUBLIC_BASE_URL", "")
-
 # 列权限需要排除的App应用
 COLUMN_EXCLUDE_APPS = ['channels', 'captcha'] + locals().get("COLUMN_EXCLUDE_APPS", [])
 
@@ -78,7 +69,6 @@ INSTALLED_APPS = [
     "captcha",
     "channels",
     "dvadmin.system",
-    "dvadmin.design_order",
 ]
 
 MIDDLEWARE = [

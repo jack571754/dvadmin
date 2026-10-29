@@ -47,7 +47,6 @@
       </el-col>
     </el-row>
 
-    <PlatformPermissionDialog ref="platformDialog" />
   </fs-page>
 </template>
 
@@ -65,7 +64,6 @@ import { i18n } from '/@/i18n/index';
 import { useThemeConfig } from '/@/stores/themeConfig';
 import { storeToRefs } from 'pinia';
 import { useI18n } from 'vue-i18n';
-import PlatformPermissionDialog from './components/PlatformPermissionDialog.vue';
 import type { UserPageContext } from './context';
 import { useRowMutation } from '/@/shared/composables/rowMutation';
 import { createUserFormSession } from '/@/features/users/formSession';
@@ -76,7 +74,6 @@ import { focusFirstError } from '/@/shared/ui/formFocus';
 import { auth } from '/@/utils/authFunction';
 import { captureSession } from '/@/shared/access/sessionEvents';
 const { t } = useI18n();
-const platformDialog = ref<InstanceType<typeof PlatformPermissionDialog>>();
 const fieldPolicy = ref<FieldPolicy>({});
 const formSession = createUserFormSession(() => '保存用户失败');
 
@@ -142,7 +139,6 @@ const {crudExpose} = useExpose({crudRef, crudBinding});
 const userContext: UserPageContext = {
   i18n: { t }, statusMutation: useRowMutation(), formSession,
   listRequest: query => api.GetList(query),
-  openPlatformPermissions: row => { void platformDialog.value?.open(row); },
   onExportTask: () => {}, startForm: () => formSession.clear(),
   // 提交失败后把用户带到第一个出错字段；首字段名由 formSession 算好
   focusFormError: (field?: string) => {

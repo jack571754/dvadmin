@@ -2,7 +2,7 @@
 
 > 导航：[仓库根](../../../CLAUDE.md) › [backend](../../CLAUDE.md) › **system 系统管理**
 >
-> 最后更新：2026-10-25 ｜ URL 前缀 `api/system/`
+> 最后更新：2026-10-26 ｜ URL 前缀 `api/system/`
 
 ## 结构
 

@@ -37,28 +37,6 @@ const greatDream: any = import.meta.glob('@great-dream/**/*.{vue,tsx}');
  */
 const dynamicViewsModules: Record<string, Function> = Object.assign({}, { ...layouModules }, { ...viewsModules }, { ...greatDream });
 
-const PRODUCT_SPEC_ROUTE_NAME = 'productSpec';
-const productSpecEditorRoute: RouteRecordRaw = {
-	path: 'product_spec',
-	name: PRODUCT_SPEC_ROUTE_NAME,
-	component: () => import('/@/views/design_order/product_spec/index.vue'),
-	meta: {
-		title: '产品规格对比',
-		isLink: '',
-		isHide: true,
-		isKeepAlive: false,
-		isAffix: false,
-		isIframe: false,
-		roles: ['admin', 'operation'],
-		icon: 'ele-Grid',
-	},
-};
-
-export function ensureProductSpecEditorRoute() {
-	if (router.hasRoute(PRODUCT_SPEC_ROUTE_NAME)) return;
-	installedRoutes.push(router.addRoute('/', productSpecEditorRoute));
-}
-
 /**
  * 后端控制路由：初始化方法，防止刷新时路由丢失
  * @method NextLoading 界面 loading 动画开始执行
@@ -82,7 +60,6 @@ export function initBackEndControlRoutes() {
         dynamicRoutes[0].children = backEndComponent(frameIn);
         // Route publication is synchronous after the final session check.
         setAddRoute();
-        ensureProductSpecEditorRoute();
         backEndComponent(frameOut).forEach((route: RouteRecordRaw) => {
             installedRoutes.push(router.addRoute(route));
         });

@@ -160,6 +160,3 @@ docs/superpowers/
 
 # Isolated frontend E2E database and uploads
 backend/.e2e/
-
-# 设计工单历史迁移必须随业务模块交付。
-!backend/dvadmin/design_order/migrations/*.py

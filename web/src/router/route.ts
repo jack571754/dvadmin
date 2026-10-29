@@ -96,14 +96,4 @@ export const staticRoutes: Array<RouteRecordRaw> = [
 			title: 'message.router.personal'
 		},
 	},
-	{
-		path: '/share/product-spec/:shareCode',
-		name: 'productSpecShare',
-		component: () => import('/@/views/design_order/product_spec_share/index.vue'),
-		meta: {
-			title: '规格提报分享',
-			// 分享链接发给外部人看，不要求登录：分享码本身就是凭证
-			allowAnonymous: true,
-		},
-	},
 ];

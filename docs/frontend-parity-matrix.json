@@ -3,10 +3,8 @@
     "commit": "e2e9c789ce7a2c32eab71aa89440049c64dcc41b",
     "patch": "p0-20261024-224722/working-tree.patch",
     "excluded_intentionally_retired_prefixes": [
-      "web/src/views/design_order/",
       "web/src/views/plugins/dvadmin_portfolio/",
-      "web/src/views/portfolio/",
-      "web/src/api/design_order/"
+      "web/src/views/portfolio/"
     ]
   },
   "limitations": [

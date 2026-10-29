@@ -16,7 +16,7 @@
 		"lint:fix": "eslint src tests playwright.config.ts --fix",
 		"typecheck": "vue-tsc --noEmit -p tsconfig.refactor.json",
 		"typecheck:legacy": "vue-tsc --noEmit -p tsconfig.json",
-		"test:unit": "node --test scripts/tests/*.test.mjs tests/product-spec-*.test.mjs",
+		"test:unit": "node --test scripts/tests/*.test.mjs",
 		"test:e2e": "playwright test --project=smoke",
 		"test:parity": "playwright test --project=parity",
 		"test:i18n": "playwright test --project=i18n",

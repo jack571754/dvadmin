@@ -71,5 +71,3 @@ cos-python-sdk-v5==1.9.41
 #   dvadmin3-celery 仍被 application/settings.py 第 442 行 import，暂保留于环境中；
 #   待迁移其 CACHES/Celery 配置到项目内后在 P2 阶段移除。
 
-# 设计工单 Icon 对象存储客户端
-boto3==1.35.36

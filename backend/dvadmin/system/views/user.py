@@ -11,8 +11,6 @@ from django.db import connection, transaction
 from django.db.models import Q
 from application import dispatch
 from dvadmin.system.models import Users, Role, Dept
-from dvadmin.design_order.models import UserPlatformPermission
-from dvadmin.design_order.permissions_service import get_platform_choices
 from dvadmin.system.views.role import RoleSerializer
 from dvadmin.utils.json_response import ErrorResponse, DetailResponse, SuccessResponse
 from dvadmin.utils.serializers import CustomModelSerializer
@@ -417,53 +415,6 @@ class UserViewSet(CustomModelViewSet, FieldPermissionMixin):
                 return DetailResponse(data=None, msg=_("Update successful"))
         else:
             return ErrorResponse(msg=_("User not found"))
-
-    @action(methods=["GET"], detail=True)
-    def platform_permissions(self, request, pk=None):
-        """读取用户的平台授权配置，由角色按钮权限 user:PlatformPermission 控制。"""
-        target = Users.objects.filter(id=pk).first()
-        if not target:
-            return ErrorResponse(msg="用户不存在", status=404)
-        permissions = list(
-            UserPlatformPermission.objects.filter(user=target)
-            .values("platform", "scope")
-            .order_by("platform")
-        )
-        return DetailResponse(
-            data={"platforms": get_platform_choices(), "permissions": permissions},
-            msg="查询平台权限成功",
-        )
-
-    @action(methods=["PUT"], detail=True)
-    def update_platform_permissions(self, request, pk=None):
-        """覆盖保存用户的平台授权配置，由角色按钮权限 user:PlatformPermissionUpdate 控制。"""
-        target = Users.objects.filter(id=pk).first()
-        if not target:
-            return ErrorResponse(msg="用户不存在", status=404)
-        payload = request.data
-        items = payload.get("permissions", []) if isinstance(payload, dict) else payload
-        if not isinstance(items, list):
-            return ErrorResponse(msg="permissions 必须是数组", status=400)
-        valid_platforms = {item["value"] for item in get_platform_choices()}
-        normalized = []
-        seen = set()
-        for item in items:
-            if not isinstance(item, dict):
-                return ErrorResponse(msg="平台授权项必须是对象", status=400)
-            platform = str(item.get("platform", "")).strip()
-            scope = item.get("scope", UserPlatformPermission.SCOPE_SELF)
-            if not platform or platform not in valid_platforms:
-                return ErrorResponse(msg=f"无效的平台：{platform}", status=400)
-            if scope not in {UserPlatformPermission.SCOPE_SELF, UserPlatformPermission.SCOPE_PLATFORM_ALL}:
-                return ErrorResponse(msg=f"无效的数据范围：{scope}", status=400)
-            if platform in seen:
-                return ErrorResponse(msg=f"平台重复授权：{platform}", status=400)
-            seen.add(platform)
-            normalized.append(UserPlatformPermission(user=target, platform=platform, scope=scope, creator=request.user))
-        with transaction.atomic():
-            UserPlatformPermission.objects.filter(user=target).delete()
-            UserPlatformPermission.objects.bulk_create(normalized)
-        return DetailResponse(data={"permissions": [{"platform": x.platform, "scope": x.scope} for x in normalized]}, msg="平台权限保存成功")
 
     def list(self, request, *args, **kwargs):
         dept_id = request.query_params.get('dept')

@@ -2,7 +2,7 @@
 
 > 导航：[仓库根](../CLAUDE.md) › **backend 后端**
 >
-> 最后更新：2026-10-25 ｜ 技术栈版本以 [requirements.txt](./requirements.txt) 为准
+> 最后更新：2026-10-29 ｜ 技术栈版本以 [requirements.txt](./requirements.txt) 为准
 
 ## 入口与运行
 
@@ -64,10 +64,6 @@ SQLite 下另有 WAL + `busy_timeout` 调优（`settings.py:119-128`）。
 **`/healthz` 和 `/readiness` 不在 urls.py**，由 `dvadmin/utils/middleware.py:105-157` 的
 `HealthCheckMiddleware` 拦截（必须排在 MIDDLEWARE 第一位）。
 
-## 设计工单恢复接入
-
-`dvadmin.design_order` 已注册，接口前缀 `/api/design_order/`，恢复来源为 `d4e92e74606fb69ae9d268b5207fdf8d489c4341`。完整保留 0001–0025 迁移与平台权限过滤。`seed_design_order_support` 仅幂等补种三组店铺字典和两个平台授权按钮，不授予角色新权限。外部 Icon 存储通过 `ICON_MINIO_*`、源库通过 `DS_ALL_DB_*` 环境变量配置；缺失时相关操作明确报错。业务库不得运行 `init` 或测试。
-
 ## 中间件
 
 `settings.py:70-83` 中有三个项目自有中间件：
@@ -103,7 +99,7 @@ SQLite 下另有 WAL + `busy_timeout` 调优（`settings.py:119-128`）。
 | `dvadmin/system/` | 系统管理模块，见 [系统模块文档](./dvadmin/system/CLAUDE.md) |
 | `dvadmin/utils/` | 通用 ViewSet / 权限 / 过滤 / 中间件，见 [utils 文档](./dvadmin/utils/CLAUDE.md) |
 | `plugins/dvadmin3_flow/` | 工作流插件，见 [插件文档](./plugins/dvadmin3_flow/CLAUDE.md) |
-| `scripts/prepare_e2e.py` | 隔离 E2E 库准备（写 `backend/.e2e/`，git 忽略） |
+| `scripts/` | `prepare_e2e.py`（隔离 E2E 库）、`audit_frontend_parity.py` |
 | `util/` | 仅 `currency.py`（编码生成、缓存锁、部门递归 CTE） |
 | `static/` `templates/` | captcha / drf-yasg / rest_framework 的静态与模板 |
 | `locale/` | `en`、`zh_Hans` 的 `.po`（`.mo` 被忽略） |
@@ -118,11 +114,13 @@ python -m pytest                      # 配置在 pytest.ini
 
 - `pytest.ini`：`DJANGO_SETTINGS_MODULE=application.settings`，`testpaths=dvadmin/utils/tests`。
 - `conftest.py` 提供 `api_client`、`en_api_client`、`zh_api_client`、`test_user` 四个 fixture。
-- 现有测试只有 `dvadmin/utils/tests/test_i18n.py`（登录错误信息中英文断言）。
+- **默认只收集 `dvadmin/utils/tests`**。`dvadmin/system/tests_parity.py` 必须显式传路径：
+  `python -m pytest dvadmin/system/tests_parity.py --ds=application.e2e_settings`。
+- `dvadmin/utils/tests/` 现有 `test_i18n.py`（登录错误信息中英文断言）。
 - **依赖未声明**：`requirements.txt` 没有列出 `pytest`，也没有 `pytest-django`（而 `pytest.ini` 依赖它）。
   新环境跑测试前需自行 `pip install pytest pytest-django`，否则测试收集阶段就会失败。
 - E2E 用独立设置 `application.e2e_settings` + 独立 SQLite（`.e2e/db.sqlite3`），
-  **不要指向业务库**。
+  **不要指向业务库**。`scripts/prepare_e2e.py` 会跑迁移并写入隔离数据。
 
 ## 已知限制
 

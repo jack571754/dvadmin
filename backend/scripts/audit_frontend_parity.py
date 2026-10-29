@@ -8,8 +8,8 @@ import sys
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[2]
-RETIRED = ('web/src/views/design_order/', 'web/src/views/plugins/dvadmin_portfolio/',
-           'web/src/views/portfolio/', 'web/src/api/design_order/')
+RETIRED = ('web/src/views/plugins/dvadmin_portfolio/',
+           'web/src/views/portfolio/')
 METHODS = ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS', 'PATCH']
 
 
